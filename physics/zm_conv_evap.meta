@@ -1,0 +1,195 @@
+[ccpp-table-properties]
+  name = zm_conv_evap
+  type = scheme
+  dependencies =
+
+########################################################################
+[ccpp-arg-table]
+  name = zm_conv_evap_run
+  type = scheme
+[ncol]
+  standard_name = horizontal_loop_extent_for_block
+  long_name = horizontal loop extent for block
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[lchnk]
+  standard_name = ccpp_block_number
+  long_name = number of block for explicit data blocking in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[t]
+  standard_name = temporary_air_temperature
+  long_name = temporary model layer mean temperature
+  units = K
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pmid]
+  standard_name = air_pressure
+  long_name = midpoint air pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pdel]
+  standard_name = pressure_thickness
+  long_name = model layer thickness
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[q]         
+  standard_name = temporary_tracer_concentration
+  long_name = temporary state model layer mean tracer concentration
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[tend_s]
+  standard_name = tendency_of_dry_static_energy_due_to_deep_convection_evaporation
+  long_name = 
+  units = J kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = inout
+  optional = F
+[tend_s_snwprd]
+  standard_name = tendency_of_dry_static_energy_due_to_deep_convection_snow_production
+  long_name = tendency of dry static energy due to deep convection snow production
+  units = J kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[tend_s_snwevmlt]
+  standard_name = tendency_of_dry_static_energy_due_to_deep_convection_snow_melting_and_evaporation
+  long_name = tendency of dry static energy due to deep convection snow melting and evaporation
+  units = J kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[tend_q]
+  standard_name = tendency_of_specific_humidity_due_to_deep_convection_evaporation
+  long_name = 
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[prdprec]
+  standard_name = rain_production_rate
+  long_name = rain production rate
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[cldfrac]
+  standard_name = cloud_area_fraction_in_atmosphere_layer_at_previous_timestep
+  long_name = cloud area fraction at oldest time in the physics buffer
+  units = frac
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[deltat]
+  standard_name = timestep_for_physics
+  long_name = physics timestep
+  units = s
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[prec]
+  standard_name = convective_precipitation_rate
+  long_name = convective precipitation rate
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = inout
+  optional = F
+[snow]
+  standard_name = lwe_convective_snowfall_rate
+  long_name = liquid water equivalent convective snowfall rate
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[ntprprd]
+  standard_name = net_rain_production_rate
+  long_name = net rain production rate
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[ntsnprd]
+  standard_name = net_snow_production_rate
+  long_name = net snow production rate
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[flxprec]
+  standard_name = convective_precipitation_flux_at_interface
+  long_name = convective precipitation flux at interface
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[flxsnow]
+  standard_name = convective_snowfall_flux_at_interface
+  long_name = convective snowfall flux at interface
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+  optional = F
+[errflg]
+  standard_name = ccpp_error_flag
+  long_name = error flag for error handling in CCPP
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = out
+  optional = F

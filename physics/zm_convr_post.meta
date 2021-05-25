@@ -1,0 +1,427 @@
+[ccpp-table-properties]
+  name = zm_convr_post
+  type = scheme
+  dependencies =
+
+########################################################################
+[ccpp-arg-table]
+  name = zm_convr_post_run
+  type = scheme
+[ncol]
+  standard_name = horizontal_loop_extent_for_block
+  long_name = horizontal loop extent within each block
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pcols]
+  standard_name = horizontal_loop_extent
+  long_name = horizontal loop extent
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pver]
+  standard_name = vertical_dimension
+  long_name = number of vertical levels
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pcnst]
+  standard_name = number_of_tracers
+  long_name = number of tracers
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[lengath]
+  standard_name = number_of_convective_triggered_columns
+  long_name = number of convective triggered columns
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[ixcldice]
+  standard_name = index_of_cloud_ice_mixing_ratio_in_tracer_concentration_array
+  long_name = index_of_cloud_ice_mixing_ratio_in_tracer_concentration_array
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[ixcldliq]
+  standard_name = index_of_cloud_liquid_water_mixing_ratio_in_tracer_concentration_array
+  long_name = index_of_cloud_liquid_water_mixing_ratio_in_tracer_concentration_array
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[ixnumice]
+  standard_name = index_of_cloud_ice_number_concentration_in_tracer_concentration_array
+  long_name = index_of_cloud_ice_number_concentration_in_tracer_concentration_array
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[ixnumliq]
+  standard_name = index_of_cloud_liquid_water_number_concentration_in_tracer_concentration_array
+  long_name = index_of_cloud_liquid_water_number_concentration_in_tracer_concentration_array
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[gravit]
+  standard_name = gravitational_acceleration
+  long_name = gravitational acceleration
+  units = m s-2
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[rair]
+  standard_name = gas_constant_dry_air
+  long_name = ideal gas constant for dry air
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[cpair]
+  standard_name = specific_heat_of_dry_air_at_constant_pressure
+  long_name = specific heat of dry air at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[zvir]
+  standard_name = ratio_of_vapor_to_dry_air_gas_constants_minus_one
+  long_name = (rv/rd) - 1 (rv = ideal gas constant for water vapor)
+  units = none
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = F
+[dt]
+  standard_name = timestep_for_physics
+  long_name = physics timestep
+  units = s
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[jt]
+  standard_name = vertical_index_at_cloud_top_for_convective_triggered_columns
+  long_name = vertical index at cloud top for convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+  optional = F
+[maxg]
+  standard_name = vertical_index_at_maximum_moist_static_energy_for_convective_triggered_columns
+  long_name = vertical index at maximum moist static energy for convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+  optional = F
+[ideep]
+  standard_name = horizontal_index_of_convective_triggered_columns
+  long_name = horizontal index of convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+  optional = F
+[fv_dycore]
+  standard_name = flag_for_finite_volume_dynamical_core
+  long_name = flag set to true when the dynamical core being used is finite volume
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+  optional = F
+[microp_scheme]
+  standard_name = control_for_microphysics_scheme
+  long name = control for microphysics scheme
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=16
+  intent = in
+  optional = F
+[qmin]
+  standard_name = minimum_tracer_concentration 
+  long_name = minimum tracer concentration
+  units = kg kg-1
+  dimensions = (number_of_tracers)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[ps]
+  standard_name = surface_air_pressure
+  long_name = surface pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[lnpint]
+  standard_name = natural_log_of_air_pressure_at_interface
+  long_name = natural log of air pressure at model layer interfaces
+  units = ln Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[lnpmid]
+  standard_name = natural_log_of_air_pressure
+  long_name = natural log of midpoint air pressure
+  units = ln Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pint]
+  standard_name = air_pressure_at_interface
+  long_name = air pressure at model layer interfaces
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pmid]
+  standard_name = air_pressure
+  long_name = midpoint air pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pdel]
+  standard_name = pressure_thickness
+  long_name = model layer thickness
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[rpdel]
+  standard_name = reciprocal_of_pressure_thickness
+  long_name = reciprocal model layer thickness
+  units = Pa-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[phis]
+  standard_name = surface_geopotential
+  long_name = surface geopotential
+  units = m2 s-2 ???
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[tend_q]
+  standard_name = tendency_of_specific_humidity_due_to_deep_convection
+  long_name = 
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[tend_s]
+  standard_name = tendency_of_dry_static_energy_due_to_deep_convection
+  long_name = 
+  units = J kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[state_u]
+  standard_name = zonal_wind
+  long_name = zonal wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[state_v]
+  standard_name = y_wind
+  long_name = meridional wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[state_s]
+  standard_name = dry_static_energy
+  long_name = dry static energy
+  units = m2 s-2???
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[state_q]         
+  standard_name = tracer_concentration
+  long_name = model layer mean tracer concentration
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[mcon]
+  standard_name = atmosphere_convective_mass_flux
+  long_name = atmosphere convective mass flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = inout
+  optional = F
+[pcont]
+  standard_name = air_pressure_at_top_of_deep_convection
+  long_name = air pressure at top of deep convection
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[pconb]
+  standard_name = air_pressure_at_bottom_of_deep_convection
+  long_name = air pressure at bottom of deep convection
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[dp_cldliq]
+  standard_name = deep_convective_cloud_liquid_water_mixing_ratio
+  long_name = deep convective cloud liquid water mixing ratio
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[dp_cldice]
+  standard_name = deep_convective_cloud_ice_mixing_ratio
+  long_name = deep convective cloud ice mixing ratio
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_u]
+  standard_name = temporary_zonal_wind
+  long_name = temporary state zonal wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_v]
+  standard_name = temporary_meridional_wind
+  long_name = temporary state meridonal wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_s]
+  standard_name = temporary_dry_static_energy
+  long_name = temporary state dry static energy
+  units = m2 s-2???
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_q]         
+  standard_name = temporary_tracer_concentration
+  long_name = temporary state model layer mean tracer concentration
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_t]
+  standard_name = temporary_air_temperature
+  long_name = temporary model layer mean temperature
+  units = K
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_zm]
+  standard_name = temporary_geopotential_height
+  long_name = temporary geopotential height above surface at midpoints
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[temp_state_zi]
+  standard_name = temporary_geopotential_height_at_interface
+  long_name = temporary geopotential height above surface at interface
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+  optional = F
+[errflg]
+  standard_name = ccpp_error_flag
+  long_name = error flag for error handling in CCPP
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = out
+  optional = F

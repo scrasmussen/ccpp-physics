@@ -1,0 +1,582 @@
+[ccpp-table-properties]
+  name = zm_convr
+  type = scheme
+  dependencies =
+
+########################################################################
+[ccpp-arg-table]
+  name = zm_convr_init
+  type = scheme
+[cpair]
+  standard_name = specific_heat_of_dry_air_at_constant_pressure
+  long_name = specific heat of dry air at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[tmelt]
+  standard_name = freezing_point_temperature_of_fresh_water
+  long_name = freezing point temperature of fresh water
+  units = K
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[epsilo]
+  standard_name = ratio_of_water_vapor_to_dry_air_molecular_weights
+  long_name = ratio of water vapor molecular weight to dry air molecular weight
+  units = none
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[latvap]
+  standard_name = latent_heat_of_vaporization_of_water_at_0C
+  long_name = latent heat of evaporation/sublimation
+  units = J kg-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[gravit]
+  standard_name = gravitational_acceleration
+  long_name = gravitational acceleration
+  units = m s-2
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[rair]
+  standard_name = gas_constant_dry_air
+  long_name = ideal gas constant for dry air
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[latice_in]
+  standard_name = latent_heat_of_fusion_of_water_at_0C
+  long_name = latent heat of fusion
+  units = J kg-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[cpwv_in]
+  standard_name = specific_heat_of_water_vapor_at_constant_pressure
+  long_name = specific heat of water vapor at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[cpliq_in]
+  standard_name = specific_heat_of_liquid_water_at_constant_pressure
+  long_name = specific heat of liquid water at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[rh2o_in]
+  standard_name = gas_constant_water_vapor
+  long_name = ideal gas constant for water vapor
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[plev]
+  standard_name = vertical_dimension_of_dycore
+  long_name = number of vertical levels in the dycore
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[plevp]
+  standard_name = vertical_dimension_of_dycore_plus_one
+  long_name = number of vertical levels in the dycore plus one
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[hypi]
+  standard_name = reference_air_pressure_at_interface
+  long_name = refernce air pressure at interface
+  units = Pa
+  dimensions = (vertical_dimension_of_dycore_plus_one)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[masterproc]
+  name = flag_for_master_processor
+  long_name = flag for master processor
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+  optional = F
+[iulog]
+  name = unit_number_for_output_logging
+  long_name = Fortran I/O unit for logging
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[no_deep_pbl_in]
+  standard_name = flag_for_deep_convection_elimination_within_PBL
+  long_name = flag for turning off deep convection within PBL
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+  optional = F
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+  optional = F
+[errflg]
+  standard_name = ccpp_error_flag
+  long_name = error flag for error handling in CCPP
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = out
+  optional = F
+
+########################################################################
+[ccpp-arg-table]
+  name = zm_convr_run
+  type = scheme
+[lchnk]
+  standard_name = ccpp_block_number
+  long_name = number of block for explicit data blocking in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[ncol]
+  standard_name = horizontal_loop_extent_for_block
+  long_name = horizontal loop extent for block
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pcols]
+  standard_name = horizontal_loop_extent
+  long_name = horizontal loop extent
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pver]
+  standard_name = vertical_dimension
+  long_name = number of vertical levels
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pcnst]
+  standard_name = number_of_tracers
+  long_name = number of tracers
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[nd_buoy]
+  standard_name = flag_for_non_dilute_buoyancy
+  long_name = flag for non-dilute buoyancy algorithm in deep convection scheme
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+  optional = F
+[delt]
+  standard_name = half_timestep_for_physics
+  long_name = half physics timestep
+  units = s
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[t]
+  standard_name = air_temperature
+  long_name = model layer mean temperature
+  units = K
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[qh]         
+  standard_name = tracer_concentration
+  long_name = model layer mean tracer concentration
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pblh]
+  standard_name = atmosphere_boundary_layer_thickness
+  long_name = pbl height
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[zm]
+  standard_name = geopotential_height
+  long_name = geopotential height above surface at midpoints
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[geos]
+  standard_name = surface_geopotential
+  long_name = surface geopotential
+  units = m2 s-2 ???
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[zi]
+  standard_name = geopotential_height_at_interface
+  long_name = geopotential height above surface at interface
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[pap]
+  standard_name = air_pressure
+  long_name = midpoint air pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[paph]
+  standard_name = air_pressure_at_interface
+  long_name = air pressure at model layer interfaces
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[dpp]
+  standard_name = pressure_thickness
+  long_name = model layer thickness
+  units = Pa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[tpert]
+  standard_name = perturbation_of_temperature
+  long_name = pertubation of temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[landfrac]
+  standard_name = land_area_fraction
+  long_name = land area fraction
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
+[jt]
+  standard_name = vertical_index_at_cloud_top_for_convective_triggered_columns
+  long_name = vertical index at cloud top for convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = F
+[maxg]
+  standard_name = vertical_index_at_maximum_moist_static_energy_for_convective_triggered_columns
+  long_name = vertical index at maximum moist static energy for convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = F
+[ideep]
+  standard_name = horizontal_index_of_convective_triggered_columns
+  long_name = horizontal index of convective triggered columns
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = F
+[lengath]
+  standard_name = number_of_convective_triggered_columns
+  long_name = number of convective triggered columns
+  units = count
+  dimensions = ()
+  type = integer
+  intent = inout
+  optional = F
+[ql]
+  standard_name = cloud_water_mixing_ratio_for_deep_convection
+  long_name = cloud water mixing ratio for deep convection
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = inout
+  optional = F
+[prec]
+  standard_name = convective_precipitation_rate
+  long_name = convective precipitation rate
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[jctop]
+  standard_name = vertical_index_at_cloud_top
+  long_name = vertical index at cloud top
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[jcbot]
+  standard_name = vertical_index_at_cloud_base
+  long_name = vertical index at cloud base
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[qtnd]
+  standard_name = tendency_of_specific_humidity_due_to_deep_convection
+  long_name = 
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[heat]
+  standard_name = tendency_of_dry_static_energy_due_to_deep_convection
+  long_name = 
+  units = J kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[mcon]
+  standard_name = atmosphere_convective_mass_flux
+  long_name = atmosphere convective mass flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[cme]
+  standard_name = atmosphere_convective_mass_flux_multiplied_by_condensation_minus_evaporation
+  long_name = atmosphere convective mass flux multiplied by condensation minus evaporation
+  units = kg m-2 s-1 ???
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[cape]
+  standard_name = atmosphere_convective_available_potential_energy
+  long_name = atmosphere convective available potential energy
+  units = J kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[dlf]
+  standard_name = atmosphere_detrainment_convective_cloud_water_mass_flux
+  long_name = atmosphere detrainment convective cloud water mass flux
+  units = kg m-2 s-1 ???
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[pflx]
+  standard_name = scattered_convective_precipitation_flux_at_interface
+  long_name = scattered convective precipitation flux
+  units = kg m-2 s-1 ???
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[zdu]
+  standard_name = atmosphere_detrainment_convective_mass_flux
+  long_name = atmosphere detrainment convective mass flux
+  units = kg m-2 s-1 ???
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[rprd]
+  standard_name = rain_production_rate
+  long_name = rain production rate
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[mu]
+  standard_name = atmosphere_updraft_convective_mass_flux
+  long_name = atmosphere updraft convective mass flux
+  units = hPa s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[md]
+  standard_name = atmosphere_downdraft_convective_mass_flux
+  long_name = atmosphere downdraft convective mass flux
+  units = hPa s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[du]
+  standard_name = atmosphere_detrainment_convective_mass_flux
+  long_name = atmosphere detrainment convective mass flux
+  units = hPa s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[eu]
+  standard_name = atmosphere_updraft_entrainment_convective_mass_flux
+  long_name = atmosphere updraft entrainment convective mass flux
+  units = hPa s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[ed]
+  standard_name = atmosphere_downdraft_entrainment_convective_mass_flux
+  long_name = atmosphere downdraft entrainment convective mass flux
+  units = hPa s-1
+  dimensions = (horizontal_loop_extent, vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[dp]
+  standard_name = pressure_thickness_in_hPa
+  long_name = model layer thickness in hPa
+  units = hPa
+  dimensions = (horizontal_loop_extent,vertical_dimension)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[dsubcld]
+  standard_name = subcloud_pressure_thickness_in_hPa
+  long_name = thickness of subcloud layer in hPa
+  units = hPa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[rliq]
+  standard_name = vertically_integrated_liquid_water_not_in_cloud
+  long_name = verticall integrated liquid water not in cloud
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[slflx]
+  standard_name = sensible_heat_flux_due_to_deep_convection
+  long_name = sensible heat flux due to deep convection
+  units = W m-2
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[qtflx]
+  standard_name = latent_heat_flux_due_to_deep_convection
+  long_name = latent heat flux due to deep convection
+  units = W m-2
+  dimensions = (horizontal_loop_extent, vertical_dimension_plus_one)
+  type = real
+  kind = kind_r8
+  intent = out
+  optional = F
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+  optional = F
+[errflg]
+  standard_name = ccpp_error_flag
+  long_name = error flag for error handling in CCPP
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = out
+  optional = F
