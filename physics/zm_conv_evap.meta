@@ -15,10 +15,34 @@
   type = integer
   intent = in
   optional = F
+[pcols]
+  standard_name = horizontal_loop_extent
+  long_name = horizontal loop extent
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
 [lchnk]
   standard_name = ccpp_block_number
   long_name = number of block for explicit data blocking in CCPP
   units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pver]
+  standard_name = vertical_dimension
+  long_name = number of vertical levels
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[pverp]
+  standard_name = vertical_dimension_plus_one
+  long_name = number of vertical levels plus one
+  units = count
   dimensions = ()
   type = integer
   intent = in

@@ -42,7 +42,6 @@ module zm_conv_common
   real(r8) :: rgrav       ! reciprocal of grav
   real(r8) :: rgas        ! gas constant for dry air
   real(r8) :: grav        ! = gravit
-  real(r8) :: cp          ! = cpres = cpair
   
   integer  limcnv       ! top interface level limit for convection
 
@@ -56,6 +55,8 @@ module zm_convr
   
   use spmd_utils,      only: masterproc
   
+  use zm_conv_common, only: cpres, tfreez, eps1, rl, grav, rgrav, rgas, tau, latice, cpwv, cpliq, rh2o, limcnv, no_deep_pbl, c0_lnd, c0_ocn, ke
+  
   implicit none
   
   public :: zm_convr_init, zm_convr_run, zm_convr_finalize
@@ -68,8 +69,6 @@ module zm_convr
     
   subroutine zm_convr_init(cpair, tmelt, epsilo, latvap, gravit, rair, latice_in, cpwv_in, cpliq_in, rh2o_in, plev, plevp, hypi, masterproc, iulog, no_deep_pbl_in, errmsg, errflg)
     implicit none
-    
-    use zm_conv_common, only :: cp, cpres, tfreez, eps1, rl, grav, rgrav, rgas, tau, latice, cpwv, cpliq, rh2o, limcnv, no_deep_pbl, c0_lnd, c0_ocn, ke
     
     integer, intent(in) :: plev, plevp, iulog
     logical, intent(in) :: masterproc, no_deep_pbl_in
@@ -90,7 +89,6 @@ module zm_convr
     if (is_initialized) return
     
     ! Initialization of ZM constants
-    cp     = cpair
     cpres  = cpair
     tfreez = tmelt
     eps1   = epsilo
@@ -530,9 +528,9 @@ module zm_convr
 
        call buoyan(lchnk   ,ncol    , &
                    q       ,t       ,p       ,z       ,pf       , &
-                   tp      ,qstp    ,tl      ,rl      ,cape     , &
+                   tp      ,qstp    ,tl      ,cape     , &
                    pblt    ,lcl     ,lel     ,lon     ,maxi     , &
-                   rgas    ,grav    ,cpres   ,msg     , &
+                   msg     , &
                    tpert   )
     else
 
@@ -541,9 +539,9 @@ module zm_convr
 
        call buoyan_dilute(lchnk   ,ncol    , &
                    q       ,t       ,p       ,z       ,pf       , &
-                   tp      ,qstp    ,tl      ,rl      ,cape     , &
+                   tp      ,qstp    ,tl      ,cape     , &
                    pblt    ,lcl     ,lel     ,lon     ,maxi     , &
-                   rgas    ,grav    ,cpres   ,msg     , &
+                   msg     , &
                    tpert   ,errmsg  ,errflg)
     end if
     
@@ -658,9 +656,9 @@ module zm_convr
                qu      ,su      ,zfg     ,qs      ,hmn     , &
                hsat    ,shat    ,qlg     , &
                cmeg    ,maxg    ,lelg    ,jt      ,jlcl    , &
-               maxg    ,j0      ,jd      ,rl      ,lengath , &
-               rgas    ,grav    ,cpres   ,msg     , &
-               pflxg   ,evpg    ,cug     ,rprdg   ,limcnv  ,landfracg)
+               maxg    ,j0      ,jd      ,lengath , &
+               msg     , &
+               pflxg   ,evpg    ,cug     ,rprdg   ,landfracg)
  !
  ! convert detrainment from units of "1/m" to "1/mb".
  !
@@ -683,8 +681,8 @@ module zm_convr
                  qhat    ,shat    ,dp      ,qstpg   ,zfg     , &
                  qlg     ,dsubcld ,mb      ,capeg   ,tlg     , &
                  lclg    ,lelg    ,jt      ,maxg    ,1       , &
-                 lengath ,rgas    ,grav    ,cpres   ,rl      , &
-                 msg     ,capelmt    )
+                 lengath , &
+                 msg     )
     !
     ! limit cloud base mass flux to theoretical upper bound.
     !
@@ -737,9 +735,9 @@ module zm_convr
     do k=msg+1,pver
       do i=1,lengath
          slflx(ideep(i),k) =   ( mu(i,k)* (su(i,k)-shat(i,k)) &
-                         + md(i,k)* (sd(i,k)-shat(i,k)) )*cpair*100._r8/grav
+                         + md(i,k)* (sd(i,k)-shat(i,k)) )*cpres*100._r8/grav
          qtflx(ideep(i),k) =   ( mu(i,k)* (qu(i,k)-qhat(i,k)) &
-                         + md(i,k)* (qd(i,k)-qhat(i,k)) )*latvap*100._r8/grav
+                         + md(i,k)* (qd(i,k)-qhat(i,k)) )*rl*100._r8/grav
       end do
     end do
     
@@ -748,7 +746,7 @@ module zm_convr
                   su      ,du      ,qhat    ,shat    ,dp      , &
                   mu      ,md      ,sd      ,qd      ,qlg     , &
                   dsubcld ,jt      ,maxg    ,1       ,lengath , &
-                  cpres   ,rl      ,msg     ,          &
+                  msg     ,          &
                   dlg     ,evpg    ,cug     )
     !
     ! gather back temperature and mixing ratio.
@@ -797,7 +795,7 @@ module zm_convr
     ! Treat rliq as flux out bottom, to be added back later.
     do k = 1, pver
       do i = 1, ncol
-         rliq(i) = rliq(i) + dlf(i,k)*dpp(i,k)/gravit
+         rliq(i) = rliq(i) + dlf(i,k)*dpp(i,k)*rgrav
       end do
     end do
     rliq(:ncol) = rliq(:ncol) /1000._r8
@@ -810,9 +808,9 @@ module zm_convr
   
   subroutine buoyan(lchnk   ,ncol    , &
                     q       ,t       ,p       ,z       ,pf      , &
-                    tp      ,qstp    ,tl      ,rl      ,cape    , &
+                    tp      ,qstp    ,tl      ,cape    , &
                     pblt    ,lcl     ,lel     ,lon     ,mx      , &
-                    rd      ,grav    ,cp      ,msg     , &
+                    rd      ,msg     , &
                     tpert   )
   !----------------------------------------------------------------------- 
   ! 
@@ -877,9 +875,7 @@ module zm_convr
      integer knt(pcols)
      integer lelten(pcols,5)
 
-     real(r8) cp
      real(r8) e
-     real(r8) grav
 
      integer i
      integer k
@@ -887,7 +883,6 @@ module zm_convr
      integer n
 
      real(r8) rd
-     real(r8) rl
   #ifdef PERGRO
      real(r8) rhd
   #endif
@@ -926,7 +921,7 @@ module zm_convr
   #ifdef PERGRO
      do k = pver,msg + 1,-1
         do i = 1,ncol
-           hmn(i) = cp*t(i,k) + grav*z(i,k) + rl*q(i,k)
+           hmn(i) = cpres*t(i,k) + grav*z(i,k) + rl*q(i,k)
   !
   ! Reset max moist static energy level when relative difference exceeds 1.e-4
   !
@@ -940,7 +935,7 @@ module zm_convr
   #else
      do k = pver,msg + 1,-1
         do i = 1,ncol
-           hmn(i) = cp*t(i,k) + grav*z(i,k) + rl*q(i,k)
+           hmn(i) = cpres*t(i,k) + grav*z(i,k) + rl*q(i,k)
            if (k >= nint(pblt(i)) .and. k <= lon(i) .and. hmn(i) > hmax(i)) then
               hmax(i) = hmn(i)
               mx(i) = k
@@ -1017,7 +1012,7 @@ module zm_convr
               estp(i) = c1*exp((c2* (tp(i,k)-tfreez))/((tp(i,k)-tfreez)+c3))
 
               qstp(i,k) = eps1*estp(i)/ (p(i,k)-estp(i))
-              a1(i) = cp / rl + qstp(i,k) * (1._r8+ qstp(i,k) / eps1) * rl * eps1 / &
+              a1(i) = cpres / rl + qstp(i,k) * (1._r8+ qstp(i,k) / eps1) * rl * eps1 / &
                       (rd * tp(i,k) ** 2)
               a2(i) = .5_r8* (qstp(i,k)* (1._r8+2._r8/eps1*qstp(i,k))* &
                       (1._r8+qstp(i,k)/eps1)*eps1**2*rl*rl/ &
@@ -1055,7 +1050,7 @@ module zm_convr
               estp(i) = c1*exp((c2* (tp(i,k)-tfreez))/((tp(i,k)-tfreez)+c3))
 
               qstp(i,k) = eps1*estp(i)/ (p(i,k)-estp(i))
-              a1(i) = cp/rl + qstp(i,k)* (1._r8+qstp(i,k)/eps1)*rl*eps1/ (rd*tp(i,k)**2)
+              a1(i) = cpres/rl + qstp(i,k)* (1._r8+qstp(i,k)/eps1)*rl*eps1/ (rd*tp(i,k)**2)
               a2(i) = .5_r8* (qstp(i,k)* (1._r8+2._r8/eps1*qstp(i,k))* &
                       (1._r8+qstp(i,k)/eps1)*eps1**2*rl*rl/ &
                       (rd**2*tp(i,k)**4)-qstp(i,k)* &
@@ -1125,9 +1120,9 @@ module zm_convr
   
   subroutine buoyan_dilute(lchnk   ,ncol    , &
                     q       ,t       ,p       ,z       ,pf      , &
-                    tp      ,qstp    ,tl      ,rl      ,cape    , &
+                    tp      ,qstp    ,tl      ,cape    , &
                     pblt    ,lcl     ,lel     ,lon     ,mx      , &
-                    rd      ,grav    ,cp      ,msg     , &
+                    rd      ,msg     , &
                     tpert   ,errmsg  ,errflg)
   !----------------------------------------------------------------------- 
   ! 
@@ -1207,9 +1202,7 @@ module zm_convr
      integer knt(pcols)
      integer lelten(pcols,5)
 
-     real(r8) cp
      real(r8) e
-     real(r8) grav
 
      integer i
      integer k
@@ -1217,7 +1210,6 @@ module zm_convr
      integer n
 
      real(r8) rd
-     real(r8) rl
   #ifdef PERGRO
      real(r8) rhd
   #endif
@@ -1256,7 +1248,7 @@ module zm_convr
   #ifdef PERGRO
      do k = pver,msg + 1,-1
         do i = 1,ncol
-           hmn(i) = cp*t(i,k) + grav*z(i,k) + rl*q(i,k)
+           hmn(i) = cpres*t(i,k) + grav*z(i,k) + rl*q(i,k)
   !
   ! Reset max moist static energy level when relative difference exceeds 1.e-4
   !
@@ -1270,7 +1262,7 @@ module zm_convr
   #else
      do k = pver,msg + 1,-1
         do i = 1,ncol
-           hmn(i) = cp*t(i,k) + grav*z(i,k) + rl*q(i,k)
+           hmn(i) = cpres*t(i,k) + grav*z(i,k) + rl*q(i,k)
            if (k >= nint(pblt(i)) .and. k <= lon(i) .and. hmn(i) > hmax(i)) then
               hmax(i) = hmn(i)
               mx(i) = k
@@ -1824,9 +1816,9 @@ module zm_convr
                     qu      ,su      ,zf      ,qst     ,hmn     , &
                     hsat    ,shat    ,ql      , &
                     cmeg    ,jb      ,lel     ,jt      ,jlcl    , &
-                    mx      ,j0      ,jd      ,rl      ,il2g    , &
-                    rd      ,grav    ,cp      ,msg     , &
-                    pflx    ,evp     ,cu      ,rprd    ,limcnv  ,landfrac)
+                    mx      ,j0      ,jd      ,il2g    , &
+                    rd      ,msg     , &
+                    pflx    ,evp     ,cu      ,rprd    ,landfrac)
   !----------------------------------------------------------------------- 
   ! 
   ! Purpose: 
@@ -1874,10 +1866,8 @@ module zm_convr
      integer, intent(in) :: mx(pcols)              ! updraft base level (same is jb)
      integer, intent(out) :: j0(pcols)              ! level where updraft begins detraining
      integer, intent(out) :: jd(pcols)              ! level of downdraft
-     integer, intent(in) :: limcnv                 ! convection limiting level
      integer, intent(in) :: il2g                   !CORE GROUP REMOVE
      integer, intent(in) :: msg                    ! missing moisture vals (always 0)
-     real(r8), intent(in) :: rl                    ! latent heat of vap
      real(r8), intent(in) :: shat(pcols,pver)      ! interface values of dry stat energy
   !
   ! output
@@ -1901,8 +1891,6 @@ module zm_convr
 
 
      real(r8) rd                   ! gas constant for dry air
-     real(r8) grav                 ! gravity
-     real(r8) cp                   ! heat capacity of dry air
 
   !
   ! Local workspace
@@ -2014,9 +2002,9 @@ module zm_convr
               qst(i,k) = 1.0_r8
            end if
   !--bee
-           gamma(i,k) = qst(i,k)*(1._r8 + qst(i,k)/eps1)*eps1*rl/(rd*t(i,k)**2)*rl/cp
-           hmn(i,k) = cp*t(i,k) + grav*z(i,k) + rl*q(i,k)
-           hsat(i,k) = cp*t(i,k) + grav*z(i,k) + rl*qst(i,k)
+           gamma(i,k) = qst(i,k)*(1._r8 + qst(i,k)/eps1)*eps1*rl/(rd*t(i,k)**2)*rl/cpres
+           hmn(i,k) = cpres*t(i,k) + grav*z(i,k) + rl*q(i,k)
+           hsat(i,k) = cpres*t(i,k) + grav*z(i,k) + rl*qst(i,k)
            hu(i,k) = hmn(i,k)
            hd(i,k) = hmn(i,k)
            rprd(i,k) = 0._r8
@@ -2048,7 +2036,7 @@ module zm_convr
            else
               qsthat(i,k) = qst(i,k)
            end if
-           hsthat(i,k) = cp*shat(i,k) + rl*qsthat(i,k)
+           hsthat(i,k) = cpres*shat(i,k) + rl*qsthat(i,k)
            if (abs(gamma(i,k-1)-gamma(i,k)) > 1.E-6_r8) then
               gamhat(i,k) = log(gamma(i,k-1)/gamma(i,k))*gamma(i,k-1)*gamma(i,k)/ &
                                   (gamma(i,k-1)-gamma(i,k))
@@ -2095,7 +2083,7 @@ module zm_convr
      do k = msg + 1,pver
         do i = 1,il2g
            if (k >= jt(i) .and. k <= jb(i)) then
-              hu(i,k) = hmn(i,mx(i)) + cp*tiedke_add
+              hu(i,k) = hmn(i,mx(i)) + cpres*tiedke_add
               su(i,k) = s(i,mx(i)) + tiedke_add
            end if
         end do
@@ -2348,7 +2336,7 @@ module zm_convr
                         dz(i,k)/mu(i,k)* (eu(i,k)-du(i,k))*s(i,k)
               qu(i,k) = mu(i,k+1)/mu(i,k)*qu(i,k+1) + dz(i,k)/mu(i,k)* (eu(i,k)*q(i,k)- &
                               du(i,k)*qst(i,k))
-              tu = su(i,k) - grav/cp*zf(i,k)
+              tu = su(i,k) - grav/cpres*zf(i,k)
               estu = c1*exp((c2* (tu-tfreez))/ ((tu-tfreez)+c3))
               qstu = eps1*estu/ ((p(i,k)+p(i,k-1))/2._r8-estu)
               if (qu(i,k) >= qstu) then
@@ -2365,10 +2353,10 @@ module zm_convr
         do i = 1,il2g
            if (k == jb(i) .and. eps0(i) > 0._r8) then
               qu(i,k) = q(i,mx(i))
-              su(i,k) = (hu(i,k)-rl*qu(i,k))/cp
+              su(i,k) = (hu(i,k)-rl*qu(i,k))/cpres
            end if
            if ((k > jt(i) .and. k <= jlcl(i)) .and. eps0(i) > 0._r8) then
-              su(i,k) = shat(i,k) + (hu(i,k)-hsthat(i,k))/(cp* (1._r8+gamhat(i,k)))
+              su(i,k) = shat(i,k) + (hu(i,k)-hsthat(i,k))/(cpres* (1._r8+gamhat(i,k)))
               qu(i,k) = qsthat(i,k) + gamhat(i,k)*(hu(i,k)-hsthat(i,k))/ &
                        (rl* (1._r8+gamhat(i,k)))
            end if
@@ -2380,7 +2368,7 @@ module zm_convr
         do i = 1,il2g
            if (k >= jt(i) .and. k < jb(i) .and. eps0(i) > 0._r8) then
               cu(i,k) = ((mu(i,k)*su(i,k)-mu(i,k+1)*su(i,k+1))/ &
-                        dz(i,k)- (eu(i,k)-du(i,k))*s(i,k))/(rl/cp)
+                        dz(i,k)- (eu(i,k)-du(i,k))*s(i,k))/(rl/cpres)
               if (k == jt(i)) cu(i,k) = 0._r8
               cu(i,k) = max(0._r8,cu(i,k))
            end if
@@ -2413,7 +2401,7 @@ module zm_convr
   !
      do i = 1,il2g
         qd(i,jd(i)) = qds(i,jd(i))
-        sd(i,jd(i)) = (hd(i,jd(i)) - rl*qd(i,jd(i)))/cp
+        sd(i,jd(i)) = (hd(i,jd(i)) - rl*qd(i,jd(i)))/cpres
      end do
   !
      do k = msg + 2,pver
@@ -2423,7 +2411,7 @@ module zm_convr
               evp(i,k) = -ed(i,k)*q(i,k) + (md(i,k)*qd(i,k)-md(i,k+1)*qd(i,k+1))/dz(i,k)
               evp(i,k) = max(evp(i,k),0._r8)
               mdt = min(md(i,k+1),-small)
-              sd(i,k+1) = ((rl/cp*evp(i,k)-ed(i,k)*s(i,k))*dz(i,k) + md(i,k)*sd(i,k))/mdt
+              sd(i,k+1) = ((rl/cpres*evp(i,k)-ed(i,k)*s(i,k))*dz(i,k) + md(i,k)*sd(i,k))/mdt
               totevp(i) = totevp(i) - dz(i,k)*ed(i,k)*q(i,k)
            end if
         end do
@@ -2491,8 +2479,8 @@ module zm_convr
                      qhat    ,shat    ,dp      ,qstp    ,zf      , &
                      ql      ,dsubcld ,mb      ,cape    ,tl      , &
                      lcl     ,lel     ,jt      ,mx      ,il1g    , &
-                     il2g    ,rd      ,grav    ,cp      ,rl      , &
-                     msg     ,capelmt )
+                     il2g    ,rd      , &
+                     msg     )
   !----------------------------------------------------------------------- 
   ! 
   ! Purpose: 
@@ -2563,13 +2551,10 @@ module zm_convr
 
      real(r8) dtbdt(pcols),dqbdt(pcols),dtldt(pcols)
      real(r8) beta
-     real(r8) capelmt
-     real(r8) cp
      real(r8) dadt(pcols)
      real(r8) debdt
      real(r8) dltaa
      real(r8) eb
-     real(r8) grav
 
      integer i
      integer il1g
@@ -2578,7 +2563,6 @@ module zm_convr
      integer msg
 
      real(r8) rd
-     real(r8) rl
   ! change of subcloud layer properties due to convection is
   ! related to cumulus updrafts and downdrafts.
   ! mc(z)=f(z)*mb, mub=betau*mb, mdb=betad*mb are used
@@ -2612,7 +2596,7 @@ module zm_convr
         do i = il1g,il2g
            if (k == jt(i)) then
               dtmdt(i,k) = (1._r8/dp(i,k))*(mu(i,k+1)* (su(i,k+1)-shat(i,k+1)- &
-                            rl/cp*ql(i,k+1))+md(i,k+1)* (sd(i,k+1)-shat(i,k+1)))
+                            rl/cpres*ql(i,k+1))+md(i,k+1)* (sd(i,k+1)-shat(i,k+1)))
               dqmdt(i,k) = (1._r8/dp(i,k))*(mu(i,k+1)* (qu(i,k+1)- &
                            qhat(i,k+1)+ql(i,k+1))+md(i,k+1)*(qd(i,k+1)-qhat(i,k+1)))
            end if
@@ -2624,16 +2608,16 @@ module zm_convr
         do i = il1g,il2g
            if (k > jt(i) .and. k < mx(i)) then
               dtmdt(i,k) = (mc(i,k)* (shat(i,k)-s(i,k))+mc(i,k+1)* (s(i,k)-shat(i,k+1)))/ &
-                           dp(i,k) - rl/cp*du(i,k)*(beta*ql(i,k)+ (1-beta)*ql(i,k+1))
+                           dp(i,k) - rl/cpres*du(i,k)*(beta*ql(i,k)+ (1-beta)*ql(i,k+1))
   !          dqmdt(i,k)=(mc(i,k)*(qhat(i,k)-q(i,k))
   !     1                +mc(i,k+1)*(q(i,k)-qhat(i,k+1)))/dp(i,k)
   !     2                +du(i,k)*(qs(i,k)-q(i,k))
   !     3                +du(i,k)*(beta*ql(i,k)+(1-beta)*ql(i,k+1))
 
-              dqmdt(i,k) = (mu(i,k+1)* (qu(i,k+1)-qhat(i,k+1)+cp/rl* (su(i,k+1)-s(i,k)))- &
-                            mu(i,k)* (qu(i,k)-qhat(i,k)+cp/rl*(su(i,k)-s(i,k)))+md(i,k+1)* &
-                           (qd(i,k+1)-qhat(i,k+1)+cp/rl*(sd(i,k+1)-s(i,k)))-md(i,k)* &
-                           (qd(i,k)-qhat(i,k)+cp/rl*(sd(i,k)-s(i,k))))/dp(i,k) + &
+              dqmdt(i,k) = (mu(i,k+1)* (qu(i,k+1)-qhat(i,k+1)+cpres/rl* (su(i,k+1)-s(i,k)))- &
+                            mu(i,k)* (qu(i,k)-qhat(i,k)+cpres/rl*(su(i,k)-s(i,k)))+md(i,k+1)* &
+                           (qd(i,k+1)-qhat(i,k+1)+cpres/rl*(sd(i,k+1)-s(i,k)))-md(i,k)* &
+                           (qd(i,k)-qhat(i,k)+cpres/rl*(sd(i,k)-s(i,k))))/dp(i,k) + &
                             du(i,k)* (beta*ql(i,k)+(1-beta)*ql(i,k+1))
            end if
         end do
@@ -2642,15 +2626,15 @@ module zm_convr
      do k = msg + 1,pver
         do i = il1g,il2g
            if (k >= lel(i) .and. k <= lcl(i)) then
-              thetavp(i,k) = tp(i,k)* (1000._r8/p(i,k))** (rd/cp)*(1._r8+1.608_r8*qstp(i,k)-q(i,mx(i)))
-              thetavm(i,k) = t(i,k)* (1000._r8/p(i,k))** (rd/cp)*(1._r8+0.608_r8*q(i,k))
+              thetavp(i,k) = tp(i,k)* (1000._r8/p(i,k))** (rd/cpres)*(1._r8+1.608_r8*qstp(i,k)-q(i,mx(i)))
+              thetavm(i,k) = t(i,k)* (1000._r8/p(i,k))** (rd/cpres)*(1._r8+0.608_r8*q(i,k))
               dqsdtp(i,k) = qstp(i,k)* (1._r8+qstp(i,k)/eps1)*eps1*rl/(rd*tp(i,k)**2)
   !
   ! dtpdt is the parcel temperature change due to change of
   ! subcloud layer properties during convection.
   !
-              dtpdt(i,k) = tp(i,k)/ (1._r8+rl/cp* (dqsdtp(i,k)-qstp(i,k)/tp(i,k)))* &
-                          (dtbdt(i)/t(i,mx(i))+rl/cp* (dqbdt(i)/tl(i)-q(i,mx(i))/ &
+              dtpdt(i,k) = tp(i,k)/ (1._r8+rl/cpres* (dqsdtp(i,k)-qstp(i,k)/tp(i,k)))* &
+                          (dtbdt(i)/t(i,mx(i))+rl/cpres* (dqbdt(i)/tl(i)-q(i,mx(i))/ &
                            tl(i)**2*dtldt(i)))
   !
   ! dboydt is the integrand of cape change.
@@ -2665,8 +2649,8 @@ module zm_convr
      do k = msg + 1,pver
         do i = il1g,il2g
            if (k > lcl(i) .and. k < mx(i)) then
-              thetavp(i,k) = tp(i,k)* (1000._r8/p(i,k))** (rd/cp)*(1._r8+0.608_r8*q(i,mx(i)))
-              thetavm(i,k) = t(i,k)* (1000._r8/p(i,k))** (rd/cp)*(1._r8+0.608_r8*q(i,k))
+              thetavp(i,k) = tp(i,k)* (1000._r8/p(i,k))** (rd/cpres)*(1._r8+0.608_r8*q(i,mx(i)))
+              thetavm(i,k) = t(i,k)* (1000._r8/p(i,k))** (rd/cpres)*(1._r8+0.608_r8*q(i,k))
   !
   ! dboydt is the integrand of cape change.
   !
@@ -2703,7 +2687,7 @@ module zm_convr
                       su      ,du      ,qhat    ,shat    ,dp      , &
                       mu      ,md      ,sd      ,qd      ,ql      , &
                       dsubcld ,jt      ,mx      ,il1g    ,il2g    , &
-                      cp      ,rl      ,msg     ,          &
+                      msg     ,          &
                       dl      ,evp     ,cu      )
 
 
@@ -2721,9 +2705,6 @@ module zm_convr
   ! Author: phil rasch dec 19 1995
   ! 
   !-----------------------------------------------------------------------
-
-
-     real(r8), intent(in) :: cp
 
      integer, intent(in) :: lchnk             ! chunk identifier
      integer, intent(in) :: il1g
@@ -2760,7 +2741,6 @@ module zm_convr
      integer k
 
      real(r8) emc
-     real(r8) rl
   !-------------------------------------------------------------------
      do k = msg + 1,pver
         do i = il1g,il2g
@@ -2784,7 +2764,7 @@ module zm_convr
            emc = -cu (i,k)               &         ! condensation in updraft
                  +evp(i,k)                         ! evaporating rain in downdraft
 
-           dsdt(i,k) = -rl/cp*emc &
+           dsdt(i,k) = -rl/cpres*emc &
                        + (+mu(i,k+1)* (su(i,k+1)-shat(i,k+1)) &
                           -mu(i,k)*   (su(i,k)-shat(i,k)) &
                           +md(i,k+1)* (sd(i,k+1)-shat(i,k+1)) &
@@ -2858,129 +2838,6 @@ module zm_conv
   public momtran                  ! convective momentum transport
 
 contains
-
-!===============================================================================
-subroutine zm_conv_evap()
-!-----------------------------------------------------------------------
-
-! convert input precip to kg/m2/s
-    prec(:ncol) = prec(:ncol)*1000._r8
-
-! determine saturation vapor pressure
-    call aqsat (t    ,pmid  ,est    ,qsat    ,pcols   , &
-         ncol ,pver  ,1       ,pver    )
-
-! determine ice fraction in rain production (use cloud water parameterization fraction at present)
-    call cldwat_fice(ncol, t, fice, fsnow_conv)
-
-! zero the flux integrals on the top boundary
-    flxprec(:ncol,1) = 0._r8
-    flxsnow(:ncol,1) = 0._r8
-    evpvint(:ncol)   = 0._r8
-
-    do k = 1, pver
-       do i = 1, ncol
-
-! Melt snow falling into layer, if necessary. 
-          if (t(i,k) > tmelt) then
-             flxsntm(i) = 0._r8
-             snowmlt(i) = flxsnow(i,k) * gravit/ pdel(i,k)
-          else
-             flxsntm(i) = flxsnow(i,k)
-             snowmlt(i) = 0._r8
-          end if
-
-! relative humidity depression must be > 0 for evaporation
-          evplimit = max(1._r8 - q(i,k)/qsat(i,k), 0._r8)
-
-! total evaporation depends on flux in the top of the layer
-! flux prec is the net production above layer minus evaporation into environmet
-          evpprec(i) = ke * (1._r8 - cldfrc(i,k)) * evplimit * sqrt(flxprec(i,k))
-!**********************************************************
-!!          evpprec(i) = 0.    ! turn off evaporation for now
-!**********************************************************
-
-! Don't let evaporation supersaturate layer (approx). Layer may already be saturated.
-! Currently does not include heating/cooling change to qsat
-          evplimit   = max(0._r8, (qsat(i,k)-q(i,k)) / deltat)
-
-! Don't evaporate more than is falling into the layer - do not evaporate rain formed
-! in this layer but if precip production is negative, remove from the available precip
-! Negative precip production occurs because of evaporation in downdrafts.
-!!$          evplimit   = flxprec(i,k) * gravit / pdel(i,k) + min(prdprec(i,k), 0.)
-          evplimit   = min(evplimit, flxprec(i,k) * gravit / pdel(i,k))
-
-! Total evaporation cannot exceed input precipitation
-          evplimit   = min(evplimit, (prec(i) - evpvint(i)) * gravit / pdel(i,k))
-
-          evpprec(i) = min(evplimit, evpprec(i))
-
-! evaporation of snow depends on snow fraction of total precipitation in the top after melting
-          if (flxprec(i,k) > 0._r8) then
-!            evpsnow(i) = evpprec(i) * flxsntm(i) / flxprec(i,k)
-!            prevent roundoff problems
-             work1 = min(max(0._r8,flxsntm(i)/flxprec(i,k)),1._r8)
-             evpsnow(i) = evpprec(i) * work1
-          else
-             evpsnow(i) = 0._r8
-          end if
-
-! vertically integrated evaporation
-          evpvint(i) = evpvint(i) + evpprec(i) * pdel(i,k)/gravit
-
-! net precip production is production - evaporation
-          ntprprd(i,k) = prdprec(i,k) - evpprec(i)
-! net snow production is precip production * ice fraction - evaporation - melting
-!pjrworks ntsnprd(i,k) = prdprec(i,k)*fice(i,k) - evpsnow(i) - snowmlt(i)
-!pjrwrks2 ntsnprd(i,k) = prdprec(i,k)*fsnow_conv(i,k) - evpsnow(i) - snowmlt(i)
-! the small amount added to flxprec in the work1 expression has been increased from 
-! 1e-36 to 8.64e-11 (1e-5 mm/day).  This causes the temperature based partitioning
-! scheme to be used for small flxprec amounts.  This is to address error growth problems.
-#ifdef PERGRO
-          work1 = min(max(0._r8,flxsnow(i,k)/(flxprec(i,k)+8.64e-11_r8)),1._r8)
-#else
-          if (flxprec(i,k).gt.0._r8) then
-             work1 = min(max(0._r8,flxsnow(i,k)/flxprec(i,k)),1._r8)
-          else
-             work1 = 0._r8
-          endif
-#endif
-          work2 = max(fsnow_conv(i,k), work1)
-          if (snowmlt(i).gt.0._r8) work2 = 0._r8
-!         work2 = fsnow_conv(i,k)
-          ntsnprd(i,k) = prdprec(i,k)*work2 - evpsnow(i) - snowmlt(i)
-          tend_s_snwprd  (i,k) = prdprec(i,k)*work2*latice
-          tend_s_snwevmlt(i,k) = - ( evpsnow(i) + snowmlt(i) )*latice
-
-! precipitation fluxes
-          flxprec(i,k+1) = flxprec(i,k) + ntprprd(i,k) * pdel(i,k)/gravit
-          flxsnow(i,k+1) = flxsnow(i,k) + ntsnprd(i,k) * pdel(i,k)/gravit
-
-! protect against rounding error
-          flxprec(i,k+1) = max(flxprec(i,k+1), 0._r8)
-          flxsnow(i,k+1) = max(flxsnow(i,k+1), 0._r8)
-! more protection (pjr)
-!         flxsnow(i,k+1) = min(flxsnow(i,k+1), flxprec(i,k+1))
-
-! heating (cooling) and moistening due to evaporation 
-! - latent heat of vaporization for precip production has already been accounted for
-! - snow is contained in prec
-          tend_s(i,k)   =-evpprec(i)*latvap + ntsnprd(i,k)*latice
-          tend_q(i,k) = evpprec(i)
-       end do
-    end do
-
-! set output precipitation rates (m/s)
-    prec(:ncol) = flxprec(:ncol,pver+1) / 1000._r8
-    snow(:ncol) = flxsnow(:ncol,pver+1) / 1000._r8
-
-!**********************************************************
-!!$    tend_s(:ncol,:)   = 0.      ! turn heating off
-!**********************************************************
-
-  end subroutine zm_conv_evap
-
-
 
 subroutine convtran(lchnk   , &
                     doconvtran,q       ,ncnst   ,mu      ,md      , &
