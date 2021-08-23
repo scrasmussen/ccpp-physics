@@ -1,0 +1,34 @@
+[ccpp-table-properties]
+  name = dummy_loop
+  type = scheme
+  dependencies =
+
+########################################################################
+[ccpp-arg-table]
+  name = dummy_loop_run
+  type = scheme
+[loop_cnt]
+  standard_name = ccpp_loop_counter
+  long_name = loop counter for subcycling loops in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+  optional = F
+[errflg]
+  standard_name = ccpp_error_flag
+  long_name = error flag for error handling in CCPP
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = out
+  optional = F

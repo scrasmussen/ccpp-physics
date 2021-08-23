@@ -84,7 +84,7 @@
   intent = in
   optional = F
 [du]
-  standard_name = atmosphere_detrainment_convective_mass_flux
+  standard_name = atmosphere_detrainment_convective_mass_flux_for_convective_triggered_columns
   long_name = atmosphere detrainment convective mass flux
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)

@@ -11,7 +11,9 @@ module zm_conv_momtran_post
   logical :: is_initialized = .False.
   
   contains
-  
+!> \section arg_table_zm_conv_momtran_post_init Argument Table
+!! \htmlinclude zm_conv_momtran_post_init.html
+!!
   subroutine zm_conv_momtran_post_init(cam_physpkg, cam_physpkg_cam3, errmsg, errflg)
     character(len=16), intent(in) :: cam_physpkg, cam_physpkg_cam3
     
@@ -29,7 +31,10 @@ module zm_conv_momtran_post
     end if
     
   end subroutine zm_conv_momtran_post_init
-  
+
+!> \section arg_table_zm_conv_momtran_post_run Argument Table
+!! \htmlinclude zm_conv_momtran_post_run.html
+!!
   subroutine zm_conv_momtran_post_run(ncol, pcols, pver, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq, &
     gravit, rair, cpair, zvir, dt, fv_dycore, microp_scheme, qmin, lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, &
     tend_u, tend_v, tend_s, temp_state_u, temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, &

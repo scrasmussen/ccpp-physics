@@ -33,7 +33,7 @@
   optional = F
 [cam_physpkg]
   standard_name = control_for_cam_physics_package
-  long name = name of cam physics package
+  long_name = name of cam physics package
   units = none
   dimensions = ()
   type = character
@@ -42,7 +42,7 @@
   optional = F
 [cam_physpkg_cam3]
   standard_name = identifier_for_cam3_physics_package
-  long name = identifier for cam3 physics package
+  long_name = identifier for cam3 physics package
   units = none
   dimensions = ()
   type = character

@@ -123,7 +123,7 @@
   intent = in
   optional = F
 [masterproc]
-  name = flag_for_master_processor
+  standard_name = flag_for_master_processor
   long_name = flag for master processor
   units = flag
   dimensions = ()
@@ -131,7 +131,7 @@
   intent = in
   optional = F
 [iulog]
-  name = unit_number_for_output_logging
+  standard_name = unit_number_for_output_logging
   long_name = Fortran I/O unit for logging
   units = index
   dimensions = ()
@@ -492,7 +492,7 @@
   intent = out
   optional = F
 [du]
-  standard_name = atmosphere_detrainment_convective_mass_flux
+  standard_name = atmosphere_detrainment_convective_mass_flux_for_convective_triggered_columns
   long_name = atmosphere detrainment convective mass flux
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)

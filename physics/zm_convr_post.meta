@@ -112,7 +112,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = kind_r8
   intent = in
   optional = F
 [dt]
@@ -158,7 +158,7 @@
   optional = F
 [microp_scheme]
   standard_name = control_for_microphysics_scheme
-  long name = control for microphysics scheme
+  long_name = control for microphysics scheme
   units = none
   dimensions = ()
   type = character

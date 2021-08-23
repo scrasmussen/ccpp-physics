@@ -66,7 +66,10 @@ module zm_convr
   logical :: is_initialized = .False.
   
   contains
-    
+
+!> \section arg_table_zm_convr_init Argument Table
+!! \htmlinclude zm_convr_init.html
+!!
   subroutine zm_convr_init(cpair, tmelt, epsilo, latvap, gravit, rair, latice_in, cpwv_in, cpliq_in, rh2o_in, plev, plevp, hypi, masterproc, iulog, no_deep_pbl_in, errmsg, errflg)
     implicit none
     

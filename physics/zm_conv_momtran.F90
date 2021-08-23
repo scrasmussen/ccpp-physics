@@ -12,7 +12,9 @@ module zm_conv_momtran
   integer, parameter :: ncnst = 2
   
   contains
-  
+!> \section arg_table_zm_conv_momtran_init Argument Table
+!! \htmlinclude zm_conv_momtran_init.html
+!!
   subroutine zm_conv_momtran_init(cam_physpkg, cam_physpkg_cam3, errmsg, errflg)
     character(len=16), intent(in) :: cam_physpkg, cam_physpkg_cam3
     
@@ -30,7 +32,10 @@ module zm_conv_momtran
     end if
     
   end subroutine zm_conv_momtran_init
-  
+
+!> \section arg_table_zm_conv_momtran_run Argument Table
+!! \htmlinclude zm_conv_momtran_run.html
+!!
   subroutine zm_conv_momtran_run(ncol, pver, domomtran, u, v, mu, md, du, eu, ed, dp, dsubcld, jt, mx, ideep, il2g, dudt, dvdt, dsdt, pguall, pgdall, icwu, icwd, dt, errmsg, errflg)
     
     integer, intent(in) :: ncol, pver                  ! number of atmospheric columns

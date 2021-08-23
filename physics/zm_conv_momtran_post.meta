@@ -9,18 +9,22 @@
   type = scheme
 [cam_physpkg]
   standard_name = control_for_cam_physics_package
-  long name = name of cam physics package
+  long_name = name of cam physics package
   units = none
   dimensions = ()
   type = character
   kind = len=16
+  intent = in
+  optional = F
 [cam_physpkg_cam3]
   standard_name = identifier_for_cam3_physics_package
-  long name = identifier for cam3 physics package
+  long_name = identifier for cam3 physics package
   units = none
   dimensions = ()
   type = character
   kind = len=16
+  intent = in
+  optional = F
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -140,7 +144,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = kind_r8
   intent = in
   optional = F
 [dt]
@@ -162,7 +166,7 @@
   optional = F
 [microp_scheme]
   standard_name = control_for_microphysics_scheme
-  long name = control for microphysics scheme
+  long_name = control for microphysics scheme
   units = none
   dimensions = ()
   type = character
