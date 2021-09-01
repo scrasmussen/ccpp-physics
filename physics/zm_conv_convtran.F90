@@ -79,7 +79,11 @@ module zm_conv_convtran
     logical :: doconvtran(ncnst)! flag for doing convective transport
     real(kind=r8) :: dpdry(pcols,pver) ! used in convtran call
     integer, parameter :: il1g = 1   ! Gathered min lon indices over which to operate
-
+    
+    ! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
+    
     !GJF: these statements were in zm_conv_intr.F90/zm_conv_tend, but moved inside the scheme to avoid a short "pre" interstitial scheme
     doconvtran(:) = .false.
     doconvtran(ixcldice) = .true.

@@ -36,9 +36,9 @@ module zm_conv_momtran
 !> \section arg_table_zm_conv_momtran_run Argument Table
 !! \htmlinclude zm_conv_momtran_run.html
 !!
-  subroutine zm_conv_momtran_run(ncol, pver, domomtran, u, v, mu, md, du, eu, ed, dp, dsubcld, jt, mx, ideep, il2g, dudt, dvdt, dsdt, pguall, pgdall, icwu, icwd, dt, errmsg, errflg)
+  subroutine zm_conv_momtran_run(ncol, pcols, pver, pverp, domomtran, u, v, mu, md, du, eu, ed, dp, dsubcld, jt, mx, ideep, il2g, dudt, dvdt, dsdt, pguall, pgdall, icwu, icwd, dt, errmsg, errflg)
     
-    integer, intent(in) :: ncol, pver                  ! number of atmospheric columns
+    integer, intent(in) :: ncol, pcols, pver, pverp         ! number of atmospheric columns
     logical, intent(in) :: domomtran(ncnst)      ! flag for doing convective transport
     real(kind=r8), intent(in) :: dt
     real(kind=r8), intent(in) :: u(:,:)
@@ -119,6 +119,10 @@ module zm_conv_momtran
     real(kind=r8)  wind0(pcols,pver,ncnst)       !  gathered  wind before time step
     real(kind=r8)  windf(pcols,pver,ncnst)       !  gathered  wind after time step
     real(kind=r8) fkeb, fket, ketend_cons, ketend, utop, ubot, vtop, vbot, gset2
+    
+    ! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
     
     q(:ncol,:pver,1) = u(:ncol,:pver)
     q(:ncol,:pver,2) = v(:ncol,:pver)
@@ -272,7 +276,7 @@ module zm_conv_momtran
 
   ! dcont for bottom layer
           !
-          !DIR$ NOINTERCHANGE
+!DIR$ NOINTERCHANGE
          do k = kbm,pver
             km1 = max(1,k-1)
             do i = il1g,il2g
