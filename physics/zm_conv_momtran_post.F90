@@ -35,14 +35,14 @@ module zm_conv_momtran_post
 !> \section arg_table_zm_conv_momtran_post_run Argument Table
 !! \htmlinclude zm_conv_momtran_post_run.html
 !!
-  subroutine zm_conv_momtran_post_run(ncol, pcols, pver, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq, &
+  subroutine zm_conv_momtran_post_run(ncol, pcols, pver, pverp, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq, &
     gravit, rair, cpair, zvir, dt, fv_dycore, microp_scheme, qmin, lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, &
     tend_u, tend_v, tend_s, temp_state_u, temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, &
     temp_state_zi, errmsg, errflg)
     
     use iap_state_update, only :: physics_update
     
-    integer,           intent(in   )                   :: ncol, pcols, pver, pcnst, &
+    integer,           intent(in   )                   :: ncol, pcols, pver, pverp, pcnst, &
                                                           ixcldice, ixcldliq, ixnumice, ixnumliq
     logical,           intent(in   )                   :: fv_dycore
     character(len=16), intent(in   )                   :: microp_scheme
@@ -76,7 +76,7 @@ module zm_conv_momtran_post
     tend_q(:,:,:) = 0.0_r8
     
     call physics_update(lu, lv, ls, lq, fv_dycore, name, microp_scheme, top, bot, ncol, &
-                        pcols, pver, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq,     &
+                        pcols, pver, pverp, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq,     &
                         rair, gravit, cpair, zvir, dt, qmin, tend_u, tend_v, tend_s, tend_q, &
                         lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, temp_state_u, &
                         temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, &

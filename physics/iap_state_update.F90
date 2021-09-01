@@ -1,24 +1,24 @@
 module iap_state_update
   
   use shr_kind_mod, only: r8=>shr_kind_r8
-  
-  public
-  
+ 
   implicit none
+
+  public
   
   contains
   
-  subroutine physics_update(lu, lv, ls, lq, fv_dycore, name, microp_scheme, top, bot, ncol, pcols, pver, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq, rair, gravit, cpair, zvir, dt, qmin, tend_u, tend_v, tend_s, tend_q, lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, state_u, state_v, state_s, state_q, t, zm, zi)
+  subroutine physics_update(lu, lv, ls, lq, fv_dycore, name, microp_scheme, top, bot, ncol, pcols, pver, pverp, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq, rair, gravit, cpair, zvir, dt, qmin, tend_u, tend_v, tend_s, tend_q, lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, state_u, state_v, state_s, state_q, t, zm, zi)
     logical, intent(in) :: lu, lv, ls, fv_dycore
     logical, intent(in), dimension(:) :: lq
     character*24, intent(in) :: name    ! name of parameterization which produced tendencies.
     character(len=16), intent(in) :: microp_scheme
-    integer, intent(in) :: top, bot, ncol, pcols, pver, pcnst
+    integer, intent(in) :: top, bot, ncol, pcols, pver, pverp, pcnst
     integer, intent(in) :: ixcldice, ixcldliq                  ! indices for CLDICE and CLDLIQ
     integer, intent(in) :: ixnumice, ixnumliq                  ! indices for ice and liquid number concentrations
-    real(kind=r8), intent(in   ),                :: rair, gravit, cpair, zvir
+    real(kind=r8), intent(in   )                 :: rair, gravit, cpair, zvir
     
-    real(kind=r8), intent(in   ),                :: dt
+    real(kind=r8), intent(in   )                 :: dt
     real(kind=r8), intent(in   ), dimension(:)   :: qmin
     real(kind=r8), intent(in   ), dimension(:,:) :: tend_u, tend_v, tend_s
     real(kind=r8), intent(in   ), dimension(:,:,:) :: tend_q
@@ -71,7 +71,7 @@ module iap_state_update
           ! now test for mixing ratios which are too small
           ! don't call qneg3 for number concentration variables
           if (m .ne. ixnumice  .and.  m .ne. ixnumliq) then
-            call qneg3(ncol, pcols, pver, m, m, qmin(m), state_q(1,1,m))
+            call qneg3(ncol, pcols, pver, m, m, qmin, state_q)
           else
              do k = top, bot
                 do i = 1,ncol
@@ -88,7 +88,7 @@ module iap_state_update
     if (ixcldliq > 1) then
        if(lq(ixcldliq)) then
           if (name == 'stratiform' .or. name == 'cldwat'  ) then
-  #ifdef PERGRO
+#ifdef PERGRO
              where (state_q(:ncol,:pver,ixcldliq) < 1.e-12_r8)
                 state_q(:ncol,:pver,ixcldliq) = 0._r8
              end where
@@ -99,7 +99,7 @@ module iap_state_update
                    state_q(:ncol,:pver,ixnumliq) = 0._r8
                 end where
              end if
-  #endif
+#endif
           else if (name == 'convect_deep') then
              where (state_q(:ncol,:pver,ixcldliq) < 1.e-36_r8)
                 state_q(:ncol,:pver,ixcldliq) = 0._r8
@@ -118,7 +118,7 @@ module iap_state_update
     if (ixcldice > 1) then
        if(lq(ixcldice)) then
           if (name == 'stratiform' .or. name == 'cldwat'  ) then
-  #ifdef PERGRO
+#ifdef PERGRO
              where (state_q(:ncol,:pver,ixcldice) < 1.e-12_r8)
                 state_q(:ncol,:pver,ixcldice) = 0._r8
              end where
@@ -128,7 +128,7 @@ module iap_state_update
                    state_q(:ncol,:pver,ixnumice) = 0._r8
                 end where
              end if
-  #endif
+#endif
           else if (name == 'convect_deep') then
              where (state_q(:ncol,:pver,ixcldice) < 1.e-36_r8)
                 state_q(:ncol,:pver,ixcldice) = 0._r8
@@ -144,9 +144,9 @@ module iap_state_update
     end if
     
     if (ls .or. lq(1)) then
-       call geopotential_dse(                                   &
+       call geopotential_dse(pcols, pver, pverp,                 &
             lnpint, lnpmid, pint, pmid, pdel, rpdel,            &
-            state_s, state_q(1,1,1), phis, rair, gravit, cpair, &
+            state_s, state_q(:ncol,:pver,1), phis, rair, gravit, cpair, &
             zvir, t, zi, zm, ncol, fv_dycore)
     end if
     
@@ -195,10 +195,10 @@ module iap_state_update
  ! Test all field values for being less than minimum value. Set q = qmin
  ! for all such points. Trace offenders and identify worst one.
  !
- !DIR$ preferstream
+!DIR$ preferstream
        do k=1,lver
           nval(k) = 0
- !DIR$ prefervector
+!DIR$ prefervector
           nn = 0
           do i=1,ncol
              if (q(i,k,m) < qmin(m)) then
@@ -236,7 +236,7 @@ module iap_state_update
     return
   end subroutine qneg3
   
-  subroutine geopotential_dse(                                &
+  subroutine geopotential_dse(pcols, pver, pverp,             &
        piln   , pmln   , pint   , pmid   , pdel   , rpdel  ,  &
        dse    , q      , phis   , rair   , gravit , cpair  ,  &
        zvir   , t      , zi     , zm     , ncol   , fvdyn)
@@ -250,6 +250,7 @@ module iap_state_update
 !------------------------------Arguments--------------------------------
 !
 ! Input arguments
+    integer, intent(in) :: pcols, pver, pverp
     integer, intent(in) :: ncol                  ! Number of longitudes
     logical, intent(in) :: fvdyn                 ! True if using finite volume dynamics
 

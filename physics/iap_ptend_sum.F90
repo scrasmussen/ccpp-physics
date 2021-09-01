@@ -2,9 +2,9 @@ module iap_ptend_sum
   
   use shr_kind_mod, only: r8=>shr_kind_r8
   
+  implicit none  
+
   public
-  
-  implicit none
   
   contains
   
@@ -12,7 +12,7 @@ module iap_ptend_sum
     u_tend_in, v_tend_in, s_tend_in, q_tend_in, taux_srf_in, taux_top_in, tauy_srf_in, tauy_top_in, &
     hflx_srf_in, hflx_top_in, cflx_srf_in, cflx_top_in, &
     lu_sum, lv_sum, ls_sum, lq_sum, u_tend_sum, v_tend_sum, s_tend_sum, q_tend_sum, &
-    taux_srf_sum, taux_top_sum, tauy_srf_sum, tauy_top_sum, hflx_sfc_sum, hflx_top_sum, cflx_srf_sum, cflx_top_sum)
+    taux_srf_sum, taux_top_sum, tauy_srf_sum, tauy_top_sum, hflx_srf_sum, hflx_top_sum, cflx_srf_sum, cflx_top_sum)
 !-----------------------------------------------------------------------
 ! Add ptend fields to ptend_sum for ptend logical flags = .true.
 ! Where ptend logical flags = .false, don't change ptend_sum
@@ -23,12 +23,12 @@ module iap_ptend_sum
     logical, intent(in) :: lu_in, lv_in, ls_in, lq_in(pcnst)
     real(kind=r8), intent(in) :: u_tend_in(:,:), v_tend_in(:,:), s_tend_in(:,:), q_tend_in(:,:,:)
     real(kind=r8), intent(in) :: taux_srf_in(:), taux_top_in(:), tauy_srf_in(:), tauy_top_in(:)
-    real(kind=r8), intent(in) :: hflx_srf_in(:), hflx_top_in(:), cflx_srf_in(:,:), clfx_top_in(:,:)
+    real(kind=r8), intent(in) :: hflx_srf_in(:), hflx_top_in(:), cflx_srf_in(:,:), cflx_top_in(:,:)
     
     logical, intent(inout) :: lu_sum, lv_sum, ls_sum, lq_sum(pcnst)
     real(kind=r8), intent(inout) :: u_tend_sum(:,:), v_tend_sum(:,:), s_tend_sum(:,:), q_tend_sum(:,:,:)
     real(kind=r8), intent(inout) :: taux_srf_sum(:), taux_top_sum(:), tauy_srf_sum(:), tauy_top_sum(:)
-    real(kind=r8), intent(inout) :: hflx_srf_sum(:), hflx_top_sum(:), cflx_srf_sum(:,:), clfx_top_sum(:,:)
+    real(kind=r8), intent(inout) :: hflx_srf_sum(:), hflx_top_sum(:), cflx_srf_sum(:,:), cflx_top_sum(:,:)
 
 !---------------------------Local storage-------------------------------
     integer :: i,k,m                               ! column,level,constituent indices

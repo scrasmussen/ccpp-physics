@@ -31,6 +31,14 @@
   type = integer
   intent = in
   optional = F
+[pverp]
+  standard_name = vertical_dimension_plus_one
+  long_name = number of vertical levels plus one
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+  optional = F
 [pcnst]
   standard_name = number_of_tracers
   long_name = number of tracers
