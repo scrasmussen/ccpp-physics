@@ -13,7 +13,7 @@ module zm_convr_post
     fv_dycore, microp_scheme, qmin, ps, lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, tend_q, tend_s, state_u, state_v, state_s, state_q, mcon, pcont, pconb, dp_cldliq, dp_cldice, &
     temp_state_u, temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, temp_state_zi, errmsg, errflg)
     
-    use iap_state_update, only :: physics_update
+    use iap_state_update, only : physics_update
     
     integer,           intent(in   )                   :: ncol, pcols, pver, pverp, pcnst, lengath, &
                                                           ixcldice, ixcldliq, ixnumice, ixnumliq
@@ -43,7 +43,8 @@ module zm_convr_post
     logical, dimension(pcnst) :: lq
     character*24 :: name
     real(kind=r8), dimension(pcols,pver) :: tend_u, tend_v
-    
+    real(kind=r8), dimension(pcols,pver,pcnst) :: tend_q_all    
+
     ! Initialize the CCPP error handling variables
     errmsg = ''
     errflg = 0
@@ -74,7 +75,9 @@ module zm_convr_post
     bot = pver
     tend_u = 0._r8
     tend_v = 0._r8
-    
+    tend_q_all(:,:,:) = 0._r8
+    tend_q_all(:,:,1) = tend_q    
+
     !GJF: replaces the physics_state_copy(state,state1) call in zm_conv_intr.F90/zm_conv_tend
     temp_state_u(:,:) = state_u(:,:)
     temp_state_v(:,:) = state_v(:,:)
@@ -83,7 +86,7 @@ module zm_convr_post
     
     call physics_update(lu, lv, ls, lq, fv_dycore, name, microp_scheme, top, bot, ncol, &
                         pcols, pver, pverp, pcnst, ixcldice, ixcldliq, ixnumice, ixnumliq,     &
-                        rair, gravit, cpair, zvir, dt, qmin, tend_u, tend_v, tend_s, tend_q, &
+                        rair, gravit, cpair, zvir, dt, qmin, tend_u, tend_v, tend_s, tend_q_all, &
                         lnpint, lnpmid, pint, pmid, pdel, rpdel, phis, temp_state_u, &
                         temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, &
                         temp_state_zi)

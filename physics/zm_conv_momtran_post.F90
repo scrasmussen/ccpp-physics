@@ -40,7 +40,7 @@ module zm_conv_momtran_post
     tend_u, tend_v, tend_s, temp_state_u, temp_state_v, temp_state_s, temp_state_q, temp_state_t, temp_state_zm, &
     temp_state_zi, errmsg, errflg)
     
-    use iap_state_update, only :: physics_update
+    use iap_state_update, only : physics_update
     
     integer,           intent(in   )                   :: ncol, pcols, pver, pverp, pcnst, &
                                                           ixcldice, ixcldliq, ixnumice, ixnumliq
@@ -66,6 +66,10 @@ module zm_conv_momtran_post
     character*24 :: name
     real(kind=r8), dimension(pcols,pver,pcnst) :: tend_q
     
+    ! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
+
     lu = .true.
     lv = .true.
     ls = .true.

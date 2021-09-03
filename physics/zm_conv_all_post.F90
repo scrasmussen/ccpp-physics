@@ -8,14 +8,14 @@ module zm_conv_all_post
 !! \section arg_table_zm_conv_all_post_run
 !! \htmlinclude zm_conv_all_post_run.html
 !!
-  subroutine zm_conv_all_post_run(ncol, pver, pcnst, cam_physpkg, cam_physpkg_cam3, ixcldice, ixcldliq, &
+  subroutine zm_conv_all_post_run(ncol, pcols, pver, pcnst, cam_physpkg, cam_physpkg_cam3, ixcldice, ixcldliq, &
     tend_qv_deep_conv, tend_s_deep_conv, &
     tend_qv_deep_conv_evap, tend_s_deep_conv_evap, tend_s_momtran, tend_u_momtran, tend_v_momtran, tend_q_convtran, &
     tend_u_all, tend_v_all, tend_s_all, tend_q_all, errmsg, errflg)
     
-    use iap_ptend_sum, only :: physics_ptend_sum
+    use iap_ptend_sum, only : physics_ptend_sum
     
-    integer,           intent(in   )              :: ncol, pver, pcnst
+    integer,           intent(in   )              :: ncol, pcols, pver, pcnst
     integer, intent(in) :: ixcldice, ixcldliq
     character(len=16), intent(in) :: cam_physpkg, cam_physpkg_cam3
     real(kind=r8), intent(in), dimension(:,:) :: tend_qv_deep_conv, tend_s_deep_conv
@@ -70,8 +70,8 @@ module zm_conv_all_post
     call physics_ptend_sum(ncol, pcnst, top, bot, lu, lv, ls, lq, temp_tend_u, temp_tend_v, &
       tend_s_deep_conv, temp_tend_q, temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, &
       temp_hflx_srf, temp_hflx_top, temp_cflx_srf, temp_cflx_top, &
-      lu_all, lv_all, ls_all, lq_all, temp_u_tend, temp_v_tend, tend_s_all, tend_q_all, &
-      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_sfc, temp_hflx_top, &
+      lu_all, lv_all, ls_all, lq_all, temp_tend_u, temp_tend_v, tend_s_all, tend_q_all, &
+      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_srf, temp_hflx_top, &
       temp_cflx_srf, temp_cflx_top)
       
     ! sum tendencies due to zm_conv_evap call
@@ -86,8 +86,8 @@ module zm_conv_all_post
     call physics_ptend_sum(ncol, pcnst, top, bot, lu, lv, ls, lq, temp_tend_u, temp_tend_v, &
       tend_s_deep_conv_evap, temp_tend_q, temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, &
       temp_hflx_srf, temp_hflx_top, temp_cflx_srf, temp_cflx_top, &
-      lu_all, lv_all, ls_all, lq_all, temp_u_tend, temp_v_tend, tend_s_all, tend_q_all, &
-      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_sfc, temp_hflx_top, &
+      lu_all, lv_all, ls_all, lq_all, temp_tend_u, temp_tend_v, tend_s_all, tend_q_all, &
+      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_srf, temp_hflx_top, &
       temp_cflx_srf, temp_cflx_top)
     
     ! sum tendencies due to zm_conv_momtran call  
@@ -102,7 +102,7 @@ module zm_conv_all_post
          tend_s_momtran, temp_tend_q, temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, &
          temp_hflx_srf, temp_hflx_top, temp_cflx_srf, temp_cflx_top, &
          lu_all, lv_all, ls_all, lq_all, tend_u_all, tend_v_all, tend_s_all, temp_tend_q, &
-         temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_sfc, temp_hflx_top, &
+         temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_srf, temp_hflx_top, &
          temp_cflx_srf, temp_cflx_top)
     end if
     
@@ -118,7 +118,7 @@ module zm_conv_all_post
       temp_tend_s, tend_q_convtran, temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, &
       temp_hflx_srf, temp_hflx_top, temp_cflx_srf, temp_cflx_top, &
       lu_all, lv_all, ls_all, lq_all, temp_tend_u, temp_tend_v, temp_tend_s, tend_q_all, &
-      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_sfc, temp_hflx_top, &
+      temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_srf, temp_hflx_top, &
       temp_cflx_srf, temp_cflx_top)
     
   end subroutine zm_conv_all_post_run

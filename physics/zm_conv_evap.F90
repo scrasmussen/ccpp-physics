@@ -18,7 +18,7 @@ module zm_conv_evap
 !> \section arg_table_zm_conv_evap_run Argument Table
 !! \htmlinclude zm_conv_evap_run.html
 !!
-  subroutine zm_conv_evap_run(ncol,pcols,lchnk,pver,pverp, &
+  subroutine zm_conv_evap_run(ncol,pcols,lchnk,pver,pverp,tmelt, &
        t,pmid,pdel,q, &
        tend_s, tend_s_snwprd, tend_s_snwevmlt, tend_q, &
        prdprec, cldfrc, deltat,  &
@@ -36,6 +36,7 @@ module zm_conv_evap
     !------------------------------Arguments--------------------------------
     integer,intent(in) :: ncol, lchnk             ! number of columns and chunk index
     integer,intent(in) :: pcols, pver, pverp
+    real(r8),intent(in) :: tmelt
     real(r8),intent(in), dimension(pcols,pver) :: t          ! temperature (K)
     real(r8),intent(in), dimension(pcols,pver) :: pmid       ! midpoint pressure (Pa) 
     real(r8),intent(in), dimension(pcols,pver) :: pdel       ! layer thickness (Pa)

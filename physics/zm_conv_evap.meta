@@ -47,6 +47,15 @@
   type = integer
   intent = in
   optional = F
+[tmelt]
+  standard_name = freezing_point_temperature_of_fresh_water
+  long_name = freezing point temperature of fresh water
+  units = K
+  dimensions = ()
+  type = real
+  kind = kind_r8
+  intent = in
+  optional = F
 [t]
   standard_name = temporary_air_temperature
   long_name = temporary model layer mean temperature

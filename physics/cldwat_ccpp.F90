@@ -13,7 +13,7 @@ module cldwat_ccpp
   
   save
   
-  public inimc, pcond
+  public inimc 
   public cldwat_fice
   
   integer, public::  ktop      ! Level above 10 hPa
@@ -150,7 +150,7 @@ module cldwat_ccpp
     return
   end subroutine cldwat_fice
   
-  subroutine inimc( tmeltx, rhonotx, gravitx, rh2ox, hypm, microp_scheme, iulog, masterproc)
+  subroutine inimc( tmeltx, rhonotx, gravitx, rh2ox, hypm, microp_scheme, iulog, pver, masterproc)
   !----------------------------------------------------------------------- 
   ! 
   ! Purpose: 
@@ -166,13 +166,13 @@ module cldwat_ccpp
      real(r8), intent(in) :: gravitx
      real(r8), intent(in) :: rh2ox
      real(r8), intent(in), dimension(:) :: hypm
-     integer,  intent(in) :: iulog
+     integer,  intent(in) :: iulog, pver
      logical,  intent(in) :: masterproc
 
-  #ifdef UNICOSMP
+#ifdef UNICOSMP
      real(r8) signgam              ! variable required by cray gamma function
      external gamma
-  #endif
+#endif
      character(len=16), intent(in)    :: microp_scheme 
 
   ! Set following for all physics packages
@@ -208,16 +208,16 @@ module cldwat_ccpp
            gam3pd = 2.549256966718531_r8 ! only right for d = 0.25
            gam4pd = 8.285085141835282_r8
         else
-  #ifdef UNICOSMP
+#ifdef UNICOSMP
            call gamma(3._r8+d, signgam, gam3pd)
            gam3pd = sign(exp(gam3pd),signgam)
            call gamma(4._r8+d, signgam, gam4pd)
            gam4pd = sign(exp(gam4pd),signgam)
            write(iulog,*) ' d, gamma(3+d), gamma(4+d) =', gam3pd, gam4pd
-  #else
+#else
            write(iulog,*) ' can only use d ne 0.25 on a cray '
            stop
-  #endif
+#endif
         endif
         mcon01 = pi*nos*c*gam3pd/4._r8
         mcon02 = 1._r8/(c*gam4pd*sqrt(rhonot)/(6*prhonos**(d/4._r8)))

@@ -65,8 +65,8 @@ module iap_ptend_sum
           do k = top_level, bot_level
              s_tend_sum(i,k) = s_tend_sum(i,k) + s_tend_in(i,k)
           end do
-          hflux_srf_sum(i) = hflux_srf_sum(i) + hflux_srf_in(i)
-          hflux_top_sum(i) = hflux_top_sum(i) + hflux_top_in(i)
+          hflx_srf_sum(i) = hflx_srf_sum(i) + hflx_srf_in(i)
+          hflx_top_sum(i) = hflx_top_sum(i) + hflx_top_in(i)
        end do
     end if
 
