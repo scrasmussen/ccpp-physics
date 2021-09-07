@@ -54,7 +54,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [ncnst]
@@ -71,7 +71,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [md]
@@ -80,7 +80,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [du]
@@ -89,7 +89,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [eu]
@@ -98,7 +98,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [ed]
@@ -107,7 +107,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dp]
@@ -116,7 +116,7 @@
   units = hPa
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dsubcld]
@@ -125,7 +125,7 @@
   units = hPa
   dimensions = (horizontal_loop_extent)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [jt]
@@ -166,7 +166,7 @@
   units = frac
   dimensions = (horizontal_loop_extent, vertical_dimension, number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dqdt]
@@ -175,7 +175,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension, number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [errmsg]

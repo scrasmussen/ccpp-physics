@@ -93,7 +93,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [v]
@@ -102,7 +102,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [mu]
@@ -111,7 +111,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [md]
@@ -120,7 +120,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [du]
@@ -129,7 +129,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [eu]
@@ -138,7 +138,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [ed]
@@ -147,7 +147,7 @@
   units = hPa s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dp]
@@ -156,7 +156,7 @@
   units = hPa
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dsubcld]
@@ -165,7 +165,7 @@
   units = hPa
   dimensions = (horizontal_loop_extent)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [jt]
@@ -206,7 +206,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [dvdt]
@@ -215,7 +215,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [dsdt]
@@ -224,7 +224,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [pguall]
@@ -233,7 +233,7 @@
   units = unknown
   dimensions = (horizontal_loop_extent,vertical_dimension,2)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = out
   optional = F
 [pgdall]
@@ -242,7 +242,7 @@
   units = unknown
   dimensions = (horizontal_loop_extent,vertical_dimension,2)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = out
   optional = F
 [icwu]
@@ -251,7 +251,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent,vertical_dimension,2)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = out
   optional = F
 [icwd]
@@ -260,7 +260,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent,vertical_dimension,2)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = out
   optional = F
 [dt]
@@ -269,7 +269,7 @@
   units = s
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [errmsg]

@@ -79,7 +79,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_s_deep_conv]
@@ -88,7 +88,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_qv_deep_conv_evap]
@@ -97,7 +97,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_s_deep_conv_evap]
@@ -106,7 +106,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_s_momtran]
@@ -115,7 +115,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_u_momtran]
@@ -124,7 +124,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_v_momtran]
@@ -133,7 +133,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_q_convtran]
@@ -142,7 +142,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension, number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_u_all]
@@ -151,7 +151,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [tend_v_all]
@@ -160,7 +160,7 @@
   units = m s-2
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [tend_s_all]
@@ -169,7 +169,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [tend_q_all]
@@ -178,7 +178,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension, number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [errmsg]

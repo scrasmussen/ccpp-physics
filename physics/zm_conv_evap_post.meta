@@ -85,7 +85,7 @@
   units = m s-2
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [rair]
@@ -94,7 +94,7 @@
   units = J kg-1 K-1
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [cpair]
@@ -103,7 +103,7 @@
   units = J kg-1 K-1
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [zvir]
@@ -112,7 +112,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [dt]
@@ -121,7 +121,7 @@
   units = s
   dimensions = ()
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [fv_dycore]
@@ -147,7 +147,7 @@
   units = kg kg-1
   dimensions = (number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [lnpint]
@@ -156,7 +156,7 @@
   units = ln Pa
   dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [lnpmid]
@@ -165,7 +165,7 @@
   units = ln Pa
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [pint]
@@ -174,7 +174,7 @@
   units = Pa
   dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [pmid]
@@ -183,7 +183,7 @@
   units = Pa
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [pdel]
@@ -192,7 +192,7 @@
   units = Pa
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [rpdel]
@@ -201,7 +201,7 @@
   units = Pa-1
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [phis]
@@ -210,7 +210,7 @@
   units = m2 s-2 ???
   dimensions = (horizontal_loop_extent)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_s]
@@ -219,7 +219,7 @@
   units = J kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [tend_q]
@@ -228,7 +228,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = in
   optional = F
 [evapcdp]
@@ -237,7 +237,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_u]
@@ -246,7 +246,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_v]
@@ -255,7 +255,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent, vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_s]
@@ -264,7 +264,7 @@
   units = m2 s-2???
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_q]         
@@ -273,7 +273,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_dimension,number_of_tracers)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_t]
@@ -282,7 +282,7 @@
   units = K
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_zm]
@@ -291,7 +291,7 @@
   units = m
   dimensions = (horizontal_loop_extent,vertical_dimension)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [temp_state_zi]
@@ -300,7 +300,7 @@
   units = m
   dimensions = (horizontal_loop_extent,vertical_dimension_plus_one)
   type = real
-  kind = kind_r8
+  kind = shr_kind_r8
   intent = inout
   optional = F
 [errmsg]
