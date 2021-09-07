@@ -16,7 +16,7 @@ module zm_conv_convtran
     
     integer, intent(in) :: pcols, pver
     integer, intent(in) :: ixcldice, ixcldliq
-    character(len=3), intent(in) :: cnst_type
+    character(len=3), intent(in) :: cnst_type(:)
     integer, intent(in) :: ncnst                 ! number of tracers to transport
     real(kind=r8), intent(in) :: q(:,:,:)  ! Tracer array including moisture
     real(kind=r8), intent(in) :: mu(:,:)       ! Mass flux up
@@ -110,7 +110,7 @@ module zm_conv_convtran
     do m = 2, ncnst
       if (doconvtran(m)) then
 
-         if (cnst_type .eq. 'dry') then !GJF: this should never execute because cloud ice and liquid mixing ratios are 'wet'
+         if (cnst_type(m) .eq. 'dry') then !GJF: this should never execute because cloud ice and liquid mixing ratios are 'wet'
             do k = 1,pver
                do i =il1g,il2g
                   dptmp(i,k) = dpdry(i,k)

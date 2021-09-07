@@ -22,7 +22,7 @@ module zm_conv_evap
        t,pmid,pdel,q, &
        tend_s, tend_s_snwprd, tend_s_snwevmlt, tend_q, &
        prdprec, cldfrc, deltat,  &
-       prec, snow, ntprprd, ntsnprd, flxprec, flxsnow )
+       prec, snow, ntprprd, ntsnprd, flxprec, flxsnow, errmsg, errflg)
 !-----------------------------------------------------------------------
 ! Compute tendencies due to evaporation of rain from ZM scheme
 !--
@@ -52,6 +52,9 @@ module zm_conv_evap
 
     real(r8), intent(inout) :: prec(pcols)        ! Convective-scale preciptn rate
     real(r8), intent(out)   :: snow(pcols)        ! Convective-scale snowfall rate
+    ! CCPP error handling
+    character(len=*),          intent(  out) :: errmsg
+    integer,                   intent(  out) :: errflg
     !
     !---------------------------Local storage-------------------------------
 
@@ -78,6 +81,9 @@ module zm_conv_evap
     integer :: i,k                     ! longitude,level indices
 
 !-----------------------------------------------------------------------
+! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
 
 ! convert input precip to kg/m2/s
     prec(:ncol) = prec(:ncol)*1000._r8

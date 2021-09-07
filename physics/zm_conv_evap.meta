@@ -137,7 +137,7 @@
   kind = shr_kind_r8
   intent = in
   optional = F
-[cldfrac]
+[cldfrc]
   standard_name = cloud_area_fraction_in_atmosphere_layer_at_previous_timestep
   long_name = cloud area fraction at oldest time in the physics buffer
   units = frac
