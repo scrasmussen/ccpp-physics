@@ -172,18 +172,20 @@
       subroutine dcyc2t3_run                                            &
 !  ---  inputs:
      &     ( solhr,slag,sdec,cdec,sinlat,coslat,                        &
-     &       xlon,coszen,tsfc_lnd,tsfc_ice,tsfc_wat,tf,tsflw,           &
+     &       con_g, con_cp, con_pi, con_sbc,                            &
+     &       xlon,coszen,tsfc_lnd,tsfc_ice,tsfc_wat,tf,tsflw,tsfc,      &
      &       sfcemis_lnd, sfcemis_ice, sfcemis_wat,                     &
      &       sfcdsw,sfcnsw,sfcdlw,swh,swhc,hlw,hlwc,                    &
      &       sfcnirbmu,sfcnirdfu,sfcvisbmu,sfcvisdfu,                   &
      &       sfcnirbmd,sfcnirdfd,sfcvisbmd,sfcvisdfd,                   &
      &       im, levs, deltim, fhswr,                                   &
-     &       dry, icy, wet,                                             &
-     &       use_LW_jacobian, sfculw, sfculw_jac,                       &
-     &       pert_radtend, do_sppt,ca_global,                           &
+     &       dry, icy, wet, damp_LW_fluxadj, lfnc_k, lfnc_p0,           &
+     &       use_LW_jacobian, sfculw, fluxlwUP_jac,                     &
+     &       t_lay, p_lay, p_lev, flux2D_lwUP, flux2D_lwDOWN,           &
+     &       pert_radtend, do_sppt,ca_global, tsfc_radtime,             &
 !    &       dry, icy, wet, lprnt, ipr,                                 &
 !  ---  input/output:
-     &       dtdt,dtdtnp,                                               &
+     &       dtdt,dtdtnp,htrlw,                                         &
 !  ---  outputs:
      &       adjsfcdsw,adjsfcnsw,adjsfcdlw,adjsfculw,                   &
      &       adjsfculw_lnd,adjsfculw_ice,adjsfculw_wat,xmu,xcosz,       &
@@ -193,7 +195,6 @@
      &     )
 !
       use machine,         only : kind_phys
-      use physcons,        only : con_pi, con_sbc
 
       implicit none
 !
@@ -203,55 +204,74 @@
      &                                   hour12 = 12.0_kind_phys,       &
      &                                   f3600  = one/3600.0_kind_phys, &
      &                                   f7200  = one/7200.0_kind_phys, &
-     &                                   czlimt = 0.0001_kind_phys,     &    ! ~ cos(89.99427)
-     &                                   pid12  = con_pi / hour12
+     &                                   czlimt = 0.0001_kind_phys        ! ~ cos(89.99427)
 
 !  ---  inputs:
       integer, intent(in) :: im, levs
 
 !     integer, intent(in) :: ipr
 !     logical lprnt
-      logical, dimension(im), intent(in) :: dry, icy, wet
-      logical, intent(in) :: use_LW_jacobian, pert_radtend
+      logical, dimension(:), intent(in) :: dry, icy, wet
+      logical, intent(in) :: use_LW_jacobian, damp_LW_fluxadj,          &
+     &     pert_radtend
       logical, intent(in) :: do_sppt,ca_global
       real(kind=kind_phys),   intent(in) :: solhr, slag, cdec, sdec,    &
-     &                                      deltim, fhswr
+     &     deltim, fhswr, lfnc_k, lfnc_p0
 
-      real(kind=kind_phys), dimension(im), intent(in) ::                &
+      real(kind=kind_phys), dimension(:), intent(in) ::                 &
      &      sinlat, coslat, xlon, coszen, tf, tsflw, sfcdlw,            &
-     &      sfcdsw, sfcnsw, sfculw, sfculw_jac
+     &      sfcdsw, sfcnsw, sfculw, tsfc, tsfc_radtime
 
-      real(kind=kind_phys), dimension(im), intent(in) ::                &
+      real(kind=kind_phys), dimension(:), intent(in) ::                 &
      &                         tsfc_lnd, tsfc_ice, tsfc_wat,            &
      &                         sfcemis_lnd, sfcemis_ice, sfcemis_wat
 
-      real(kind=kind_phys), dimension(im), intent(in) ::                &
+      real(kind=kind_phys), dimension(:), intent(in) ::                 &
      &      sfcnirbmu, sfcnirdfu, sfcvisbmu, sfcvisdfu,                 &
      &      sfcnirbmd, sfcnirdfd, sfcvisbmd, sfcvisdfd
 
-      real(kind=kind_phys), dimension(im,levs), intent(in) :: swh,  hlw &
-     &,                                                       swhc, hlwc
+      real(kind=kind_phys), dimension(:,:), intent(in) :: swh, hlw,     &
+     &                                     swhc, hlwc, p_lay, t_lay
+
+      real(kind=kind_phys), dimension(:,:), intent(in) :: p_lev,        &
+     &     flux2D_lwUP, flux2D_lwDOWN, fluxlwUP_jac
+
+      real(kind_phys),           intent(in   ) :: con_g, con_cp,        &
+     &     con_pi, con_sbc
+
+      real(kind_phys)  :: pid12
+
 
 !  ---  input/output:
-      real(kind=kind_phys), dimension(im,levs), intent(inout) :: dtdt 
-      real(kind=kind_phys), dimension(:,:),     intent(inout) :: dtdtnp
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: dtdt, htrlw
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: dtdtnp
 
 !  ---  outputs:
-      real(kind=kind_phys), dimension(im), intent(out) ::               &
+      real(kind=kind_phys), dimension(:), intent(out) ::                &
      &      adjsfcdsw, adjsfcnsw, adjsfcdlw, adjsfculw, xmu, xcosz,     &
      &      adjnirbmu, adjnirdfu, adjvisbmu, adjvisdfu,                 &
      &      adjnirbmd, adjnirdfd, adjvisbmd, adjvisdfd
 
-      real(kind=kind_phys), dimension(im), intent(out) ::               &
+      real(kind=kind_phys), dimension(:), intent(out) ::                &
      &      adjsfculw_lnd, adjsfculw_ice, adjsfculw_wat
 
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
 
 !  ---  locals:
-      integer :: i, k, nstp, nstl, it, istsun(im)
+      integer :: i, k, nstp, nstl, it, istsun(im),iSFC,iTOA
       real(kind=kind_phys) :: cns,  coszn, tem1, tem2, anginc,          &
      &                        rstl, solang, dT
+      real(kind=kind_phys), dimension(im,levs+1) :: flxlwup_adj,        &
+     &     flxlwdn_adj
+      real(kind=kind_phys) :: fluxlwnet_adj,fluxlwnet,dT_sfc,           &
+     &fluxlwDOWN_jac,lfnc,c1
+      ! Length scale for flux-adjustment scaling
+      real(kind=kind_phys), parameter ::                                &
+     &     L = 1.
+      ! Scaling factor for downwelling LW Jacobian profile.
+      real(kind=kind_phys), parameter ::                                &
+     &     gamma = 0.2
 !
 !===> ...  begin here
 !
@@ -259,9 +279,19 @@
       errmsg = ''
       errflg = 0
 
+!     Vertical ordering?
+      if (p_lev(1,1) .lt.  p_lev(1, levs)) then 
+         iSFC = levs + 1
+         iTOA = 1
+      else
+         iSFC = 1
+         iTOA = levs + 1
+      endif
+
       tem1 = fhswr / deltim
       nstp = max(6, nint(tem1))
       nstl = max(1, nint(nstp/tem1))
+      pid12  = con_pi / hour12
 !
 !  --- ...  sw time-step adjustment for current cosine of zenith angle
 !           ----------------------------------------------------------
@@ -297,33 +327,28 @@
 !
 
       do i = 1, im
+!> - LW time-step adjustment:
          tem1 = tf(i) / tsflw(i)
          tem2 = tem1 * tem1
          adjsfcdlw(i) = sfcdlw(i) * tem2 * tem2
-!> - LW time-step adjustment:
-         if (use_LW_Jacobian) then
-            ! F_adj = F_o + (dF/dT) * dT	
-            dT           = tf(i) - tsflw(i)
-            adjsfculw(i) = sfculw(i) + sfculw_jac(i) * dT
-         else
 !!  - adjust \a sfc downward LW flux to account for t changes in the lowest model layer.
 !! compute 4th power of the ratio of \c tf in the lowest model layer over the mean value \c tsflw.
-           if (dry(i)) then
-             tem2 = tsfc_lnd(i) * tsfc_lnd(i)
-             adjsfculw_lnd(i) =  sfcemis_lnd(i) * con_sbc * tem2 * tem2
+         if (dry(i)) then
+            tem2 = tsfc_lnd(i) * tsfc_lnd(i)
+            adjsfculw_lnd(i) =  sfcemis_lnd(i) * con_sbc * tem2 * tem2
      &                        + (one - sfcemis_lnd(i)) * adjsfcdlw(i)
-           endif
-           if (icy(i)) then
-             tem2 = tsfc_ice(i) * tsfc_ice(i)
-             adjsfculw_ice(i) =  sfcemis_ice(i) * con_sbc * tem2 * tem2
+         endif
+         if (icy(i)) then
+            tem2 = tsfc_ice(i) * tsfc_ice(i)
+            adjsfculw_ice(i) =  sfcemis_ice(i) * con_sbc * tem2 * tem2
      &                        + (one - sfcemis_ice(i)) * adjsfcdlw(i)
-           endif
-           if (wet(i)) then
-             tem2 = tsfc_wat(i) * tsfc_wat(i)
-             adjsfculw_wat(i) =  sfcemis_wat(i) * con_sbc * tem2 * tem2
+         endif
+         if (wet(i)) then
+            tem2 = tsfc_wat(i) * tsfc_wat(i)
+            adjsfculw_wat(i) =  sfcemis_wat(i) * con_sbc * tem2 * tem2
      &                        + (one - sfcemis_wat(i)) * adjsfcdlw(i)
-          endif
-        endif  
+         endif
+
 !     if (lprnt .and. i == ipr) write(0,*)' in dcyc3: dry==',dry(i)
 !    &,' wet=',wet(i),' icy=',icy(i),' tsfc3=',tsfc3(i,:)
 !    &,' sfcemis=',sfcemis(i,:),' adjsfculw=',adjsfculw(i,:)
@@ -353,14 +378,62 @@
         adjvisdfd(i) = sfcvisdfd(i) * xmu(i)
       enddo
 
-!>  - adjust SW heating rates with zenith angle change and
-!! add with LW heating to temperature tendency.
+      ! Adjust the LW and SW heating-rates.
+      ! For LW, optionally scale using the Jacobian of the upward LW flux. *RRTMGP ONLY*
+      ! For SW, adjust heating rates with zenith angle change.
+      if (use_LW_jacobian) then
+         ! Compute adjusted net LW flux foillowing Hogan and Bozzo 2015 (10.1002/2015MS000455)
+         ! Here we assume that the profile of the downwelling LW Jaconiam has the same shape
+         ! as the upwelling, but scaled and offset.
+         ! The scaling factor is 0.2
+         ! The profile of the downwelling Jacobian (J) is offset so that
+         !     J_dn_sfc / J_up_sfc = scaling_factor
+         !     J_dn_toa / J_up_sfc = 0
+         !
+         ! Optionally, the flux adjustment can be damped with height using a logistic function
+         ! fx ~ L / (1 + exp(-k*dp)), where dp = p - p0
+         ! L  = 1, fix scale between 0-1.      - Fixed
+         ! k  = 1 / pressure decay length (Pa) - Controlled by namelist
+         ! p0 = Transition pressure (Pa)       - Controlled by namelsit
+         do i = 1, im
+            c1 = fluxlwUP_jac(i,iTOA) / fluxlwUP_jac(i,iSFC)
+            !dT_sfc = t_lev2(i,iSFC) - t_lev(i,iSFC)
+            dT_sfc = tsfc(i) - tsfc_radtime(i)
+            do k = 1, levs
+               ! LW net flux
+               fluxlwnet = (flux2D_lwUP(i,  k+1) - flux2D_lwUP(i,  k) - &
+     &                      flux2D_lwDOWN(i,k+1) + flux2D_lwDOWN(i,k))
+               ! Downward LW Jacobian (Eq. 9)
+               fluxlwDOWN_jac = gamma *                                 &
+     &              (fluxlwUP_jac(i,k)/fluxlwUP_jac(i,iSFC) - c1) /     &
+     &              (1 - c1)
+               ! Adjusted LW net flux(Eq. 10)
+               fluxlwnet_adj = fluxlwnet + dT_sfc*                      &
+     &              (fluxlwUP_jac(i,k)/fluxlwUP_jac(i,iSFC) -           &
+     &              fluxlwDOWN_jac)
+               ! Adjusted LW heating rate
+               htrlw(i,k) = fluxlwnet_adj * con_g /                     &
+     &              (con_cp * (p_lev(i,k+1) - p_lev(i,k)))
 
-      do k = 1, levs
-        do i = 1, im
-          dtdt(i,k)  = dtdt(i,k)  + swh(i,k)*xmu(i)  + hlw(i,k)
-        enddo
-      enddo
+               ! Add radiative heating rates to physics heating rate. Optionally, scaled w/ height
+               ! using a logistic function
+               if (damp_LW_fluxadj) then
+                  lfnc = L / (1+exp(-(p_lev(i,k) - lfnc_p0)/lfnc_k))
+               else
+                  lfnc = 1.
+               endif
+               dtdt(i,k) = dtdt(i,k) + swh(i,k)*xmu(i) +                &
+     &              htrlw(i,k)*lfnc + (1.-lfnc)*hlw(i,k)
+            enddo
+         enddo
+      else
+         do k = 1, levs
+            do i = 1, im
+               dtdt(i,k)  = dtdt(i,k)  + swh(i,k)*xmu(i)  + hlw(i,k)
+            enddo
+         enddo
+      endif
+
       if (do_sppt .or. ca_global) then
          if (pert_radtend) then
 ! clear sky

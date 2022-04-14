@@ -4,15 +4,19 @@
 
 !>\ingroup gsd_mynn_edmf
 !> The following references best describe the code within
-!!    Olson et al. (2018, NOAA Technical Memorandum)
+!!    Olson et al. (2019, NOAA Technical Memorandum)
 !!    Nakanishi and Niino (2009 ) \cite NAKANISHI_2009
       MODULE mynnedmf_wrapper
 
       contains
 
-      subroutine mynnedmf_wrapper_init (lheatstrg, errmsg, errflg)
+!> \section arg_table_mynnedmf_wrapper_init Argument Table
+!! \htmlinclude mynnedmf_wrapper_init.html
+!!
+      subroutine mynnedmf_wrapper_init (do_mynnedmf, lheatstrg, errmsg, errflg)
         implicit none
-
+        
+        logical,          intent(in)  :: do_mynnedmf
         logical,          intent(in)  :: lheatstrg
         character(len=*), intent(out) :: errmsg
         integer,          intent(out) :: errflg
@@ -20,6 +24,13 @@
         ! Initialize CCPP error handling variables
         errmsg = ''
         errflg = 0
+
+        ! Consistency checks
+        if (.not. do_mynnedmf) then
+          errmsg = 'Logic error: do_mynnedmf = .false.'
+          errflg = 1
+            return
+         end if
 
         if (lheatstrg) then
           errmsg = 'Logic error: lheatstrg not implemented for MYNN PBL'
@@ -39,6 +50,8 @@
 SUBROUTINE mynnedmf_wrapper_run(        &
      &  im,levs,                        &
      &  flag_init,flag_restart,         &
+     &  cp, g, r_d, r_v, cpv, cliq,Cice,&
+     &  rcp, XLV, XLF, EP_1, EP_2,      &
      &  lssav, ldiag3d, qdiag3d,        &
      &  lsidea, cplflx,                 &
      &  delt,dtf,dx,zorl,               &
@@ -51,6 +64,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &  qgrs_ozone,                     &
      &  qgrs_water_aer_num_conc,        &
      &  qgrs_ice_aer_num_conc,          &
+     &  qgrs_cccn,                      &
      &  prsl,exner,                     &
      &  slmsk,tsurf,qsfc,ps,            &
      &  ust,ch,hflx,qflx,wspd,rb,       &
@@ -62,7 +76,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &  dtsfc_diag,dqsfc_diag,          &
      &  dusfc_cice,dvsfc_cice,          &
      &  dtsfc_cice,dqsfc_cice,          &
-     &  hflx_ocn,qflx_ocn,stress_ocn,   &
+     &  hflx_wat,qflx_wat,stress_wat,   &
      &  oceanfrac,fice,wet,icy,dry,     &
      &  dusfci_cpl,dvsfci_cpl,          &
      &  dtsfci_cpl,dqsfci_cpl,          &
@@ -78,40 +92,30 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &  sub_thl,sub_sqv,det_thl,det_sqv,&
      &  nupdraft,maxMF,ktop_plume,      &
      &  dudt, dvdt, dtdt,                                  &
-     &  dqdt_water_vapor, dqdt_liquid_cloud,               &
-     &  dqdt_ice_cloud, dqdt_ozone,                        &
-     &  dqdt_cloud_droplet_num_conc, dqdt_ice_num_conc,    &
-     &  dqdt_water_aer_num_conc, dqdt_ice_aer_num_conc,    &
+     &  dqdt_water_vapor, dqdt_liquid_cloud,               & ! <=== ntqv, ntcw
+     &  dqdt_ice_cloud, dqdt_ozone,                        & ! <=== ntiw, ntoz
+     &  dqdt_cloud_droplet_num_conc, dqdt_ice_num_conc,    & ! <=== ntlnc, ntinc
+     &  dqdt_water_aer_num_conc, dqdt_ice_aer_num_conc,    & ! <=== ntwa, ntia
+     &  dqdt_cccn,                                         & ! <=== ntccn
      &  flag_for_pbl_generic_tend,                         &
-     &  du3dt_PBL, du3dt_OGWD, dv3dt_PBL, dv3dt_OGWD,      &
-     &  do3dt_PBL, dq3dt_PBL, dt3dt_PBL,                   &
-     &  htrsw, htrlw, xmu,                                 &
+     &  dtend, dtidx, index_of_temperature,                &
+     &  index_of_x_wind, index_of_y_wind, ntke,            &
+     &  ntqv, ntcw, ntiw, ntoz, ntlnc, ntinc, ntwa, ntia,  &
+     &  index_of_process_pbl, htrsw, htrlw, xmu,           &
      &  grav_settling, bl_mynn_tkebudget, bl_mynn_tkeadvect, &
      &  bl_mynn_cloudpdf, bl_mynn_mixlength,               &
      &  bl_mynn_edmf, bl_mynn_edmf_mom, bl_mynn_edmf_tke,  &
-     &  bl_mynn_edmf_part, bl_mynn_cloudmix, bl_mynn_mixqt,&
+     &  bl_mynn_cloudmix, bl_mynn_mixqt,                   &
      &  bl_mynn_output,                                    &
      &  icloud_bl, do_mynnsfclay,                          &
      &  imp_physics, imp_physics_gfdl,                     &
      &  imp_physics_thompson, imp_physics_wsm6,            &
-     &  ltaerosol, lprnt, errmsg, errflg  )
+     &  imp_physics_nssl, nssl_ccn_on,                     &
+     &  ltaerosol, spp_wts_pbl, spp_pbl, lprnt, huge, errmsg, errflg  )
 
 ! should be moved to inside the mynn:
       use machine , only : kind_phys
 !      use funcphys, only : fpvs
-
-      use physcons, only : cp     => con_cp,              &
-     &                     g      => con_g,               &
-     &                     r_d    => con_rd,              &
-     &                     r_v    => con_rv,              &
-     &                     cpv    => con_cvap,            &
-     &                     cliq   => con_cliq,            &
-     &                     Cice   => con_csol,            &
-     &                     rcp    => con_rocp,            &
-     &                     XLV    => con_hvap,            &
-     &                     XLF    => con_hfus,            &
-     &                     EP_1   => con_fvirt,           &
-     &                     EP_2   => con_eps
 
       USE module_bl_mynn, only : mynn_bl_driver
 
@@ -172,16 +176,18 @@ SUBROUTINE mynnedmf_wrapper_run(        &
 !   REAL    , PARAMETER :: EP_1         = R_v/R_d-1.
 !   REAL    , PARAMETER :: EP_2         = R_d/R_v
 !
+  
+  real(kind=kind_phys), intent(in) :: cp, g, r_d, r_v, cpv, &
+                      & cliq, Cice, rcp, XLV, XLF, EP_1, EP_2
 
-  REAL, PARAMETER :: xlvcp=xlv/cp, xlscp=(xlv+xlf)/cp, ev=xlv, rd=r_d, &
-       &rk=cp/rd, svp11=svp1*1.e3, p608=ep_1, ep_3=1.-ep_2
+  real(kind=kind_phys) :: xlvcp, xlscp, ev, rd,             &
+       &     rk, svp11, p608, ep_3,tv0, tv1, gtr,g_inv, huge
 
   REAL, PARAMETER :: tref=300.0     !< reference temperature (K)
   REAL, PARAMETER :: TKmin=253.0    !< for total water conversion, Tripoli and Cotton (1981)
-  REAL, PARAMETER :: tv0=p608*tref, tv1=(1.+p608)*tref, gtr=g/tref, g_inv=1./g
 
   REAL, PARAMETER :: zero=0.0d0, one=1.0d0
-  REAL, PARAMETER :: huge=9.9692099683868690E36 ! NetCDF float FillValue, same as in GFS_typedefs.F90
+! REAL, PARAMETER :: huge=9.9692099683868690E36 ! NetCDF float FillValue, same as in GFS_typedefs.F90
 
   character(len=*), intent(out) :: errmsg
   integer, intent(out) :: errflg
@@ -192,7 +198,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
 ! NAMELIST OPTIONS (INPUT):
       LOGICAL, INTENT(IN) :: bl_mynn_tkeadvect, ltaerosol,  &
                              lprnt, do_mynnsfclay,          &
-                             flag_for_pbl_generic_tend
+                             flag_for_pbl_generic_tend, nssl_ccn_on
       INTEGER, INTENT(IN) ::                                &
      &       bl_mynn_cloudpdf,                              &
      &       bl_mynn_mixlength,                             &
@@ -200,20 +206,29 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &       bl_mynn_edmf,                                  &
      &       bl_mynn_edmf_mom,                              &
      &       bl_mynn_edmf_tke,                              &
-     &       bl_mynn_edmf_part,                             &
      &       bl_mynn_cloudmix,                              &
      &       bl_mynn_mixqt,                                 &
      &       bl_mynn_tkebudget,                             &
      &       bl_mynn_output,                                &
      &       grav_settling,                                 &
      &       imp_physics, imp_physics_wsm6,                 &
-     &       imp_physics_thompson, imp_physics_gfdl
+     &       imp_physics_thompson, imp_physics_gfdl,        &
+     &       imp_physics_nssl,                              &
+     &       spp_pbl
+
+!TENDENCY DIAGNOSTICS
+      real(kind=kind_phys), intent(inout), optional :: dtend(:,:,:)
+      integer, intent(in) :: dtidx(:,:)
+      integer, intent(in) :: index_of_temperature, index_of_x_wind, &
+        index_of_y_wind, index_of_process_pbl
+      integer, intent(in) :: ntoz, ntqv, ntcw, ntiw, ntlnc, ntinc, ntwa, ntia, ntke
 
 !MISC CONFIGURATION OPTIONS
       INTEGER, PARAMETER ::                                 &
-     &       spp_pbl=0,                                     &
      &       bl_mynn_mixscalars=1,                          &
      &       levflag=2
+      REAL, PARAMETER ::                                    &
+     &       closure=2.6   !2.5, 2.6 or 3.0
       LOGICAL ::                                            &
      &       FLAG_QI, FLAG_QNI, FLAG_QC, FLAG_QNC,          &
      &       FLAG_QNWFA, FLAG_QNIFA
@@ -221,7 +236,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       LOGICAL, PARAMETER :: cycling = .false.
       INTEGER, PARAMETER :: param_first_scalar = 1
       INTEGER ::                                            &
-       &      p_qc, p_qr, p_qi, p_qs, p_qg, p_qnc, p_qni
+     &      p_qc, p_qr, p_qi, p_qs, p_qg, p_qnc, p_qni
 
 !MYNN-1D
       REAL(kind=kind_phys), intent(in) :: delt, dtf
@@ -236,13 +251,14 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       REAL(kind=kind_phys) :: tem
 
 !MYNN-3D
-      real(kind=kind_phys), dimension(im,levs+1), intent(in) :: phii
-      real(kind=kind_phys), dimension(im,levs  ), intent(inout) ::       &
+      real(kind=kind_phys), dimension(:,:), intent(in) :: phii
+      real(kind=kind_phys), dimension(:,:), intent(inout) ::             &
      &        dtdt, dudt, dvdt,                                          &
      &        dqdt_water_vapor, dqdt_liquid_cloud, dqdt_ice_cloud,       &
      &        dqdt_cloud_droplet_num_conc, dqdt_ice_num_conc,            &
      &        dqdt_ozone, dqdt_water_aer_num_conc, dqdt_ice_aer_num_conc
-      real(kind=kind_phys), dimension(im,levs), intent(inout) ::         &
+      real(kind=kind_phys), dimension(:,:), intent(inout) ::dqdt_cccn
+      real(kind=kind_phys), dimension(:,:), intent(inout) ::             &
      &        qke, qke_adv, EL_PBL, Sh3D,                                &
      &        qc_bl, qi_bl, cldfra_bl
 !These 10 arrays are only allocated when bl_mynn_output > 0
@@ -250,7 +266,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &        edmf_a,edmf_w,edmf_qt,                                     &
      &        edmf_thl,edmf_ent,edmf_qc,                                 &
      &        sub_thl,sub_sqv,det_thl,det_sqv
-     real(kind=kind_phys), dimension(im,levs), intent(in) ::             &
+     real(kind=kind_phys), dimension(:,:), intent(in) ::                 &
     &        u,v,omega,t3d,                                              &
     &        exner,prsl,                                                 &
     &        qgrs_water_vapor,                                           &
@@ -261,13 +277,14 @@ SUBROUTINE mynnedmf_wrapper_run(        &
     &        qgrs_ozone,                                                 &
     &        qgrs_water_aer_num_conc,                                    &
     &        qgrs_ice_aer_num_conc
-     real(kind=kind_phys), dimension(im,levs), intent(out) ::            &
+     real(kind=kind_phys), dimension(:,:), intent(in) ::qgrs_cccn
+     real(kind=kind_phys), dimension(:,:), intent(out) ::                &
     &        Tsq, Qsq, Cov, exch_h, exch_m
-     real(kind=kind_phys), dimension(:,:), intent(inout) ::              &
-    &        du3dt_PBL, du3dt_OGWD, dv3dt_PBL, dv3dt_OGWD,               &
-    &        do3dt_PBL, dq3dt_PBL, dt3dt_PBL
-    real(kind=kind_phys), dimension(im), intent(in) :: xmu
-    real(kind=kind_phys), dimension(im, levs), intent(in) :: htrsw, htrlw
+     real(kind=kind_phys), dimension(:), intent(in) :: xmu
+     real(kind=kind_phys), dimension(:,:), intent(in) :: htrsw, htrlw
+    ! spp_wts_pbl only allocated if spp_pbl == 1
+    real(kind_phys), dimension(:,:),       intent(in) :: spp_wts_pbl
+
      !LOCAL
       real(kind=kind_phys), dimension(im,levs) ::                        &
      &        sqv,sqc,sqi,qnc,qni,ozone,qnwfa,qnifa,                     &
@@ -275,8 +292,8 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &        RUBLTEN, RVBLTEN, RTHBLTEN, RQVBLTEN,                      &
      &        RQCBLTEN, RQNCBLTEN, RQIBLTEN, RQNIBLTEN,                  &
      &        RQNWFABLTEN, RQNIFABLTEN,                                  &
-     &        dqke,qWT,qSHEAR,qBUOY,qDISS,                               &
-     &        pattern_spp_pbl
+     &        dqke,qWT,qSHEAR,qBUOY,qDISS
+      real(kind=kind_phys), allocatable :: old_ozone(:,:)
 
 !MYNN-CHEM arrays
       real(kind=kind_phys), dimension(im,nchem) :: chem3d
@@ -286,39 +303,39 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       REAL(kind=kind_phys), DIMENSION( ndvel ) :: vd1
 
 !MYNN-2D
-      real(kind=kind_phys), dimension(im), intent(in) ::                 &
+      real(kind=kind_phys), dimension(:), intent(in) ::                  &
      &        dx,zorl,slmsk,tsurf,qsfc,ps,                               &
      &        hflx,qflx,ust,wspd,rb,recmol
 
-      real(kind=kind_phys), dimension(im), intent(in) ::                 &
+      real(kind=kind_phys), dimension(:), intent(in) ::                  &
      &        dusfc_cice,dvsfc_cice,dtsfc_cice,dqsfc_cice,               &
-     &        stress_ocn,hflx_ocn,qflx_ocn,                              &
+     &        stress_wat,hflx_wat,qflx_wat,                              &
      &        oceanfrac,fice
 
-      logical, dimension(im), intent(in) ::                              &
+      logical, dimension(:), intent(in) ::                               &
      &        wet, dry, icy
 
-      real(kind=kind_phys), dimension(im), intent(inout) ::              &
-     &        pblh
-      real(kind=kind_phys), dimension(im), intent(out) ::                &
+      real(kind=kind_phys), dimension(:), intent(inout) ::               &
+     &        pblh,dusfc_diag,dvsfc_diag,dtsfc_diag,dqsfc_diag
+      real(kind=kind_phys), dimension(:), intent(out) ::                 &
      &        ch,dtsfc1,dqsfc1,dusfc1,dvsfc1,                            &
-     &        dtsfci_diag,dqsfci_diag,dtsfc_diag,dqsfc_diag,             &
-     &        dusfci_diag,dvsfci_diag,dusfc_diag,dvsfc_diag,             &
+     &        dtsfci_diag,dqsfci_diag,dusfci_diag,dvsfci_diag,           &
      &        maxMF
-      integer, dimension(im), intent(inout) ::                           &
+      integer, dimension(:), intent(inout) ::                            &
      &        kpbl,nupdraft,ktop_plume
 
-      real(kind=kind_phys), dimension(:), intent(inout) ::              &
+      real(kind=kind_phys), dimension(:), intent(inout) ::               &
      &        dusfc_cpl,dvsfc_cpl,dtsfc_cpl,dqsfc_cpl
-      real(kind=kind_phys), dimension(:), intent(inout) ::              &
+      real(kind=kind_phys), dimension(:), intent(inout) ::               &
      &        dusfci_cpl,dvsfci_cpl,dtsfci_cpl,dqsfci_cpl
 
      !LOCAL
       real, dimension(im) ::                                             &
      &        WSTAR,DELTA,qcg,hfx,qfx,rmol,xland,                        &
      &        uoce,voce,vdfg,znt,ts
-
+      integer :: idtend
       real, dimension(im) :: dusfci1,dvsfci1,dtsfci1,dqsfci1
+      real(kind=kind_phys), allocatable :: save_qke_adv(:,:)
 
       ! Initialize CCPP error handling variables
       errmsg = ''
@@ -331,6 +348,14 @@ SUBROUTINE mynnedmf_wrapper_run(        &
          write(0,*)"flag_restart=",flag_restart
       endif
 
+      if(.not. flag_for_pbl_generic_tend .and. ldiag3d) then
+        idtend = dtidx(ntke+100,index_of_process_pbl)
+        if(idtend>=1) then
+          allocate(save_qke_adv(im,levs))
+          save_qke_adv=qke_adv
+        endif
+      endif
+
       ! DH* TODO: Use flag_restart to distinguish which fields need
       ! to be initialized and which are read from restart files
       if (flag_init) then
@@ -340,6 +365,19 @@ SUBROUTINE mynnedmf_wrapper_run(        &
          initflag=0
          !print*,"in MYNN, initflag=",initflag
       endif
+      
+      xlvcp=xlv/cp
+      xlscp=(xlv+xlf)/cp
+      ev=xlv
+      rd=r_d
+      rk=cp/rd
+      svp11=svp1*1.e3
+      p608=ep_1
+      ep_3=1.-ep_2
+      tv0=p608*tref
+      tv1=(1.+p608)*tref
+      gtr=g/tref
+      g_inv=1./g
 
   ! Assign variables for each microphysics scheme
         if (imp_physics == imp_physics_wsm6) then
@@ -366,6 +404,37 @@ SUBROUTINE mynnedmf_wrapper_run(        &
               qnc(i,k)   = 0.
               qni(i,k)   = 0.
               qnwfa(i,k) = 0.
+              qnifa(i,k) = 0.
+            enddo
+          enddo
+        elseif (imp_physics == imp_physics_nssl ) then
+  ! NSSL
+         FLAG_QI = .true.
+         FLAG_QNI= .true.
+         FLAG_QC = .true.
+         FLAG_QNC= .true.
+         FLAG_QNWFA= nssl_ccn_on ! ERM: Perhaps could use this field for CCN field?
+         FLAG_QNIFA= .false.
+         ! p_q vars not used?
+         p_qc = 2
+         p_qr = 0
+         p_qi = 2 
+         p_qs = 0 
+         p_qg = 0
+         p_qnc= 0 
+         p_qni= 0 
+         do k=1,levs
+            do i=1,im
+              sqv(i,k)  = qgrs_water_vapor(i,k)
+              sqc(i,k)    = qgrs_liquid_cloud(i,k)
+              sqi(i,k)    = qgrs_ice_cloud(i,k)
+              ozone(i,k) = qgrs_ozone(i,k)
+              qnc(i,k)   = qgrs_cloud_droplet_num_conc(i,k)
+              qni(i,k)   = qgrs_cloud_ice_num_conc(i,k)
+              qnwfa(i,k) = 0.
+              IF ( nssl_ccn_on ) THEN
+                qnwfa(i,k) = qgrs_cccn(i,k)
+              ENDIF
               qnifa(i,k) = 0.
             enddo
           enddo
@@ -480,7 +549,10 @@ SUBROUTINE mynnedmf_wrapper_run(        &
             enddo
           enddo
         endif
-
+       if(ldiag3d .and. dtidx(100+ntoz,index_of_process_pbl)>1) then
+         allocate(old_ozone(im,levs))
+         old_ozone = ozone
+       endif
        if (lprnt)write(0,*)"prepping MYNN-EDMF variables..."
 
        do k=1,levs
@@ -493,9 +565,9 @@ SUBROUTINE mynnedmf_wrapper_run(        &
           !   qi(i,k)=qi(i,k)/(1.0 - qvsh(i,k))
              rho(i,k)=prsl(i,k)/(r_d*t3d(i,k))
              w(i,k) = -omega(i,k)/(rho(i,k)*g)
-             pattern_spp_pbl(i,k)=0.0
          enddo
       enddo
+
       do i=1,im
          if (slmsk(i)==1. .or. slmsk(i)==2.) then !sea/land/ice mask (=0/1/2) in FV3
             xland(i)=1.0                          !but land/water = (1/2) in SFCLAY_mynn
@@ -537,11 +609,6 @@ SUBROUTINE mynnedmf_wrapper_run(        &
            else
              rmol(i)=ABS(rb(i))*1./(dz(i,1)*0.5)
            endif
-           !if (rb(i) .ge. 0.)then
-           !  rmol(i)=rb(i)*8./(dz(i,1)*0.5)
-           !else
-           !  rmol(i)=MAX(rb(i)*5.,-10.)/(dz(i,1)*0.5)
-           !endif
          endif
          ts(i)=tsurf(i)/exner(i,1)  !theta
 !        qsfc(i)=qss(i)
@@ -560,14 +627,14 @@ SUBROUTINE mynnedmf_wrapper_run(        &
               dqsfci_cpl(i) = dqsfc_cice(i)
             elseif (icy(i) .or. dry(i)) then ! use stress_ocean for opw component at mixed point
               if (wspd(i) > zero) then
-                dusfci_cpl(i) = -1.*rho(i,1)*stress_ocn(i)*u(i,1)/wspd(i)   ! U-momentum flux
-                dvsfci_cpl(i) = -1.*rho(i,1)*stress_ocn(i)*v(i,1)/wspd(i)   ! V-momentum flux
+                dusfci_cpl(i) = -1.*rho(i,1)*stress_wat(i)*u(i,1)/wspd(i)   ! U-momentum flux
+                dvsfci_cpl(i) = -1.*rho(i,1)*stress_wat(i)*v(i,1)/wspd(i)   ! V-momentum flux
               else
                 dusfci_cpl(i) = zero
                 dvsfci_cpl(i) = zero
               endif
-              dtsfci_cpl(i) =  cp*rho(i,1)*hflx_ocn(i) ! sensible heat flux over open ocean
-              dqsfci_cpl(i) = XLV*rho(i,1)*qflx_ocn(i) ! latent heat flux over open ocean
+              dtsfci_cpl(i) =  cp*rho(i,1)*hflx_wat(i) ! sensible heat flux over open ocean
+              dqsfci_cpl(i) = XLV*rho(i,1)*qflx_wat(i) ! latent heat flux over open ocean
             else                                       ! use results from this scheme for 100% open ocean
               dusfci_cpl(i) = dusfci_diag(i)
               dvsfci_cpl(i) = dvsfci_diag(i)
@@ -594,7 +661,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
          print*,"bl_mynn_tkebudget=",bl_mynn_tkebudget," bl_mynn_tkeadvect=",bl_mynn_tkeadvect
          print*,"bl_mynn_cloudpdf=",bl_mynn_cloudpdf," bl_mynn_mixlength=",bl_mynn_mixlength
          print*,"bl_mynn_edmf=",bl_mynn_edmf," bl_mynn_edmf_mom=",bl_mynn_edmf_mom
-         print*,"bl_mynn_edmf_tke=",bl_mynn_edmf_tke," bl_mynn_edmf_part=",bl_mynn_edmf_part
+         print*,"bl_mynn_edmf_tke=",bl_mynn_edmf_tke
          print*,"bl_mynn_cloudmix=",bl_mynn_cloudmix," bl_mynn_mixqt=",bl_mynn_mixqt
          print*,"icloud_bl=",icloud_bl
          print*,"T:",t3d(1,1),t3d(1,2),t3d(1,levs)
@@ -663,7 +730,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &             ,bl_mynn_mixlength=bl_mynn_mixlength                & !input parameter
      &             ,icloud_bl=icloud_bl                                & !input parameter
      &             ,qc_bl=qc_bl,qi_bl=qi_bl,cldfra_bl=cldfra_bl        & !output
-     &             ,levflag=levflag,bl_mynn_edmf=bl_mynn_edmf          & !input parameter
+     &             ,closure=closure,bl_mynn_edmf=bl_mynn_edmf          & !input parameter
      &             ,bl_mynn_edmf_mom=bl_mynn_edmf_mom                  & !input parameter
      &             ,bl_mynn_edmf_tke=bl_mynn_edmf_tke                  & !input parameter
      &             ,bl_mynn_mixscalars=bl_mynn_mixscalars              & !input parameter
@@ -676,7 +743,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &             ,det_thl3D=det_thl,det_sqv3D=det_sqv                &
      &             ,nupdraft=nupdraft,maxMF=maxMF                      & !output
      &             ,ktop_plume=ktop_plume                              & !output
-     &             ,spp_pbl=spp_pbl,pattern_spp_pbl=pattern_spp_pbl    & !input
+     &             ,spp_pbl=spp_pbl,pattern_spp_pbl=spp_wts_pbl        & !input
      &             ,RTHRATEN=htrlw                                     & !input
      &             ,FLAG_QI=flag_qi,FLAG_QNI=flag_qni                  & !input
      &             ,FLAG_QC=flag_qc,FLAG_QNC=flag_qnc                  & !input
@@ -701,22 +768,17 @@ SUBROUTINE mynnedmf_wrapper_run(        &
               dvdt(i,k) = dvdt(i,k) + RVBLTEN(i,k)
            enddo
         enddo
-        accum_duvt3dt: if(lssav) then
-          if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
-            do k = 1, levs
-              do i = 1, im
-                du3dt_PBL(i,k) = du3dt_PBL(i,k) + RUBLTEN(i,k)*dtf
-                dv3dt_PBL(i,k) = dv3dt_PBL(i,k) + RVBLTEN(i,k)*dtf
-              enddo
-            enddo
-          endif
-          
-          if (lsidea .or. (ldiag3d .and. .not. flag_for_pbl_generic_tend)) then
-            do k = 1, levs
-               do i = 1, im
-                 dt3dt_PBL(i,k) = dt3dt_PBL(i,k) + RTHBLTEN(i,k)*exner(i,k)*dtf
-               enddo
-            enddo   
+        accum_duvt3dt: if(ldiag3d .or. lsidea) then
+          call dtend_helper(index_of_x_wind,RUBLTEN)
+          call dtend_helper(index_of_y_wind,RVBLTEN)
+          call dtend_helper(index_of_temperature,RTHBLTEN,exner)
+          if(ldiag3d) then
+            call dtend_helper(100+ntoz,dqdt_ozone)
+            ! idtend = dtidx(100+ntoz,index_of_process_pbl)
+            ! if(idtend>=1) then
+            !   dtend(:,:,idtend) = dtend(:,:,idtend) + (ozone-old_ozone)
+            !   deallocate(old_ozone)
+            ! endif
           endif
         endif accum_duvt3dt
         !Update T, U and V:
@@ -739,6 +801,11 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                !dqdt_ozone(i,k)        = 0.0
              enddo
            enddo
+           if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+             call dtend_helper(100+ntqv,RQVBLTEN)
+             call dtend_helper(100+ntcw,RQCBLTEN)
+             call dtend_helper(100+ntiw,RQIBLTEN)
+           endif
            !Update moist species:
            !do k=1,levs
            !  do i=1,im
@@ -763,6 +830,15 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                  dqdt_ice_aer_num_conc(i,k)        = RQNIFABLTEN(i,k)
                enddo
              enddo
+             if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+               call dtend_helper(100+ntqv,RQVBLTEN)
+               call dtend_helper(100+ntcw,RQCBLTEN)
+               call dtend_helper(100+ntlnc,RQNCBLTEN)
+               call dtend_helper(100+ntiw,RQIBLTEN)
+               call dtend_helper(100+ntinc,RQNIBLTEN)
+               call dtend_helper(100+ntwa,RQNWFABLTEN)
+               call dtend_helper(100+ntia,RQNIFABLTEN)
+             endif
              !do k=1,levs
              !  do i=1,im
              !    qgrs_water_vapor(i,k)            = qgrs_water_vapor(i,k)    + (RQVBLTEN(i,k)/(1.0+RQVBLTEN(i,k)))*delt
@@ -786,6 +862,12 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                  !dqdt_ozone(i,k)         = 0.0
                enddo
              enddo
+             if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+               call dtend_helper(100+ntqv,RQVBLTEN)
+               call dtend_helper(100+ntcw,RQCBLTEN)
+               call dtend_helper(100+ntiw,RQIBLTEN)
+               call dtend_helper(100+ntinc,RQNIBLTEN)
+             endif
              !do k=1,levs
              !  do i=1,im
              !    qgrs_water_vapor(i,k)            = qgrs_water_vapor(i,k)    + (RQVBLTEN(i,k)/(1.0+RQVBLTEN(i,k)))*delt
@@ -796,6 +878,21 @@ SUBROUTINE mynnedmf_wrapper_run(        &
              !  enddo
              !enddo
            endif !end thompson choice
+        elseif (imp_physics == imp_physics_nssl) then
+           ! NSSL
+             do k=1,levs
+               do i=1,im
+                 dqdt_water_vapor(i,k)             = RQVBLTEN(i,k) !/(1.0 + qv(i,k))
+                 dqdt_liquid_cloud(i,k)            = RQCBLTEN(i,k) !/(1.0 + qv(i,k))
+                 dqdt_cloud_droplet_num_conc(i,k)  = RQNCBLTEN(i,k)
+                 dqdt_ice_cloud(i,k)               = RQIBLTEN(i,k) !/(1.0 + qv(i,k))
+                 dqdt_ice_num_conc(i,k)            = RQNIBLTEN(i,k)
+                 IF ( nssl_ccn_on ) THEN ! 
+                   dqdt_cccn(i,k)      = RQNWFABLTEN(i,k)
+                 ENDIF
+               enddo
+             enddo
+
         elseif (imp_physics == imp_physics_gfdl) then
            ! GFDL MP
            do k=1,levs
@@ -809,6 +906,11 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                !dqdt_ozone(i,k)         = 0.0
              enddo
            enddo
+           if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+             call dtend_helper(100+ntqv,RQVBLTEN)
+             call dtend_helper(100+ntcw,RQCBLTEN)
+             call dtend_helper(100+ntiw,RQIBLTEN)
+           endif
            !do k=1,levs
            !  do i=1,im
            !    qgrs_water_vapor(i,k)            = qgrs_water_vapor(i,k)    + (RQVBLTEN(i,k)/(1.0+RQVBLTEN(i,k)))*delt
@@ -830,16 +932,13 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                !dqdt_ozone(i,k)         = 0.0
              enddo
            enddo
+           if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+             call dtend_helper(100+ntqv,RQVBLTEN)
+             call dtend_helper(100+ntcw,RQCBLTEN)
+             call dtend_helper(100+ntiw,RQIBLTEN)
+           endif
        endif
        
-       if(lssav .and. (ldiag3d .and. qdiag3d .and. .not. flag_for_pbl_generic_tend)) then
-         do k=1,levs
-           do i=1,im
-             dq3dt_PBL(i,k)  = dq3dt_PBL(i,k) + dqdt_water_vapor(i,k)*dtf
-           enddo
-         enddo
-       endif
-
        if (lprnt) then
           print*
           print*,"===Finished with mynn_bl_driver; output:"
@@ -881,6 +980,33 @@ SUBROUTINE mynnedmf_wrapper_run(        &
           print*
        endif
 
+       if(allocated(save_qke_adv)) then
+         if(ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+           idtend = dtidx(100+ntke,index_of_process_pbl)
+           if(idtend>=1) then
+             dtend(:,:,idtend) = dtend(:,:,idtend) + qke_adv-save_qke_adv
+           endif
+         endif
+         deallocate(save_qke_adv)
+       endif
+
+  CONTAINS
+
+    SUBROUTINE dtend_helper(itracer,field,mult)
+      real(kind=kind_phys), intent(in) :: field(im,levs)
+      real(kind=kind_phys), intent(in), optional :: mult(im,levs)
+      integer, intent(in) :: itracer
+      integer :: idtend
+      
+      idtend=dtidx(itracer,index_of_process_pbl)
+      if(idtend>=1) then
+        if(present(mult)) then
+          dtend(:,:,idtend) = dtend(:,:,idtend) + field*dtf*mult
+        else
+          dtend(:,:,idtend) = dtend(:,:,idtend) + field*dtf
+        endif
+      endif
+    END SUBROUTINE dtend_helper
 
   END SUBROUTINE mynnedmf_wrapper_run
 

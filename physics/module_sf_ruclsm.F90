@@ -60,12 +60,12 @@ CONTAINS
 !>\section gen_lsmruc GSD RUC LSM General Algorithm
 !! @{
     SUBROUTINE LSMRUC(                                           &
-                   DT,init,restart,KTAU,iter,NSL,                &
+                   DT,init,lsm_cold_start,KTAU,iter,NSL,         &
                    graupelncv,snowncv,rainncv,raincv,            &
                    ZS,RAINBL,SNOW,SNOWH,SNOWC,FRZFRAC,frpcpn,    &
                    rhosnf,precipfr,                              &
-                   Z3D,P8W,T3D,QV3D,QC3D,RHO3D,                  &
-                   GLW,GSW,EMISS,CHKLOWQ, CHS,                   &
+                   Z3D,P8W,T3D,QV3D,QC3D,RHO3D,EMISBCK,          &
+                   GLW,GSWdn,GSW,EMISS,CHKLOWQ, CHS,             &
                    FLQC,FLHC,MAVAIL,CANWAT,VEGFRA,ALB,ZNT,       &
                    Z0,SNOALB,ALBBCK,LAI,                         & 
                    landusef, nlcat,                              & ! mosaic_lu, mosaic_soil, &
@@ -97,7 +97,7 @@ CONTAINS
 !-----------------------------------------------------------------
 !-- DT            time step (second)
 !        init - flag for initialization
-!     restart - flag for restart run
+!lsm_cold_start - flag for cold start run
 !        ktau - number of time step
 !        NSL  - number of soil layers
 !        NZS  - number of levels in soil
@@ -166,7 +166,7 @@ CONTAINS
 !   INTEGER,     PARAMETER            ::     nddzs=2*(nzss-2)
 
    REAL,       INTENT(IN   )    ::     DT
-   LOGICAL,    INTENT(IN   )    ::     myj,frpcpn,init,restart
+   LOGICAL,    INTENT(IN   )    ::     myj,frpcpn,init,lsm_cold_start
    INTEGER,    INTENT(IN   )    ::     NLCAT, NSCAT ! , mosaic_lu, mosaic_soil
    INTEGER,    INTENT(IN   )    ::     ktau, iter, nsl, isice, iswater, &
                                        ims,ime, jms,jme, kms,kme, &
@@ -185,6 +185,7 @@ CONTAINS
    REAL,       DIMENSION( ims:ime , jms:jme ),                   &
                INTENT(IN   )    ::                       RAINBL, &
                                                             GLW, &
+                                                          GSWdn, &
                                                             GSW, &
                                                          ALBBCK, &
                                                            FLHC, &
@@ -220,6 +221,7 @@ CONTAINS
                                                             ALB, &
                                                             LAI, &
                                                           EMISS, &
+                                                        EMISBCK, &
                                                          MAVAIL, & 
                                                          SFCEXC, &
                                                             Z0 , &
@@ -421,7 +423,7 @@ CONTAINS
 !> - Initialize soil/vegetation parameters
 !--- This is temporary until SI is added to mass coordinate ---!!!!!
 
-     if(init .and. (.not. restart) .and. iter == 1) then
+     if(init .and. (lsm_cold_start) .and. iter == 1) then
      DO J=jts,jte
          DO i=its,ite
 !            do k=1,nsl
@@ -706,26 +708,25 @@ CONTAINS
     ENDIF
  
 !> - Call soilvegin() to initialize soil and surface properties
-     CALL SOILVEGIN  ( debug_print, &
+     !-- land or ice
+       CALL SOILVEGIN  ( debug_print, &
                        soilfrac,nscat,shdmin(i,j),shdmax(i,j),mosaic_lu, mosaic_soil,&
                        NLCAT,ILAND,ISOIL,iswater,MYJ,IFOREST,lufrac,VEGFRA(I,J),     &
                        EMISSL(I,J),PC(I,J),ZNT(I,J),LAI(I,J),RDLAI2D,                &
                        QWRTZ,RHOCS,BCLH,DQM,KSAT,PSIS,QMIN,REF,WILT,i,j )
+
+       !-- update background emissivity for land points, can have vegetation mosaic effect
+       EMISBCK(I,J) = EMISSL(I,J)
+
     IF (debug_print ) THEN
       if(init) &
          print *,'after SOILVEGIN - z0,znt(1,26),lai(1,26)',z0(i,j),znt(i,j),lai(i,j)
 
       if(init)then
-!         print *,'NLCAT,iland,lufrac,EMISSL(I,J),PC(I,J),ZNT(I,J),LAI(I,J)', &
-!                  NLCAT,iland,lufrac,EMISSL(I,J),PC(I,J),ZNT(I,J),LAI(I,J),i,j
          print *,'NLCAT,iland,EMISSL(I,J),PC(I,J),ZNT(I,J),LAI(I,J)', &
                   NLCAT,iland,EMISSL(I,J),PC(I,J),ZNT(I,J),LAI(I,J),i,j
-
-!         print *,'NSCAT,soilfrac,QWRTZ,RHOCS,BCLH,DQM,KSAT,PSIS,QMIN,REF,WILT',&
-!                 NSCAT,soilfrac,QWRTZ,RHOCS,BCLH,DQM,KSAT,PSIS,QMIN,REF,WILT,i,j
          print *,'NSCAT,QWRTZ,RHOCS,BCLH,DQM,KSAT,PSIS,QMIN,REF,WILT',&
                  NSCAT,QWRTZ,RHOCS,BCLH,DQM,KSAT,PSIS,QMIN,REF,WILT,i,j
-
       endif
     ENDIF
 
@@ -839,12 +840,13 @@ CONTAINS
             ISOIL = 16 ! STATSGO
         endif
             ZNT(I,J) = 0.011
-            snoalb(i,j) = 0.75
+            ! in FV3 albedo and emiss are defined for ice
+            !snoalb(i,j) = snoalb(i,j)
+            emissl(i,j) = emisbck(i,j) ! no snow impact, old 0.98 used in WRF 
             dqm = 1.
             ref = 1.
             qmin = 0.
             wilt = 0.
-            emissl(i,j) = 0.98 
 
            patmb=P8w(i,1,j)*1.e-2
            qvg  (i,j) = QSN(SOILT(i,j),TBQ)/PATMB
@@ -900,12 +902,13 @@ CONTAINS
          CALL SFCTMP (debug_print, dt,ktau,conflx,i,j,           &
 !--- input variables
                 nzs,nddzs,nroot,meltfactor,                      &   !added meltfactor
-                iland,isoil,ivgtyp(i,j),isltyp(i,j),  &
+                iland,isoil,ivgtyp(i,j),isltyp(i,j),             &
                 PRCPMS, NEWSNMS,SNWE,SNHEI,SNOWFRAC,             &
                 RHOSN,RHONEWSN,RHOSNFALL,                        &
                 snowrat,grauprat,icerat,curat,                   &
                 PATM,TABS,QVATM,QCATM,RHO,                       &
-                GLW(I,J),GSW(I,J),EMISSL(I,J),                   &
+                GLW(I,J),GSWdn(i,j),GSW(I,J),                    &
+                EMISSL(I,J),EMISBCK(I,J),                        &
                 QKMS,TKMS,PC(I,J),LMAVAIL(I,J),                  &
                 canwatr,vegfra(I,J),alb(I,J),znt(I,J),           &
                 snoalb(i,j),albbck(i,j),lai(i,j),                &   !new
@@ -1046,7 +1049,7 @@ print * ,'Soil moisture is below wilting in mixed grassland/cropland category at
       endif
     ENDIF
 
-        if(snow(i,j)==0.) EMISSL(i,j) = LEMITBL(IVGTYP(i,j))
+        if(snow(i,j)==0.) EMISSL(i,j) = EMISBCK(i,j)
         EMISS (I,J) = EMISSL(I,J)
 ! SNOW is in [mm], SNWE is in [m]; CANWAT is in mm, CANWATR is in m
         SNOW   (i,j) = SNWE*1000.
@@ -1172,7 +1175,7 @@ endif
                 RHOSN,RHONEWSN,RHOSNFALL,                        &
                 snowrat,grauprat,icerat,curat,                   &
                 PATM,TABS,QVATM,QCATM,rho,                       &
-                GLW,GSW,EMISS,QKMS,TKMS,PC,                      &
+                GLW,GSWdn,GSW,EMISS,EMISBCK,QKMS,TKMS,PC,        &
                 MAVAIL,CST,VEGFRA,ALB,ZNT,                       &
                 ALB_SNOW,ALB_SNOW_FREE,lai,                      &
                 MYJ,SEAICE,ISICE,                                &
@@ -1208,6 +1211,7 @@ endif
    REAL                                                        , &
             INTENT(IN   )    ::                             GLW, &
                                                             GSW, &
+                                                          GSWdn, &
                                                              PC, &
                                                          VEGFRA, &
                                                   ALB_SNOW_FREE, &
@@ -1221,6 +1225,7 @@ endif
 !--- 2-D variables
    REAL                                                        , &
             INTENT(INOUT)    ::                           EMISS, &
+                                                        EMISBCK, &
                                                          MAVAIL, &
                                                        SNOWFRAC, &
                                                        ALB_SNOW, &
@@ -1420,11 +1425,11 @@ endif
           enddo
 
         GSWnew=GSW
-        GSWin=GSW/(1.-alb)
+        GSWin=GSWdn !/(1.-alb)
         ALBice=ALB_SNOW_FREE
         ALBsn=alb_snow
-        EMISSN = 0.98
-        EMISS_snowfree = LEMITBL(IVGTYP)
+        EMISSN = 0.99 ! from setemis, from WRF - 0.98
+        EMISS_snowfree = EMISBCK ! LEMITBL(IVGTYP)
 
 !--- sea ice properties
 !--- N.N Zubov "Arctic Ice"
@@ -1725,8 +1730,9 @@ endif
          ALBsn   = MAX(keep_snow_albedo*alb_snow,               &
                    MIN((albice + (alb_snow - albice) * snowfrac), alb_snow))
          Emiss   = MAX(keep_snow_albedo*emissn,                 &
+                   !-- emiss_snowfree=0.96 in setemis
                    MIN((emiss_snowfree +                        &
-           (emissn - emiss_snowfree) * snowfrac), emissn))
+                   (emissn - emiss_snowfree) * snowfrac), emissn))
      endif
 
     IF (debug_print ) THEN
@@ -2576,7 +2582,7 @@ endif
 !      endif
         alfa=1.
 ! field capacity
-! 20jun18 - beta in Eq. (4) is called soilres here - it limits soil evaporation
+! 20jun18 - beta in Eq. (5) is called soilres in the code - it limits soil evaporation
 ! when soil moisture is below field capacity.  [Lee and Pielke, 1992]
 ! This formulation agrees with obsevations when top layer is < 2 cm thick.
 ! Soilres = 1 for snow, glaciers and wetland.
@@ -2586,7 +2592,10 @@ endif
 ! evaporation, effects sparsely vegetated areas--> cooler during the day
 !        fc=max(qmin,ref*0.25)  ! 
 ! For now we'll go back to ref*0.5
-        fc=max(qmin,ref*0.5)
+! 3feb21 - in RRFS testing (fv3-based), ref*0.5 gives too much direct
+!          evaporation. Therefore , it is replaced with ref*0.7.
+        !fc=max(qmin,ref*0.5)
+        fc=max(qmin,ref*0.7)
         fex_fc=1.
       if((soilmois(1)+qmin) > fc .or. (qvatm-qvg) > 0.) then
         soilres = 1.
@@ -6269,10 +6278,10 @@ print *,'INFMAX,INFMAX1,HYDRO(1)*SOILIQW(1),-TOTLIQ', &
         if((ws-a).lt.0.12)then
            diffu(K)=0.
         else
-           H=max(0.,(soilmoism(K)+qmin-a)/(max(1.e-8,(dqm-a))))
+           H=max(0.,(soilmoism(K)+qmin-a)/(max(1.e-8,(ws-a)))) 
            facd=1.
         if(a.ne.0.)facd=1.-a/max(1.e-8,soilmoism(K))
-          ame=max(1.e-8,dqm-riw*soilicem(K))
+          ame=max(1.e-8,ws-riw*soilicem(K))
 !--- DIFFU is diffusional conductivity of soil water
           diffu(K)=-BCLH*KSAT*PSIS/ame*                             &
                   (ws/ame)**3.                                     &
@@ -7035,7 +7044,7 @@ print *,'INFMAX,INFMAX1,HYDRO(1)*SOILIQW(1),-TOTLIQ', &
 !> This subroutine computes liquid and forezen soil moisture from the
 !! total soil moisture, and also computes soil moisture availability in
 !! the top soil layer.
-  SUBROUTINE RUCLSMINIT( debug_print, slmsk,                       &
+  SUBROUTINE RUCLSMINIT( debug_print, landfrac, fice, min_seaice,  &
                      nzs, isltyp, ivgtyp, mavail,                  &
                      sh2o, smfr3d, tslb, smois,                    &
                      ims,ime, jms,jme, kms,kme,                    &
@@ -7048,7 +7057,8 @@ print *,'INFMAX,INFMAX1,HYDRO(1)*SOILIQW(1),-TOTLIQ', &
 #endif
    IMPLICIT NONE
    LOGICAL,  INTENT(IN   )   ::  debug_print
-   REAL, DIMENSION( ims:ime),  INTENT(IN   )   :: slmsk
+   REAL, DIMENSION( ims:ime),  INTENT(IN   )   :: landfrac, fice
+   REAL,                       INTENT(IN   )   :: min_seaice
 
    INTEGER,  INTENT(IN   )   ::     &
                                     ims,ime, jms,jme, kms,kme,  &
@@ -7108,7 +7118,7 @@ print *,'INFMAX,INFMAX1,HYDRO(1)*SOILIQW(1),-TOTLIQ', &
        ! has isltyp=14 for water
        if (isltyp(i,j) == 0) isltyp(i,j)=14
      
-       if(slmsk(i) == 1. ) then
+       if(landfrac(i) > 0. ) then
        !-- land
        !-- Computate volumetric content of ice in soil
        !-- and initialize MAVAIL
@@ -7141,7 +7151,7 @@ print *,'INFMAX,INFMAX1,HYDRO(1)*SOILIQW(1),-TOTLIQ', &
            endif
          ENDDO
 
-       elseif( slmsk(i) == 2.) then
+       elseif( fice(i) > min_seaice) then
        !-- ice
          mavail(i,j) = 1.
          DO L=1,NZS

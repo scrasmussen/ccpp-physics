@@ -6,19 +6,24 @@
 !!       scale) qc, qi and cloud fraction coming from the microphysics scheme.
 !!    4) Recompute the diagnostic high, mid, low, total and bl clouds to be consistent with radiation
 
+!> \defgroup sgsrad_group GSD sgscloud_radpre_run Module
       module sgscloud_radpre
 
       contains
 
+!> \section arg_table_sgscloud_radpre_init Argument Table
+!! \htmlinclude sgscloud_radpre_init.html
+!!
       subroutine sgscloud_radpre_init ()
       end subroutine sgscloud_radpre_init
 
+!> \section arg_table_sgscloud_radpre_finalize Argument Table
+!! \htmlinclude sgscloud_radpre_finalize.html
+!!
       subroutine sgscloud_radpre_finalize ()
       end subroutine sgscloud_radpre_finalize
 
-!> \defgroup sgsrad_group GSD sgscloud_radpre_run Module
-!> \ingroup sgscloud_radpre
-!! This interstitial code adds the subgrid clouds to the resolved-scale clouds 
+!> This interstitial code adds the subgrid clouds to the resolved-scale clouds 
 !! if there is no resolved-scale clouds in that particular grid box. It can also 
 !! specify a cloud fraction for resolved-scale clouds, using Xu-Randall (1996),
 !! if desired.
@@ -37,6 +42,7 @@
       subroutine sgscloud_radpre_run(    &
            im,levs,                      &
            flag_init,flag_restart,       &
+           con_g, con_pi, eps, epsm1,    &
            do_mynnedmf,                  &
            qc, qi, qv, T3D, P3D,         &
            qr, qs, qg,                   &
@@ -54,34 +60,32 @@
 
 ! should be moved to inside the mynn:
       use machine , only : kind_phys
-      use physcons, only : con_g, con_pi, &
-                        eps   => con_eps, & ! Rd/Rv
-                      epsm1 => con_epsm1    ! Rd/Rv-1
       use module_radiation_clouds, only : gethml
-      use radcons, only: qmin               ! Minimum vlaues for varius calculations
+      use radcons, only: qmin               ! Minimum values for various calculations
       use funcphys, only: fpvs              ! Function ot compute sat. vapor pressure over liq.
 !------------------------------------------------------------------- 
       implicit none
 !------------------------------------------------------------------- 
       ! Interface variables
-      real (kind=kind_phys), parameter :: gfac=1.0e5/con_g
+      real(kind=kind_phys), intent(in) :: con_g, con_pi, eps, epsm1 
+      real (kind=kind_phys)         :: gfac
       integer,          intent(in)  :: im, levs, imfdeepcnv, imfdeepcnv_gf, &
            &               nlay, imp_physics, imp_physics_gfdl
       logical,          intent(in)  :: flag_init, flag_restart, do_mynnedmf
-      real(kind=kind_phys), dimension(im,levs), intent(inout) :: qc, qi
-      real(kind=kind_phys), dimension(im,levs), intent(inout) :: qr, qs, qg
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: qc, qi
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: qr, qs, qg
       ! qci_conv only allocated if GF is used
       real(kind=kind_phys), dimension(:,:),     intent(inout) :: qci_conv
-      real(kind=kind_phys), dimension(im,levs), intent(in)    :: T3D,delp, &
+      real(kind=kind_phys), dimension(:,:), intent(in)    :: T3D,delp, &
            &                                                     qv,P3D
-      real(kind=kind_phys), dimension(im,levs), intent(inout) :: &
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: &
            &         clouds1,clouds2,clouds3,clouds4,clouds5
-      real(kind=kind_phys), dimension(im,levs), intent(inout) :: qc_save, qi_save
-      real(kind=kind_phys), dimension(im,levs), intent(in)    :: qc_bl, qi_bl, cldfra_bl
-      real(kind=kind_phys), dimension(im),      intent(in)    :: slmsk, xlat, de_lgth
-      real(kind=kind_phys), dimension(im,nlay), intent(in)    :: plyr, dz      
-      real(kind=kind_phys), dimension(im,5),    intent(inout) :: cldsa
-      integer,              dimension(im,3),    intent(inout) :: mbota, mtopa
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: qc_save, qi_save
+      real(kind=kind_phys), dimension(:,:), intent(in)    :: qc_bl, qi_bl, cldfra_bl
+      real(kind=kind_phys), dimension(:),      intent(in)    :: slmsk, xlat, de_lgth
+      real(kind=kind_phys), dimension(:,:), intent(in)    :: plyr, dz      
+      real(kind=kind_phys), dimension(:,:),    intent(inout) :: cldsa
+      integer,              dimension(:,:),    intent(inout) :: mbota, mtopa
       integer,                                  intent(in)    :: iovr
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
@@ -109,7 +113,7 @@
 
       !write(0,*)"=============================================="
       !write(0,*)"in SGSCLoud_RadPre"
-
+      gfac=1.0e5/con_g
       if (flag_init .and. (.not. flag_restart)) then
         !write (0,*) 'Skip this flag_init = ', flag_init
         ! return
@@ -261,8 +265,8 @@
                   if(qi(i,k)>1.E-8)clouds5(i,k)=max(173.45 + 2.14*Tc, 20.)
                 endif
 
-                if ( do_mynnedmf .or. (imp_physics == imp_physics_gfdl) ) then
-                  !print *,'MYNN PBL or GFDL MP cldcov used'
+                if ( do_mynnedmf ) then
+                  !print *,'MYNN PBL cldcov used'
                 else
                   !print *,'GF with Xu-Randall cloud fraction'
                   ! Xu-Randall (1996) cloud fraction
@@ -285,7 +289,7 @@
                   endif
                   !print*,"XuRandla- cf:",clouds1(i,k)," rh:",rhgrid," qt:",h2oliq
                   !print*,"XuRandlb- clwt:",clwt," qsat:",qsat," p:",p3d(i,k)
-                endif ! not MYNN PBL or GFDL MP
+                endif ! not MYNN PBL
               endif ! qci_conv
             enddo
           enddo

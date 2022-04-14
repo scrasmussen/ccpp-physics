@@ -1,19 +1,20 @@
 module rrtmgp_sw_gas_optics
   use machine,                only: kind_phys
-  use module_radiation_gases, only: NF_VGAS
   use mo_rte_kind,            only: wl
   use mo_gas_optics_rrtmgp,   only: ty_gas_optics_rrtmgp
   use mo_gas_concentrations,  only: ty_gas_concs
-  use rrtmgp_aux,             only: check_error_msg
+  use radiation_tools,        only: check_error_msg
   use mo_optical_props,       only: ty_optical_props_2str
-  use mo_compute_bc,          only: compute_bc
-  use GFS_rrtmgp_pre,         only: active_gases_array
   use netcdf
 #ifdef MPI
   use mpi
 #endif
 
   implicit none
+  real(kind_phys),parameter :: &
+       tsi_default = 1360.85767381726, &
+       mg_default  = 0.1567652,        &
+       sb_default  = 902.7126
 
   ! RRTMGP k-distribution LUTs.
   type(ty_gas_optics_rrtmgp) :: sw_gas_props
@@ -78,23 +79,20 @@ contains
 !! \section arg_table_rrtmgp_sw_gas_optics_init
 !! \htmlinclude rrtmgp_sw_gas_optics.html
 !!
-  subroutine rrtmgp_sw_gas_optics_init(nCol, nLev, nThreads, rrtmgp_root_dir,               &
-       rrtmgp_sw_file_gas, gas_concentrations, mpicomm, mpirank, mpiroot, errmsg, errflg)
+  subroutine rrtmgp_sw_gas_optics_init(rrtmgp_root_dir, rrtmgp_sw_file_gas,                 &
+       active_gases_array, mpicomm, mpirank, mpiroot, errmsg, errflg)
 
     ! Inputs
     character(len=128),intent(in) :: &
          rrtmgp_root_dir,  & ! RTE-RRTMGP root directory
          rrtmgp_sw_file_gas  ! RRTMGP file containing coefficients used to compute gaseous optical properties
     integer,intent(in) :: &
-         nCol,             & ! Number of horizontal gridpoints.
-         nLev,             & ! Number of vertical levels.
-         nThreads,         & ! Number of openMP threads
          mpicomm,          & ! MPI communicator
          mpirank,          & ! Current MPI rank
          mpiroot             ! Master MPI rank
-    type(ty_gas_concs),intent(inout)  :: &
-         gas_concentrations  ! RRTMGP DDT containing active trace gases.
- 
+    character(len=*), dimension(:), intent(in) :: &
+         active_gases_array ! List of active gases from namelist as array
+
     ! Outputs
     character(len=*), intent(out) :: &
          errmsg              ! CCPP error message
@@ -105,6 +103,8 @@ contains
     integer :: status, ncid, dimid, varID, iGas, mpierr, iChar
     integer,dimension(:),allocatable :: temp1, temp2, temp3, temp4
     character(len=264) :: sw_gas_props_file
+    type(ty_gas_concs) :: gas_concentrations  ! RRTMGP DDT containing active trace gases
+
 
     ! Initialize
     errmsg = ''
@@ -301,11 +301,23 @@ contains
        status = nf90_inq_varid(ncid, 'absorption_coefficient_ref_T', varID)
        status = nf90_get_var(  ncid, varID, temp_ref_tSW) 
        status = nf90_inq_varid(ncid, 'tsi_default', varID)
-       status = nf90_get_var(  ncid, varID, tsi_defaultSW)
+       if (status .eq. 0) then
+          status = nf90_get_var(  ncid, varID, tsi_defaultSW)
+       else
+          tsi_defaultSW = tsi_default
+       endif
        status = nf90_inq_varid(ncid, 'mg_default', varID)
-       status =	nf90_get_var(  ncid, varID, mg_defaultSW)
+       if (status .eq. 0) then
+          status =	nf90_get_var(  ncid, varID, mg_defaultSW)
+       else
+          mg_defaultSW = mg_default
+       endif
        status = nf90_inq_varid(ncid, 'sb_default', varID)
-       status =	nf90_get_var(  ncid, varID, sb_defaultSW)
+       if (status .eq. 0) then
+          status =	nf90_get_var(  ncid, varID, sb_defaultSW)
+       else
+          sb_defaultSW = sb_default
+       endif
        status = nf90_inq_varid(ncid, 'press_ref_trop', varID)
        status = nf90_get_var(  ncid, varID, press_ref_tropSW)       
        status = nf90_inq_varid(ncid, 'kminor_lower', varID)
@@ -454,6 +466,7 @@ contains
     ! Initialize RRTMGP DDT's...
     !
     ! #######################################################################################
+    allocate(gas_concentrations%gas_name(1:size(active_gases_array)))
     gas_concentrations%gas_name(:) = active_gases_array(:)
     call check_error_msg('sw_gas_optics_init',sw_gas_props%load(gas_concentrations,         &
          gas_namesSW, key_speciesSW, band2gptSW, band_limsSW, press_refSW, press_ref_tropSW,&
@@ -475,8 +488,8 @@ contains
 !! \htmlinclude rrtmgp_sw_gas_optics.html
 !!
   subroutine rrtmgp_sw_gas_optics_run(doSWrad, nCol, nLev, ngptsGPsw, nday, idxday,  p_lay, &
-       p_lev, toa_src_sw, t_lay, t_lev, gas_concentrations, solcon, sw_optical_props_clrsky,&
-       errmsg, errflg)
+       p_lev, toa_src_sw, t_lay, t_lev, active_gases_array, gas_concentrations, solcon,     &
+       sw_optical_props_clrsky, errmsg, errflg)
 
     ! Inputs
     logical, intent(in) :: &
@@ -489,12 +502,12 @@ contains
     integer,intent(in),dimension(ncol) :: &
          idxday                  ! Indices for daylit points.
     real(kind_phys), dimension(ncol,nLev), intent(in) :: &
-         p_lay,                & ! Pressure @ model layer-centers (hPa)
+         p_lay,                & ! Pressure @ model layer-centers (Pa)
          t_lay                   ! Temperature (K)
     real(kind_phys), dimension(ncol,nLev+1), intent(in) :: &
-         p_lev,                & ! Pressure @ model layer-interfaces (hPa)
+         p_lev,                & ! Pressure @ model layer-interfaces (Pa)
          t_lev                   ! Temperature @ model levels
-    type(ty_gas_concs),intent(in) :: &
+    type(ty_gas_concs),intent(inout) :: &
          gas_concentrations      ! RRTMGP DDT: trace gas concentrations (vmr)
     real(kind_phys), intent(in) :: &
          solcon                  ! Solar constant
@@ -508,6 +521,8 @@ contains
          sw_optical_props_clrsky ! RRTMGP DDT: clear-sky shortwave optical properties, spectral (tau,ssa,g) 
     real(kind_phys), dimension(nCol,ngptsGPsw), intent(out) :: &
          toa_src_sw              ! TOA incident spectral flux (W/m2)
+    character(len=*), dimension(:), intent(in) :: &
+         active_gases_array ! List of active gases from namelist as array
 
     ! Local variables
     integer :: ij,iGas
@@ -521,9 +536,10 @@ contains
 
     if (.not. doSWrad) return
 
+    gas_concentrations%gas_name(:) = active_gases_array(:)
+
     toa_src_sw(:,:) = 0._kind_phys
     if (nDay .gt. 0) then
-       !active_gases = gas_concentrations%get_gas_names()
        ! Allocate space
        call check_error_msg('rrtmgp_sw_gas_optics_run_alloc_2str',&
             sw_optical_props_clrsky%alloc_2str(nday, nLev, sw_gas_props))

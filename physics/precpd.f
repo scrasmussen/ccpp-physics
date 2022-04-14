@@ -4,9 +4,44 @@
 
 !> This module contains the CCPP-compliant zhao_carr_precpd scheme.
       module zhaocarr_precpd
+
+        implicit none
+        public :: zhaocarr_precpd_init, zhaocarr_precpd_run,            &
+     &            zhaocarr_precpd_finalize
+        private
+        logical :: is_initialized = .False.
       contains
 
-      subroutine zhaocarr_precpd_init ()
+      subroutine zhaocarr_precpd_init (imp_physics,                     &
+     &                                 imp_physics_zhao_carr,           &
+     &                                 imp_physics_zhao_carr_pdf,       &
+     &                                 errmsg, errflg)
+        implicit none
+
+        ! Interface variables
+         integer,              intent(in   ) :: imp_physics
+         integer,              intent(in   ) :: imp_physics_zhao_carr,  &
+     &                                      imp_physics_zhao_carr_pdf
+         ! CCPP error handling
+         character(len=*),          intent(  out) :: errmsg
+         integer,                   intent(  out) :: errflg
+
+         ! Initialize the CCPP error handling variables
+         errmsg = ''
+         errflg = 0
+
+         if (is_initialized) return
+
+         ! Consistency checks
+         if (imp_physics/=imp_physics_zhao_carr .and.                   &
+     &       imp_physics/=imp_physics_zhao_carr_pdf) then
+            write(errmsg,'(*(a))') "Logic error: namelist choice of     &
+     &                  microphysics is different from Zhao-Carr MP"
+            errflg = 1
+            return
+         end if
+
+         is_initialized = .true.
       end subroutine zhaocarr_precpd_init
 
 !> \defgroup precip GFS precpd Main
@@ -42,6 +77,7 @@
 !! \section Zhao-Carr_precip_detailed GFS precpd Scheme Detailed Algorithm
 !> @{
        subroutine zhaocarr_precpd_run (im,km,dt,del,prsl,q,cwm,t,rn     &
+     &,                   grav, hvap, hfus, ttp, cp, eps, epsm1         &
      &,                   sr,rainp,u00k,psautco,prautco,evpco,wminco    &
      &,                   wk1,lprnt,jpr,errmsg,errflg)
 
@@ -89,22 +125,22 @@
 !
       use machine , only : kind_phys
       use funcphys , only : fpvs
-      use physcons, grav => con_g, hvap => con_hvap, hfus => con_hfus
-     &,             ttp => con_ttp, cp => con_cp
-     &,             eps => con_eps, epsm1 => con_epsm1
+      
       implicit none
 !     include 'constant.h'
 !
 ! Interface variables
       integer, intent(in) :: im, km, jpr
+      real (kind=kind_phys), intent(in) :: grav, hvap, hfus, ttp, cp,   &
+     &                                      eps, epsm1
       real (kind=kind_phys), intent(in) :: dt
-      real (kind=kind_phys), intent(in) :: del(im,km), prsl(im,km)
-      real (kind=kind_phys), intent(inout) :: q(im,km), t(im,km),       &
-     &                                        cwm(im,km)
-      real (kind=kind_phys), intent(out) :: rn(im), sr(im), rainp(im,km)
-      real (kind=kind_phys), intent(in) :: u00k(im,km)
-      real (kind=kind_phys), intent(in) :: psautco(2), prautco(2),      &
-     &                                     evpco, wminco(2), wk1(im)
+      real (kind=kind_phys), intent(in) :: del(:,:), prsl(:,:)
+      real (kind=kind_phys), intent(inout) :: q(:,:), t(:,:),           &
+     &                                        cwm(:,:)
+      real (kind=kind_phys), intent(out) :: rn(:), sr(:), rainp(:,:)
+      real (kind=kind_phys), intent(in) :: u00k(:,:)
+      real (kind=kind_phys), intent(in) :: psautco(:), prautco(:),      &
+     &                                     evpco, wminco(:), wk1(:)
       logical, intent(in) :: lprnt
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
@@ -115,14 +151,13 @@
      &,                     elwv,   eliv,  row
      &,                     epsq,   eliw
      &,                     rcp,    rrow
-       parameter (g=grav,         h1=1.e0,     h1000=1000.0
-     &,           d00=0.e0
-     &,           elwv=hvap,      eliv=hvap+hfus,   row=1.e3
-     &,           epsq=2.e-12
-     &,           eliw=eliv-elwv, rcp=h1/cp,   rrow=h1/row)
-!
-      real(kind=kind_phys), parameter :: cons_0=0.0,     cons_p01=0.01
-     &,                                  cons_20=20.0
+      parameter (                h1=1.e0,     h1000=1000.0              &
+     &,           d00=0.e0,      row=1.e3                               &
+     &,           epsq=2.e-12)
+!     
+
+      real(kind=kind_phys), parameter :: cons_0=0.0,     cons_p01=0.01  &  
+     &,                                  cons_20=20.0                   &
      &,                                  cons_m30=-30.0, cons_50=50.0
 !
       real (kind=kind_phys) rnp(im),    psautco_l(im), prautco_l(im)    &
@@ -171,6 +206,12 @@
 !       enddo
 !     enddo
 !
+      g=grav
+      elwv=hvap
+      eliv=hvap+hfus
+      eliw=eliv-elwv
+      rcp=h1/cp
+      rrow=h1/row
       rdt     = h1 / dt
 !     ke      = 2.0e-5  ! commented on 09/10/99  -- opr value
 !     ke      = 2.0e-6

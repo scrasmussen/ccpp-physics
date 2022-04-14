@@ -65,7 +65,7 @@
 !> \section arg_table_GFS_time_vary_pre_timestep_init Argument Table
 !! \htmlinclude GFS_time_vary_pre_timestep_init.html
 !!
-      subroutine GFS_time_vary_pre_timestep_init (jdat, idat, dtp, lsm, lsm_noahmp, nsswr, &
+      subroutine GFS_time_vary_pre_timestep_init (jdat, idat, dtp, nsswr, &
         nslwr, idate, debug, me, master, nscyc, sec, phour, zhour, fhour, kdt,   &
         julian, yearlen, ipt, lprnt, lssav, lsswr, lslwr, solhr, errmsg, errflg)
 
@@ -73,10 +73,9 @@
 
         implicit none
         
-        integer,                          intent(in)    :: idate(4)
-        integer,                          intent(in)    :: jdat(1:8), idat(1:8)
-        integer,                          intent(in)    :: lsm, lsm_noahmp,      &
-                                                           nsswr, nslwr, me,     &
+        integer,                          intent(in)    :: idate(:)
+        integer,                          intent(in)    :: jdat(:), idat(:)
+        integer,                          intent(in)    :: nsswr, nslwr, me,     &
                                                            master, nscyc
         logical,                          intent(in)    :: debug
         real(kind=kind_phys),             intent(in)    :: dtp
@@ -111,7 +110,7 @@
         end if
 
         !--- jdat is being updated directly inside of the time integration
-        !--- loop of gmtb_scm.F90
+        !--- loop of scm.F90
         !--- update calendars and triggers
         rinc(1:5)   = 0
         call w3difdat(jdat,idat,4,rinc)

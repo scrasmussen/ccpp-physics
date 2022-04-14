@@ -848,7 +848,6 @@ contains
    	     
        call oro_spectral_solver(im, km, npt, ipt, kref, kdt, me, master,      &
            dtp, dxres, taub, u1, v1, t1, xn, yn, bnv2, ro, prsi,prsl,         &
-           grav, omega1, rd,                                                  &
            del, sigma, hprime, gamma, theta, sinlat, xlatd, taup, taud, pkdis)  
 	      
       endif                    !  oro_linsat - linsatdis-solver for stationary OGWs
@@ -909,8 +908,8 @@ contains
          dudt_obl(j,k) = -dbim * u1(j,k)
          dvdt_obl(j,k) = -dbim * v1(j,k)
 	    	    
-         pdvdt(j,k) = dudt_obl(j,k) +pdvdt(j,k)
-         pdudt(j,k) = dvdt_obl(j,k) +pdudt(j,k)	         	        	    
+         pdudt(j,k) = dudt_obl(j,k) +pdudt(j,k)
+         pdvdt(j,k) = dvdt_obl(j,k) +pdvdt(j,k)	         	        	    
          du_oblcol(j)    = du_oblcol(j) + dudt_obl(j,k)* del(j,k)
          dv_oblcol(j)    = dv_oblcol(j) + dvdt_obl(j,k)* del(j,k)	    
          dusfc(j)   = dusfc(j) + du_oblcol(j)
