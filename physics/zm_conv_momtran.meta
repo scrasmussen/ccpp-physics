@@ -15,7 +15,6 @@
   type = character
   kind = len=16
   intent = in
-  optional = F
 [cam_physpkg_cam3]
   standard_name = identifier_for_cam3_physics_package
   long_name = identifier for cam3 physics package
@@ -24,7 +23,6 @@
   type = character
   kind = len=16
   intent = in
-  optional = F
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -33,15 +31,13 @@
   type = character
   kind = len=*
   intent = out
-  optional = F
 [errflg]
-  standard_name = ccpp_error_flag
+  standard_name = ccpp_error_code
   long_name = error flag for error handling in CCPP
-  units = flag
+  units = 1
   dimensions = ()
   type = integer
   intent = out
-  optional = F
 
 ########################################################################
 [ccpp-arg-table]
@@ -54,7 +50,6 @@
   dimensions = ()
   type = integer
   intent = in
-  optional = F
 [pcols]
   standard_name = horizontal_loop_extent
   long_name = horizontal loop extent
@@ -62,23 +57,20 @@
   dimensions = ()
   type = integer
   intent = in
-  optional = F
 [pver]
-  standard_name = vertical_dimension
+  standard_name = vertical_layer_dimension
   long_name = number of vertical levels
   units = count
   dimensions = ()
   type = integer
   intent = in
-  optional = F
 [pverp]
-  standard_name = vertical_dimension_plus_one
+  standard_name = vertical_layer_dimension_plus_one
   long_name = number of vertical levels plus one
   units = count
   dimensions = ()
   type = integer
   intent = in
-  optional = F
 [domomtran]
   standard_name = flag_for_convective_momentum_transport
   long_name = flag set to true whose position indicates the wind component to convectively transport
@@ -86,79 +78,70 @@
   dimensions = (2)
   type = logical
   intent = in
-  optional = F
 [u]
   standard_name = temporary_x_wind
   long_name = temporary state x wind
   units = m s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [v]
   standard_name = temporary_y_wind
   long_name = temporary state y wind
   units = m s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [mu]
   standard_name = atmosphere_updraft_convective_mass_flux
   long_name = atmosphere updraft convective mass flux
   units = hPa s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [md]
   standard_name = atmosphere_downdraft_convective_mass_flux
   long_name = atmosphere downdraft convective mass flux
   units = hPa s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [du]
   standard_name = atmosphere_detrainment_convective_mass_flux_for_convective_triggered_columns
   long_name = atmosphere detrainment convective mass flux
   units = hPa s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [eu]
   standard_name = atmosphere_updraft_entrainment_convective_mass_flux
   long_name = atmosphere updraft entrainment convective mass flux
   units = hPa s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [ed]
   standard_name = atmosphere_downdraft_entrainment_convective_mass_flux
   long_name = atmosphere downdraft entrainment convective mass flux
   units = hPa s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [dp]
   standard_name = pressure_thickness_in_hPa
   long_name = model layer thickness in hPa
   units = hPa
-  dimensions = (horizontal_loop_extent,vertical_dimension)
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [dsubcld]
   standard_name = subcloud_pressure_thickness_in_hPa
   long_name = thickness of subcloud layer in hPa
@@ -167,7 +150,6 @@
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [jt]
   standard_name = vertical_index_at_cloud_top_for_convective_triggered_columns
   long_name = vertical index at cloud top for convective triggered columns
@@ -175,7 +157,6 @@
   dimensions = (horizontal_loop_extent)
   type = integer
   intent = in
-  optional = F
 [mx]
   standard_name = vertical_index_at_maximum_moist_static_energy_for_convective_triggered_columns
   long_name = vertical index at maximum moist static energy for convective triggered columns
@@ -183,7 +164,6 @@
   dimensions = (horizontal_loop_extent)
   type = integer
   intent = in
-  optional = F
 [ideep]
   standard_name = horizontal_index_of_convective_triggered_columns
   long_name = horizontal index of convective triggered columns
@@ -191,7 +171,6 @@
   dimensions = (horizontal_loop_extent)
   type = integer
   intent = in
-  optional = F
 [il2g]
   standard_name = number_of_convective_triggered_columns
   long_name = number of convective triggered columns
@@ -199,70 +178,62 @@
   dimensions = ()
   type = integer
   intent = in
-  optional = F
 [dudt]
   standard_name = tendency_of_x_wind_due_to_deep_convection_momentum_transport
   long_name = tendency of x wind due to deep convection momentum transport
   units = m s-2
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = inout
-  optional = F
 [dvdt]
   standard_name = tendency_of_y_wind_due_to_deep_convection_momentum_transport
   long_name = tendency of y wind due to deep convection momentum transport
   units = m s-2
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = inout
-  optional = F
 [dsdt]
   standard_name = tendency_of_dry_static_energy_due_to_deep_convection_momentum_transport
   long_name = tendency of dry static energy due to deep convection momentum transport
   units = J kg-1 s-1
-  dimensions = (horizontal_loop_extent, vertical_dimension)
+  dimensions = (horizontal_loop_extent, vertical_layer_dimension)
   type = real
   kind = shr_kind_r8
   intent = inout
-  optional = F
 [pguall]
   standard_name = updraft_pressure_gradient_apparent_force
   long_name = updraft pressure gradient apparent force
   units = unknown
-  dimensions = (horizontal_loop_extent,vertical_dimension,2)
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,2)
   type = real
   kind = shr_kind_r8
   intent = out
-  optional = F
 [pgdall]
   standard_name = downdraft_pressure_gradient_apparent_force
   long_name = downdraft pressure gradient apparent force
   units = unknown
-  dimensions = (horizontal_loop_extent,vertical_dimension,2)
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,2)
   type = real
   kind = shr_kind_r8
   intent = out
-  optional = F
 [icwu]
   standard_name = winds_within_cloudy_updrafts
   long_name = in-cloud winds in the convective updrafts
   units = m s-1
-  dimensions = (horizontal_loop_extent,vertical_dimension,2)
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,2)
   type = real
   kind = shr_kind_r8
   intent = out
-  optional = F
 [icwd]
   standard_name = winds_within_cloudy_downdrafts
   long_name = in-cloud winds in the convective downdrafts
   units = m s-1
-  dimensions = (horizontal_loop_extent,vertical_dimension,2)
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,2)
   type = real
   kind = shr_kind_r8
   intent = out
-  optional = F
 [dt]
   standard_name = timestep_for_physics
   long_name = physics timestep
@@ -271,7 +242,6 @@
   type = real
   kind = shr_kind_r8
   intent = in
-  optional = F
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -280,12 +250,10 @@
   type = character
   kind = len=*
   intent = out
-  optional = F
 [errflg]
-  standard_name = ccpp_error_flag
+  standard_name = ccpp_error_code
   long_name = error flag for error handling in CCPP
-  units = flag
+  units = 1
   dimensions = ()
   type = integer
   intent = out
-  optional = F
