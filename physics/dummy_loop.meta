@@ -5,6 +5,47 @@
 
 ########################################################################
 [ccpp-arg-table]
+  name = dummy_loop_init
+  type = scheme
+[loop_cnt]
+  standard_name = ccpp_loop_counter
+  long_name = loop counter for subcycling loops in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[loop_max]
+  standard_name = ccpp_loop_extent
+  long_name = loop extent for subcycling loops in CCPP
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[ncol]
+  standard_name = horizontal_dimension
+  long_name = number of horizontal columns to process
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error flag for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
+
+########################################################################
+[ccpp-arg-table]
   name = dummy_loop_run
   type = scheme
 [loop_cnt]
@@ -14,7 +55,34 @@
   dimensions = ()
   type = integer
   intent = in
-  optional = F
+[loop_max]
+  standard_name = ccpp_loop_extent
+  long_name = loop extent for subcycling loops in CCPP
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[ncol]
+  standard_name = horizontal_loop_extent
+  long_name = number of horizontal columns to process
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[blk_no]
+  standard_name = ccpp_block_number
+  long_name = number of block for explicit data blocking in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[thrd_no]
+  standard_name = ccpp_thread_number
+  long_name = number of thread for threading in CCPP
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -23,12 +91,10 @@
   type = character
   kind = len=*
   intent = out
-  optional = F
 [errflg]
-  standard_name = ccpp_error_flag
+  standard_name = ccpp_error_code
   long_name = error flag for error handling in CCPP
-  units = flag
+  units = 1
   dimensions = ()
   type = integer
   intent = out
-  optional = F
