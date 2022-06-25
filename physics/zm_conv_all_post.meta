@@ -161,6 +161,28 @@
   type = real
   kind = shr_kind_r8
   intent = inout
+[doconvtran_name]
+  standard_name = control_for_name_of_moisture_tendencies_calculation
+  long_name = control for process name of moisture tendencies
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=24
+  intent = out
+[doconvtran_suv]
+  standard_name = control_for_suv_moisture_tendencies_calculation
+  long_name = control for calculating and returning moisture tendencies of suv
+  units = flag
+  dimensions = (3)
+  type = logical
+  intent = out
+[doconvtran_q]
+  standard_name = control_for_tracer_moisture_tendencies_calculation
+  long_name = control for calculating and returning moisture tendencies of tracers
+  units = flag
+  dimensions = (number_of_tracers)
+  type = logical
+  intent = out
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP

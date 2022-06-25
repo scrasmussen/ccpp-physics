@@ -11,7 +11,7 @@ module zm_conv_all_post
   subroutine zm_conv_all_post_run(ncol, pcols, pver, pcnst, cam_physpkg, cam_physpkg_cam3, ixcldice, ixcldliq, &
     tend_qv_deep_conv, tend_s_deep_conv, &
     tend_qv_deep_conv_evap, tend_s_deep_conv_evap, tend_s_momtran, tend_u_momtran, tend_v_momtran, tend_q_convtran, &
-    tend_u_all, tend_v_all, tend_s_all, tend_q_all, errmsg, errflg)
+    tend_u_all, tend_v_all, tend_s_all, tend_q_all, doconvtran_name, doconvtran_suv, doconvtran_q, errmsg, errflg)
     
     use iap_ptend_sum, only : physics_ptend_sum
     
@@ -25,7 +25,10 @@ module zm_conv_all_post
     
     real(kind=r8), intent(inout), dimension(:,:) :: tend_u_all, tend_v_all, tend_s_all
     real(kind=r8), intent(inout), dimension(:,:,:) :: tend_q_all
-    
+
+    character(len=*), intent(out)      :: doconvtran_name
+    logical, intent(out), dimension(:) :: doconvtran_suv, doconvtran_q
+
     ! CCPP error handling
     character(len=*),          intent(  out) :: errmsg
     integer,                   intent(  out) :: errflg
@@ -120,6 +123,11 @@ module zm_conv_all_post
       lu_all, lv_all, ls_all, lq_all, temp_tend_u, temp_tend_v, temp_tend_s, tend_q_all, &
       temp_taux_srf, temp_taux_top, temp_tauy_srf, temp_tauy_top, temp_hflx_srf, temp_hflx_top, &
       temp_cflx_srf, temp_cflx_top)
-    
+
+    doconvtran_name     = 'convect_deep'
+    doconvtran_suv(1:3) = .true.
+    doconvtran_q(1:3)   = .true.
+    doconvtran_q(4:)    = .false.
+
   end subroutine zm_conv_all_post_run
 end module zm_conv_all_post
