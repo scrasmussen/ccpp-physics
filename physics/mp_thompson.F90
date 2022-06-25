@@ -300,7 +300,7 @@ module mp_thompson
                               con_eps, convert_dry_rho,            &
                               spechum, qc, qr, qi, qs, qg, ni, nr, &
                               is_aerosol_aware, nc, nwfa, nifa,    &
-                              nwfa2d, nifa2d,                      &
+                              nwfa2d, nifa2d, aero_ind_fdb,        &
                               tgrs, prsl, phii, omega,             &
                               sedi_semi, decfl, dtp, dt_inner,     & 
                               first_time_step, istep, nsteps,      &
@@ -308,7 +308,9 @@ module mp_thompson
                               refl_10cm, reset_dBZ, do_radar_ref,  &
                               mpicomm, mpirank, mpiroot, blkno,    &
                               ext_diag, diag3d, reset_diag3d,      &
-                              spp_wts_mp, spp_mp,                  &
+                              spp_wts_mp, spp_mp, n_var_spp,       &
+                              spp_prt_list, spp_var_list,          &
+                              spp_stddev_cutoff,                   &
                               errmsg, errflg)
 
          implicit none
@@ -339,6 +341,7 @@ module mp_thompson
          real(kind_phys), optional, intent(inout) :: nifa(:,:)
          real(kind_phys), optional, intent(in   ) :: nwfa2d(:)
          real(kind_phys), optional, intent(in   ) :: nifa2d(:)
+         logical,         optional, intent(in   ) :: aero_ind_fdb
          ! State variables and timestep information
          real(kind_phys),           intent(inout) :: tgrs(:,:)
          real(kind_phys),           intent(in   ) :: prsl(:,:)
@@ -376,7 +379,11 @@ module mp_thompson
          
          ! SPP
          integer,                   intent(in) :: spp_mp
+         integer,                   intent(in) :: n_var_spp
          real(kind_phys),           intent(in) :: spp_wts_mp(:,:)
+         real(kind_phys),           intent(in) :: spp_prt_list(:)
+         character(len=3),          intent(in) :: spp_var_list(:)
+         real(kind_phys),           intent(in) :: spp_stddev_cutoff(:)
 
          ! Local variables
 
@@ -634,6 +641,7 @@ module mp_thompson
          if (is_aerosol_aware) then
             call mp_gt_driver(qv=qv, qc=qc, qr=qr, qi=qi, qs=qs, qg=qg, ni=ni, nr=nr,        &
                               nc=nc, nwfa=nwfa, nifa=nifa, nwfa2d=nwfa2d, nifa2d=nifa2d,     &
+                              aero_ind_fdb=aero_ind_fdb,                                     &
                               tt=tgrs, p=prsl, w=w, dz=dz, dt_in=dtstep, dt_inner=dt_inner,  &
                               sedi_semi=sedi_semi, decfl=decfl,                              &
                               rainnc=rain_mp, rainncv=delta_rain_mp,                         &
@@ -644,7 +652,9 @@ module mp_thompson
                               diagflag=diagflag, do_radar_ref=do_radar_ref_mp,               &
                               has_reqc=has_reqc, has_reqi=has_reqi, has_reqs=has_reqs,       &
                               rand_perturb_on=spp_mp_opt, kme_stoch=kme_stoch,               &
-                              rand_pert=spp_wts_mp,                                          &
+                              rand_pert=spp_wts_mp, spp_var_list=spp_var_list,               &
+                              spp_prt_list=spp_prt_list, n_var_spp=n_var_spp,                &
+                              spp_stddev_cutoff=spp_stddev_cutoff,                           &
                               ids=ids, ide=ide, jds=jds, jde=jde, kds=kds, kde=kde,          &
                               ims=ims, ime=ime, jms=jms, jme=jme, kms=kms, kme=kme,          &
                               its=its, ite=ite, jts=jts, jte=jte, kts=kts, kte=kte,          &
@@ -681,7 +691,9 @@ module mp_thompson
                               diagflag=diagflag, do_radar_ref=do_radar_ref_mp,               &
                               has_reqc=has_reqc, has_reqi=has_reqi, has_reqs=has_reqs,       &
                               rand_perturb_on=spp_mp_opt, kme_stoch=kme_stoch,               &
-                              rand_pert=spp_wts_mp,                                          &
+                              rand_pert=spp_wts_mp, spp_var_list=spp_var_list,               &
+                              spp_prt_list=spp_prt_list, n_var_spp=n_var_spp,                &
+                              spp_stddev_cutoff=spp_stddev_cutoff,                           &
                               ids=ids, ide=ide, jds=jds, jde=jde, kds=kds, kde=kde,          &
                               ims=ims, ime=ime, jms=jms, jme=jme, kms=kms, kme=kme,          &
                               its=its, ite=ite, jts=jts, jte=jte, kts=kts, kte=kte,          &
