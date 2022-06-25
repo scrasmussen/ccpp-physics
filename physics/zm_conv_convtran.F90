@@ -1,19 +1,132 @@
-module zm_conv_convtran
-  
+module zm_conv_convtran_1_pre
+
   use shr_kind_mod,    only: r8 => shr_kind_r8
-  
+
   implicit none
-  
+
+  public :: zm_conv_convtran_1_pre_run
+
+  private
+
+  contains
+
+!! \section arg_table_zm_conv_convtran_1_pre_run
+!! \htmlinclude zm_conv_convtran_1_pre_run.html
+!!
+  subroutine zm_conv_convtran_1_pre_run(ixcldice, ixcldliq, doconvtran_name, doconvtran_suv, doconvtran_q, dpdry, errmsg, errflg)
+
+    integer,          intent(in)  :: ixcldice
+    integer,          intent(in)  :: ixcldliq
+    character(len=*), intent(out) :: doconvtran_name
+    logical,          intent(out) :: doconvtran_suv(:) ! flag for doing convective transport of suv
+    logical,          intent(out) :: doconvtran_q(:)   ! flag for doing convective transport of tracers
+    real(kind=r8),    intent(out) :: dpdry(:,:)        ! used in convtran call
+
+    ! CCPP error handling
+    character(len=*),          intent(  out) :: errmsg
+    integer,                   intent(  out) :: errflg
+
+    ! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
+
+    !GJF: these statements were in zm_conv_intr.F90/zm_conv_tend
+    doconvtran_name        = 'convtran1'
+    doconvtran_suv(1:3)    = .false.
+    doconvtran_q(:)        = .false.
+    doconvtran_q(ixcldice) = .true.
+    doconvtran_q(ixcldliq) = .true.
+
+    ! dpdry is not used in this call to convtran since the
+    ! cloud liquid and ice mixing ratios are moist
+    dpdry(:,:) = 0._r8
+
+  end subroutine zm_conv_convtran_1_pre_run
+
+end module zm_conv_convtran_1_pre
+
+
+module zm_conv_convtran_2_pre
+
+  use shr_kind_mod,    only: r8 => shr_kind_r8
+
+  implicit none
+
+  public :: zm_conv_convtran_2_pre_run
+
+  private
+
+  contains
+
+!! \section arg_table_zm_conv_convtran_2_pre_run
+!! \htmlinclude zm_conv_convtran_2_pre_run.html
+!!
+  subroutine zm_conv_convtran_2_pre_run(ideep, il2g, ixcldice, ixcldliq, pdeldry, doconvtran_name, doconvtran_suv, doconvtran_q, dpdry, state_q, temp_state_q, errmsg, errflg)
+
+    integer,          intent(in)  :: ideep(:)          ! Gathering array
+    integer,          intent(in)  :: il2g              ! Gathered max lon indices over which to operate
+    integer,          intent(in)  :: ixcldice
+    integer,          intent(in)  :: ixcldliq
+    real(kind=r8),    intent(in)  :: pdeldry(:,:)
+    character(len=*), intent(out) :: doconvtran_name
+    logical,          intent(out) :: doconvtran_suv(:) ! flag for doing convective transport of suv
+    logical,          intent(out) :: doconvtran_q(:)   ! flag for doing convective transport of tracers
+    real(kind=r8),    intent(out) :: dpdry(:,:)        ! used in convtran call
+    real(kind=r8),    intent(in)  :: state_q(:,:,:)
+    real(kind=r8),    intent(out) :: temp_state_q(:,:,:)
+
+    ! CCPP error handling
+    character(len=*),          intent(  out) :: errmsg
+    integer,                   intent(  out) :: errflg
+
+    ! Local variables
+    integer, parameter :: il1g = 1
+    integer :: i
+
+    ! Initialize the CCPP error handling variables
+    errmsg = ''
+    errflg = 0
+
+    !DH: these statements were in zm_conv_intr.F90/zm_conv_tend_2
+    doconvtran_name        = 'convtran2'
+    doconvtran_suv(1:3)    = .false.
+    doconvtran_q(:)        = .true.
+    doconvtran_q(1)        = .false.
+    doconvtran_q(ixcldice) = .false.
+    doconvtran_q(ixcldliq) = .false.
+
+    ! initialize dpdry for call to convtran
+    ! it is used for tracers of dry mixing ratio type
+    dpdry = 0._r8
+    do i = il1g,il2g
+       !dpdry(i,:) = state%pdeldry(ideep(i,lchnk),:)/100._r8
+       dpdry(i,:) = pdeldry(ideep(i),:)/100._r8
+    end do
+
+    ! Assign state tracer concentration to temporary tracer concentration
+    temp_state_q = state_q
+
+  end subroutine zm_conv_convtran_2_pre_run
+
+end module zm_conv_convtran_2_pre
+
+
+module zm_conv_convtran
+
+  use shr_kind_mod,    only: r8 => shr_kind_r8
+
+  implicit none
+
   public :: zm_conv_convtran_run
 
   private
-  
+
   contains
 !! \section arg_table_zm_conv_convtran_run
 !! \htmlinclude zm_conv_convtran_run.html
 !!
-  subroutine zm_conv_convtran_run(pcols, pver, ixcldice, ixcldliq, cnst_type, q, ncnst, mu, md, du, eu, ed, dp, dsubcld, jt, mx, ideep, il2g, fracis, dqdt, errmsg, errflg)
-    
+  subroutine zm_conv_convtran_run(pcols, pver, ixcldice, ixcldliq, cnst_type, q, ncnst, mu, md, du, eu, ed, dp, dsubcld, jt, mx, ideep, il2g, fracis, dqdt, doconvtran, dpdry, errmsg, errflg)
+
     integer, intent(in) :: pcols, pver
     integer, intent(in) :: ixcldice, ixcldliq
     character(len=3), intent(in) :: cnst_type(:)
@@ -26,15 +139,17 @@ module zm_conv_convtran
     real(kind=r8), intent(in) :: ed(:,:)       ! Mass entraining from downdraft
     real(kind=r8), intent(in) :: dp(:,:)       ! Delta pressure between interfaces
     real(kind=r8), intent(in) :: dsubcld(:)    ! Delta pressure from cloud base to sfc
-    
+
     integer, intent(in) :: jt(:)         ! Index of cloud top for each column
     integer, intent(in) :: mx(:)         ! Index of cloud top for each column
     integer, intent(in) :: ideep(:)      ! Gathering array
-    integer, intent(in) :: il2g              ! Gathered max lon indices over which to operate
-    
-    real(kind=r8), intent(in) :: fracis(:,:,:) ! fraction of tracer that is insoluble
-    real(r8), intent(inout) :: dqdt(:,:,:)  ! Tracer tendency array
-    
+    integer, intent(in) :: il2g          ! Gathered max lon indices over which to operate
+
+    real(kind=r8), intent(in) :: fracis(:,:,:)  ! fraction of tracer that is insoluble
+    real(kind=r8), intent(inout) :: dqdt(:,:,:) ! Tracer tendency array
+    logical, intent(in) :: doconvtran(:)        ! flag for doing convective transport
+    real(kind=r8), intent(in) :: dpdry(:,:)     ! used in convtran call
+
     ! CCPP error handling
     character(len=*),          intent(  out) :: errmsg
     integer,                   intent(  out) :: errflg
@@ -75,24 +190,11 @@ module zm_conv_convtran
     real(r8) dptmp(pcols,pver)    ! Delta pressure between interfaces
     !-----------------------------------------------------------------------
     !
-
-    logical :: doconvtran(ncnst)! flag for doing convective transport
-    real(kind=r8) :: dpdry(pcols,pver) ! used in convtran call
     integer, parameter :: il1g = 1   ! Gathered min lon indices over which to operate
-    
+
     ! Initialize the CCPP error handling variables
     errmsg = ''
     errflg = 0
-    
-    !GJF: these statements were in zm_conv_intr.F90/zm_conv_tend, but moved inside the scheme to avoid a short "pre" interstitial scheme
-    doconvtran(:) = .false.
-    doconvtran(ixcldice) = .true.
-    doconvtran(ixcldliq) = .true.
-    
-    ! dpdry is not used in this call to convtran since the cloud liquid and ice mixing
-    ! ratios are moist
-    dpdry(:,:) = 0._r8
-    
 
     small = 1.e-36_r8
     ! mbsth is the threshold below which we treat the mass fluxes as zero (in mb/s)
