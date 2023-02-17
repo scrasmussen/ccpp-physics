@@ -5,6 +5,50 @@
 
 ########################################################################
 [ccpp-arg-table]
+  name = mmm_ysu_init
+  type = scheme
+[con_g]
+  standard_name = gravitational_acceleration
+  long_name = gravitational acceleration
+  units = m s-2
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[con_rd]
+  standard_name = gas_constant_of_dry_air
+  long_name = ideal gas constant for dry air
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[con_cp]
+  standard_name = specific_heat_of_dry_air_at_constant_pressure
+  long_name = specific heat of dry air at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
+
+########################################################################
+[ccpp-arg-table]
   name = mmm_ysu_run
   type = scheme
 [nCol]
@@ -21,7 +65,7 @@
   dimensions = ()
   type = integer
   intent = in
-[nmix]
+[ntrac]
   standard_name = number_of_tracers
   long_name = number of tracers
   units = count
@@ -73,7 +117,7 @@
   type = real
   kind = kind_phys
   intent = in
-[qx]
+[q]
   standard_name = tracer_concentration
   long_name = model layer mean tracer concentration
   units = kg kg-1
@@ -81,7 +125,7 @@
   type = real
   kind = kind_phys
   intent = in
-[p2d]
+[p]
   standard_name = air_pressure
   long_name = mean layer pressure
   units = Pa
@@ -89,7 +133,7 @@
   type = real
   kind = kind_phys
   intent = in
-[p2di]
+[pi]
   standard_name = air_pressure_at_interface
   long_name = air pressure at model layer interfaces
   units = Pa
@@ -105,7 +149,7 @@
   type = real
   kind = kind_phys
   intent = in
-[pi2d]
+[prslk]
   standard_name = dimensionless_exner_function
   long_name = Exner function at layers
   units = none
@@ -153,7 +197,7 @@
   type = real
   kind = kind_phys
   intent = in
-[g]
+[con_g]
   standard_name = gravitational_acceleration
   long_name = gravitational acceleration
   units = m s-2
@@ -161,7 +205,7 @@
   type = real
   kind = kind_phys
   intent = in
-[rd]
+[con_rd]
   standard_name = gas_constant_of_dry_air
   long_name = ideal gas constant for dry air
   units = J kg-1 K-1
@@ -169,7 +213,7 @@
   type = real
   kind = kind_phys
   intent = in
-[cp]
+[con_cp]
   standard_name = specific_heat_of_dry_air_at_constant_pressure
   long_name = specific heat of dry air at constant pressure
   units = J kg-1 K-1
@@ -263,7 +307,7 @@
   type = real
   kind = kind_phys
   intent = in
-[rv]
+[con_rv]
   standard_name = gas_constant_water_vapor
   long_name = ideal gas constant for water vapor
   units = J kg-1 K-1
@@ -345,7 +389,21 @@
 [do_ysu_cldice]
   standard_name = flag_to_include_cloud_ice_water_mixing_ratio_in_ysu_pbl
   long_name = flag for ice water mixing ratio
-  units = flag	   
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[ysu_add_bep]
+  standard_name = flag_to_include_BEP_canopy_layer_forcing
+  long_name = flag to include BEP canopy layer forcing
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[ysu_topdown_pblmix]
+  standard_name = flag_for_ysu_mixing
+  long_name = flag for ysu topdown mixing option
+  units = flag
   dimensions = ()
   type = logical
   intent = in
