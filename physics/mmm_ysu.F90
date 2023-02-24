@@ -1,3 +1,8 @@
+! ###########################################################################################
+!
+! This is a ccpp-compliant wrapper to call the YSU PBL scheme implemented @ NCAR MMM.
+!
+! ###########################################################################################
 module mmm_ysu
   use machine, only: kind_phys
   use bl_ysu,  only: bl_ysu_run
@@ -14,6 +19,7 @@ contains
 !! \htmlinclude mmm_ysu_init.html
 !!
   ! #########################################################################################
+  !
   ! #########################################################################################
   subroutine mmm_ysu_init(con_rd, con_cp, con_g, errmsg, errflg)
     ! Inputs
@@ -27,7 +33,7 @@ contains
     errmsg = ''
     errflg = 0
 
-    ! Compute some constants.
+    ! Compute module constants.
     rovcp = con_rd/con_cp
     rovg  = con_rd/con_g
 
@@ -37,6 +43,7 @@ contains
 !! \htmlinclude mmm_ysu_run.html
 !!
   ! #########################################################################################
+  !
   ! #########################################################################################
   subroutine mmm_ysu_run(nCol, nLay, ntrac, slimask, u, v, t, q, ntcw, ntiw, p, pi, phii,   &
        prslk, ps, zorl, psim, psih, heat, evap, sfc_tau, wspd, u10, v10, con_cp, con_g,     &
@@ -47,7 +54,7 @@ contains
        exch_mx, hpbl, kpbl1d, wstar, delta, errmsg, errflg)
 
     ! Inputs
-    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix
+    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix
     integer, intent(in) :: nCol, nLay, ntrac, ntcw, ntiw
     integer, intent(in),dimension(:) :: slimask
     real(kind_phys),intent(in) :: con_cp, con_g, con_rd, ep1, ep2, karman, con_rv, xlv, dtp
@@ -55,22 +62,27 @@ contains
          wspd, br, xmu
     real(kind_phys),intent(in),dimension(:,:) :: u, v, t, p, pi, prslk, swh, lwh, phii
     real(kind_phys),intent(in),dimension(:,:,:) :: q
-    real(kind_phys),intent(in),dimension(:), optional :: uo_sfc, vo_sfc, ctopo, ctopo2,     &
-         frcurb
-    real(kind_phys),intent(in),dimension(:,:), optional :: a_u, a_v, a_t, a_q, a_e, b_u,    &
-         b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk ! DJS: These still need metadata
+    real(kind_phys),intent(in),dimension(:), optional :: uo_sfc, vo_sfc, ctopo, ctopo2
+
+    ! From Building Environment Parameterization (BEP) urbran-canopy model (optional)
+    logical, intent(in) :: ysu_add_bep
+    real(kind_phys),intent(in),dimension(:),   optional :: frcurb
+    real(kind_phys),intent(in),dimension(:,:), optional :: a_u, a_v, a_t, a_q, b_u, b_v,    &
+         b_t, b_q, sfk, vlk
+    real(kind_phys),intent(in),dimension(:,:), optional :: a_e, b_e, dlu, dlg !*NOTE* These are not currently used in bl_ysu_run.
+
     ! Outputs
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg
     integer,          intent(inout), dimension(:) :: kpbl1d
-    real(kind_phys),  intent(inout), dimension(:) :: u10, v10, hpbl, wstar, delta, exch_hx, &
-         exch_mx
+    real(kind_phys),  intent(inout), dimension(:) :: u10, v10 !*NOTE* These are changed if topographical corrections are provided.
+    real(kind_phys),  intent(inout), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx
     real(kind_phys),  intent(inout), dimension(:,:) :: dudt_pbl, dvdt_pbl, dtdt_pbl,        &
          dqvdt_pbl, dqcdt_pbl, dqidt_pbl
     real(kind_phys),  intent(inout), dimension(:,:,:) :: dqtdt_pbl
 
     ! Locals
-    integer :: iCol, iLay, ysu_topdown_pblmix_int
+    integer :: iCol, iLay, ysu_topdown_pblmix_int !*NOTE* This will go away if/when bl_ysu_run accepts this switch directly as a logical.
     real(kind_phys) :: tvcon
     real(kind_phys),dimension(nCol) :: xland, hfx, qfx, rho, govrth, ust, znt
     real(kind_phys),dimension(nCol, nLay) :: theta, rthraten
@@ -81,8 +93,9 @@ contains
     errflg = 0
 
     ! #######################################################################################
-    ! GFS MMM-YSU-PBL pre
-    ! Compute inputs for YSU scheme...
+    !
+    ! GFS MMM-YSU-PBL pre (compute inputs for YSU scheme...)
+    !
     ! #######################################################################################
 
     ! Compute land/sea mask convention for YSU from (0-sea/1-land/2-ice) ---> (1-land/2-sea)
@@ -148,4 +161,5 @@ contains
          b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay, nLay+1, errmsg, errflg)
 
   end subroutine mmm_ysu_run
+
 end module mmm_ysu
