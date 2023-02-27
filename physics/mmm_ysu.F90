@@ -9,7 +9,7 @@ module mmm_ysu
   implicit none
 
   ! Module constants
-  real(kind_phys) :: rovcp, rovg
+  real(kind_phys) :: rovcp, rovg, conw
 
   public mmm_ysu_init, mmm_ysu_run
 
@@ -34,8 +34,10 @@ contains
     errflg = 0
 
     ! Compute module constants.
+    ! DJS2023: These may be defined by the host, need to check, if so, pass into _run phase()
     rovcp = con_rd/con_cp
     rovg  = con_rd/con_g
+    conw  = 1._kind_phys/con_g
 
   end subroutine mmm_ysu_init
 
@@ -51,7 +53,8 @@ contains
        do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, uo_sfc, vo_sfc, ctopo, ctopo2,       &
        frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk,        &
        dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl, dqidt_pbl, dqtdt_pbl, exch_hx,   &
-       exch_mx, hpbl, kpbl1d, wstar, delta, errmsg, errflg)
+       exch_mx, dusfc, dvsfc, dtsfc, dqsfc, hpbl, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
+       qtnp, errmsg, errflg)
 
     ! Inputs
     logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix
@@ -74,19 +77,25 @@ contains
     ! Outputs
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg
-    integer,          intent(inout), dimension(:) :: kpbl1d
-    real(kind_phys),  intent(inout), dimension(:) :: u10, v10 !*NOTE* These are changed if topographical corrections are provided.
-    real(kind_phys),  intent(inout), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx
-    real(kind_phys),  intent(inout), dimension(:,:) :: dudt_pbl, dvdt_pbl, dtdt_pbl,        &
+    integer,          intent(out), dimension(:) :: kpbl1d
+    real(kind_phys),  intent(out), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx,  &
+         dusfc, dvsfc, dtsfc, dqsfc
+    real(kind_phys),  intent(out), dimension(:,:) :: dudt_pbl, dvdt_pbl, dtdt_pbl,        &
          dqvdt_pbl, dqcdt_pbl, dqidt_pbl
-    real(kind_phys),  intent(inout), dimension(:,:,:) :: dqtdt_pbl
+    real(kind_phys),  intent(out), dimension(:,:,:) :: dqtdt_pbl
+    
+    ! In/Out
+    real(kind_phys),  intent(inout), dimension(:)     :: u10, v10 !*NOTE* These are changed if topographical corrections are provided.
+    real(kind_phys),  intent(inout), dimension(:,:)   :: utnp, vtnp, ttnp
+    real(kind_phys),  intent(inout), dimension(:,:,:) :: qtnp
 
     ! Locals
     integer :: iCol, iLay, ysu_topdown_pblmix_int !*NOTE* This will go away if/when bl_ysu_run accepts this switch directly as a logical.
     real(kind_phys) :: tvcon
-    real(kind_phys),dimension(nCol) :: xland, hfx, qfx, rho, govrth, ust, znt
-    real(kind_phys),dimension(nCol, nLay) :: theta, rthraten
+    real(kind_phys),dimension(nCol) :: xland, hfx, qfx, rho, ust, znt
+    real(kind_phys),dimension(nCol, nLay) :: rthraten, dz
     real(kind_phys),dimension(nCol, nLay+1) :: zi
+    integer :: i,k
 
     ! Initialize CCPP error handling
     errmsg = ''
@@ -110,22 +119,21 @@ contains
     ! Height (m) at interface from geopotential (m2/s2)
     do iLay = 1,nLay+1
        do iCol = 1,nCol
-          zi(iCol,iLay) = phii(iCol,iLay)/con_g
+          zi(iCol,iLay) = phii(iCol,iLay)*conw
        enddo
     enddo
 
-    ! Potential temperature (K)
+    ! Compute layer thickness (m)
     do iLay = 1,nLay
        do iCol = 1,nCol
-          theta(iCol,iLay)   = t(iCol,iLay)/prslk(iCol,iLay)
+          dz(iCol,iLay) = abs(zi(iCol,iLay)-zi(iCol,iLay+1))
        enddo
     enddo
-    govrth(:) = con_g/theta(:,1)   ! gravity divided by theta at the surface
-    
-    ! Total (longwave+shortwave) radiative heating rate from temp/s -> theta/s
+
+    ! Total (longwave+shortwave) radiative heating rate (K/s)
     do iLay = 1,nLay
        do iCol = 1,nCol
-          rthraten(iCol,iLay) = (swh(iCol,iLay)*xmu(iCol)+lwh(iCol,iLay))/prslk(iCol,iLay)
+          rthraten(iCol,iLay) = (swh(iCol,iLay)*xmu(iCol)+lwh(iCol,iLay))
        enddo
     enddo
 
@@ -143,7 +151,7 @@ contains
     ! Surface friction velocity (from surface wind-stress)
     ust(:) = sqrt(sfc_tau(:))
 
-    ! YSU scheme needs 0/1 flag, we have .true./.false.
+    ! YSU scheme needs 1/0 flag, we have .true./.false.
     ysu_topdown_pblmix_int = 0
     if (ysu_topdown_pblmix) ysu_topdown_pblmix_int = 1
 
@@ -152,13 +160,36 @@ contains
     ! Call MMM-YSU-PBL scheme
     !
     ! #######################################################################################
+
     call bl_ysu_run(u, v, t, q(:,:,1), q(:,:,ntcw), q(:,:,ntiw), ntrac, q, p, pi, prslk,    &
          do_ysu_cldliq, do_ysu_cldice, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,  &
          dqidt_pbl, dqtdt_pbl, con_cp, con_g, rovcp, con_rd, rovg, ep1, ep2, karman, xlv,   &
-         con_rv, zi, ps, znt, ust, hpbl, psim, psih, xland, hfx, qfx, wspd, br, dtp,        &
-         kpbl1d, exch_hx, exch_mx, wstar, delta, u10, v10, uo_sfc, vo_sfc, rthraten,        &
-         ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,&
-         b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay, nLay+1, errmsg, errflg)
+         con_rv, dz, ps, znt, ust, hpbl, dusfc, dvsfc, dtsfc, dqsfc, psim, psih, xland, hfx,&
+         qfx, wspd, br, dtp, kpbl1d, exch_hx, exch_mx, wstar, delta, u10, v10, uo_sfc,      &
+         vo_sfc, rthraten, ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e,  &
+         b_u, b_v, b_t, b_q, b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay,   &
+         nLay+1, errmsg, errflg)
+
+    ! #######################################################################################
+    !
+    ! GFS MMM-YSU-PBL post (couple YSU scheme...) 
+    !
+    ! #######################################################################################
+
+    ! Procces-split scheme, accumulate tendencies...
+    do iLay = 1,nLay
+       do iCol = 1,nCol
+          utnp(iCol,iLay)      = utnp(iCol,iLay)      + dudt_pbl(iCol,iLay)
+          vtnp(iCol,iLay)      = vtnp(iCol,iLay)      + dvdt_pbl(iCol,iLay)
+          ttnp(iCol,iLay)      = ttnp(iCol,iLay)      + dtdt_pbl(iCol,iLay)
+          qtnp(iCol,iLay,1)    = qtnp(iCol,iLay,1)    + dqvdt_pbl(iCol,iLay)
+          qtnp(iCol,iLay,ntcw) = qtnp(iCol,iLay,ntcw) + dqcdt_pbl(iCol,iLay)
+          qtnp(iCol,iLay,ntiw) = qtnp(iCol,iLay,ntiw) + dqidt_pbl(iCol,iLay)
+       enddo
+    enddo
+    
+    ! Time-splt scheme, advance internal physics state...
+    ! DJS2023: Pass in _new_state fields with intent(inout), apply tendencies.
 
   end subroutine mmm_ysu_run
 
