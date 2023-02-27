@@ -266,7 +266,7 @@
   units = index
   dimensions = (horizontal_loop_extent)
   type = integer
-  intent = inout
+  intent = out
 [exch_hx]
   standard_name = surface_exchange_coefficient_for_heat
   long_name = surface exchange coefficient for heat
@@ -274,7 +274,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [exch_mx]
   standard_name = surface_drag_wind_speed_for_momentum_in_air
   long_name = surface drag wind speed for momentum in air
@@ -282,7 +282,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [wstar]
   standard_name = surface_wind_enhancement_due_to_convection
   long_name = surface wind enhancement due to convection
@@ -290,7 +290,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [delta]
   standard_name = entrainment_layer_depth
   long_name = entrainment layer depth
@@ -298,7 +298,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [xlv]
   standard_name = latent_heat_of_vaporization_of_water_at_0C
   long_name = latent heat of evaporation/sublimation
@@ -363,22 +363,6 @@
   type = real
   kind = kind_phys
   intent = in
-[u10]
-  standard_name = x_wind_at_10m
-  long_name = x component of wind at 10 m
-  units = m s-1
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = inout
-[v10]
-  standard_name = y_wind_at_10m
-  long_name = y component of wind at 10 m
-  units = m s-1
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = inout
 [do_ysu_cldliq]
   standard_name = flag_to_include_cloud_liquid_water_mixing_ratio_in_ysu_pbl
   long_name = flag for cloud water mixing ratio
@@ -414,7 +398,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [dvdt_pbl]
   standard_name = instantaneous_tendency_of_y_wind_due_to_boundary_layer
   long_name = tendency of y wind due to boundary layer
@@ -422,7 +406,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [dtdt_pbl]
   standard_name = instantaneous_tendency_of_potential_temperature_due_to_boundary_layer
   long_name = tendency of potential temperature due to boundary layer
@@ -430,7 +414,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [dqvdt_pbl]
   standard_name = instantaneous_tendency_of_water_vapor_mixing_ratio_due_to_boundary_layer
   long_name = tendency of water vapor mixing ratio due to boundary layer
@@ -438,16 +422,16 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [dqcdt_pbl]
   standard_name = instantaneous_tendency_of_cloud_water_mixing_ratio_due_to_boundary_layer
   long_name = tendency of cloud water mixing ratio due to boundary layer
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  intent = inout
+  intent = out
   kind = kind_phys
-  intent = inout
+  intent = out
 [dqidt_pbl]
   standard_name = instantaneous_tendency_of_ice_water_mixing_ratio_due_to_boundary_layer
   long_name = tendency of ice water mixing ratio due to boundary layer
@@ -455,7 +439,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
 [dqtdt_pbl]
   standard_name = instantaneous_tendency_of_scalars_due_to_boundary_layer
   long_name = tendency of scalars due to boundary layer
@@ -463,12 +447,92 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension,number_of_tracers)
   type = real
   kind = kind_phys
-  intent = inout
+  intent = out
+[dusfc]
+  standard_name = instantaneous_surface_x_momentum_flux
+  long_name = x momentum flux
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dvsfc]
+  standard_name = instantaneous_surface_y_momentum_flux
+  long_name = y momentum flux
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dtsfc]
+  standard_name = instantaneous_surface_upward_sensible_heat_flux
+  long_name = surface upward sensible heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dqsfc]
+  standard_name = instantaneous_surface_upward_latent_heat_flux
+  long_name = surface upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
 [hpbl]
   standard_name = atmosphere_boundary_layer_thickness
   long_name = PBL thickness
   units = m
   dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[u10]
+  standard_name = x_wind_at_10m
+  long_name = x component of wind at 10 m
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[v10]
+  standard_name = y_wind_at_10m
+  long_name = y component of wind at 10 m
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[utnp]
+  standard_name = process_split_cumulative_tendency_of_x_wind
+  long_name = updated tendency of the x wind
+  units = m s-2
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[vtnp]
+  standard_name = process_split_cumulative_tendency_of_y_wind
+  long_name = updated tendency of the y wind
+  units = m s-2
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[ttnp]
+  standard_name = process_split_cumulative_tendency_of_air_temperature
+  long_name = updated tendency of the temperature
+  units = K s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qtnp]
+  standard_name = process_split_cumulative_tendency_of_tracers
+  long_name = updated tendency of the tracers due to model physics
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension,number_of_tracers)
   type = real
   kind = kind_phys
   intent = inout
