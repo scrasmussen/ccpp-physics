@@ -50,14 +50,14 @@ contains
   subroutine mmm_ysu_run(nCol, nLay, ntrac, slimask, u, v, t, q, ntcw, ntiw, p, pi, phii,   &
        prslk, ps, zorl, psim, psih, heat, evap, sfc_tau, wspd, u10, v10, con_cp, con_g,     &
        con_rd, ep1, ep2, br, karman, dtp, xlv, con_rv, xmu, lwh, swh, do_ysu_cldliq,        &
-       do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, uo_sfc, vo_sfc, ctopo, ctopo2,       &
-       frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk,        &
+       do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, ysu_timesplit, uo_sfc, vo_sfc, ctopo,&
+       ctopo2, frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk,&
        dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl, dqidt_pbl, dqtdt_pbl, exch_hx,   &
-       exch_mx, dusfc, dvsfc, dtsfc, dqsfc, hpbl, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
-       qtnp, errmsg, errflg)
+       exch_mx, hpbl, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
+       qtnp, u1, v1, t1, q1, qc1, qi1, errmsg, errflg)
 
     ! Inputs
-    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix
+    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix, ysu_timesplit
     integer, intent(in) :: nCol, nLay, ntrac, ntcw, ntiw
     integer, intent(in),dimension(:) :: slimask
     real(kind_phys),intent(in) :: con_cp, con_g, con_rd, ep1, ep2, karman, con_rv, xlv, dtp
@@ -78,8 +78,7 @@ contains
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg
     integer,          intent(out), dimension(:) :: kpbl1d
-    real(kind_phys),  intent(out), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx,  &
-         dusfc, dvsfc, dtsfc, dqsfc
+    real(kind_phys),  intent(out), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx
     real(kind_phys),  intent(out), dimension(:,:) :: dudt_pbl, dvdt_pbl, dtdt_pbl,        &
          dqvdt_pbl, dqcdt_pbl, dqidt_pbl
     real(kind_phys),  intent(out), dimension(:,:,:) :: dqtdt_pbl
@@ -88,6 +87,7 @@ contains
     real(kind_phys),  intent(inout), dimension(:)     :: u10, v10 !*NOTE* These are changed if topographical corrections are provided.
     real(kind_phys),  intent(inout), dimension(:,:)   :: utnp, vtnp, ttnp
     real(kind_phys),  intent(inout), dimension(:,:,:) :: qtnp
+    real(kind_phys),  intent(inout), dimension(:,:)   :: u1, v1, t1, q1, qc1, qi1
 
     ! Locals
     integer :: iCol, iLay, ysu_topdown_pblmix_int !*NOTE* This will go away if/when bl_ysu_run accepts this switch directly as a logical.
@@ -164,11 +164,10 @@ contains
     call bl_ysu_run(u, v, t, q(:,:,1), q(:,:,ntcw), q(:,:,ntiw), ntrac, q, p, pi, prslk,    &
          do_ysu_cldliq, do_ysu_cldice, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,  &
          dqidt_pbl, dqtdt_pbl, con_cp, con_g, rovcp, con_rd, rovg, ep1, ep2, karman, xlv,   &
-         con_rv, dz, ps, znt, ust, hpbl, dusfc, dvsfc, dtsfc, dqsfc, psim, psih, xland, hfx,&
-         qfx, wspd, br, dtp, kpbl1d, exch_hx, exch_mx, wstar, delta, u10, v10, uo_sfc,      &
-         vo_sfc, rthraten, ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e,  &
-         b_u, b_v, b_t, b_q, b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay,   &
-         nLay+1, errmsg, errflg)
+         con_rv, dz, ps, znt, ust, hpbl, psim, psih, xland, hfx, qfx, wspd, br, dtp, kpbl1d,&
+         exch_hx, exch_mx, wstar, delta, u10, v10, uo_sfc, vo_sfc, rthraten,                &
+         ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,&
+         b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay, nLay+1, errmsg, errflg)
 
     ! #######################################################################################
     !
@@ -176,20 +175,31 @@ contains
     !
     ! #######################################################################################
 
-    ! Procces-split scheme, accumulate tendencies...
-    do iLay = 1,nLay
-       do iCol = 1,nCol
-          utnp(iCol,iLay)      = utnp(iCol,iLay)      + dudt_pbl(iCol,iLay)
-          vtnp(iCol,iLay)      = vtnp(iCol,iLay)      + dvdt_pbl(iCol,iLay)
-          ttnp(iCol,iLay)      = ttnp(iCol,iLay)      + dtdt_pbl(iCol,iLay)
-          qtnp(iCol,iLay,1)    = qtnp(iCol,iLay,1)    + dqvdt_pbl(iCol,iLay)
-          qtnp(iCol,iLay,ntcw) = qtnp(iCol,iLay,ntcw) + dqcdt_pbl(iCol,iLay)
-          qtnp(iCol,iLay,ntiw) = qtnp(iCol,iLay,ntiw) + dqidt_pbl(iCol,iLay)
+    ! Procces-split scheme (default), accumulate tendencies...
+    if (.not. ysu_timesplit) then
+       do iLay = 1,nLay
+          do iCol = 1,nCol
+             utnp(iCol,iLay)      = utnp(iCol,iLay)      + dudt_pbl(iCol,iLay)
+             vtnp(iCol,iLay)      = vtnp(iCol,iLay)      + dvdt_pbl(iCol,iLay)
+             ttnp(iCol,iLay)      = ttnp(iCol,iLay)      + dtdt_pbl(iCol,iLay)
+             qtnp(iCol,iLay,1)    = qtnp(iCol,iLay,1)    + dqvdt_pbl(iCol,iLay)
+             qtnp(iCol,iLay,ntcw) = qtnp(iCol,iLay,ntcw) + dqcdt_pbl(iCol,iLay)
+             qtnp(iCol,iLay,ntiw) = qtnp(iCol,iLay,ntiw) + dqidt_pbl(iCol,iLay)
+          enddo
        enddo
-    enddo
-    
     ! Time-splt scheme, advance internal physics state...
-    ! DJS2023: Pass in _new_state fields with intent(inout), apply tendencies.
+    else
+       do iLay = 1,nLay
+          do iCol = 1,nCol
+             u1(iCol,iLay)  = u(iCol,iLay)     + dtp*dudt_pbl(iCol,iLay)
+             v1(iCol,iLay)  = v(iCol,iLay)     + dtp*dvdt_pbl(iCol,iLay)
+             t1(iCol,iLay)  = t(iCol,iLay)     + dtp*dtdt_pbl(iCol,iLay)
+             q1(iCol,iLay)  = q(iCol,iLay,1)   + dtp*dqvdt_pbl(iCol,iLay)
+             qc1(iCol,iLay) = q(iCo,iLay,ntcw) + dtp*dqcdt_pbl(iCol,iLay)
+             qi1(iCol,iLay) = q(iCo,iLay,ntiw) + dtp*dqidt_pbl(iCol,iLay)
+          enddo
+       enddo
+    endif
 
   end subroutine mmm_ysu_run
 
