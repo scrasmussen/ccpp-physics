@@ -370,6 +370,13 @@
   dimensions = ()
   type = logical
   intent = in
+[ysu_timesplit]
+  standard_name = flag_to_advance_internal_state_after_YSU_PBL_scheme
+  long_name = flag to advance internal physics state after calling YSU PBL scheme
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
 [do_ysu_cldice]
   standard_name = flag_to_include_cloud_ice_water_mixing_ratio_in_ysu_pbl
   long_name = flag for ice water mixing ratio
@@ -448,38 +455,6 @@
   type = real
   kind = kind_phys
   intent = out
-[dusfc]
-  standard_name = instantaneous_surface_x_momentum_flux
-  long_name = x momentum flux
-  units = Pa
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = out
-[dvsfc]
-  standard_name = instantaneous_surface_y_momentum_flux
-  long_name = y momentum flux
-  units = Pa
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = out
-[dtsfc]
-  standard_name = instantaneous_surface_upward_sensible_heat_flux
-  long_name = surface upward sensible heat flux
-  units = W m-2
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = out
-[dqsfc]
-  standard_name = instantaneous_surface_upward_latent_heat_flux
-  long_name = surface upward latent heat flux
-  units = W m-2
-  dimensions = (horizontal_loop_extent)
-  type = real
-  kind = kind_phys
-  intent = out
 [hpbl]
   standard_name = atmosphere_boundary_layer_thickness
   long_name = PBL thickness
@@ -533,6 +508,54 @@
   long_name = updated tendency of the tracers due to model physics
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension,number_of_tracers)
+  type = real
+  kind = kind_phys
+  intent = inout
+[q1]
+  standard_name = specific_humidity_of_new_state
+  long_name = updated vapor specific humidity
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[t1]
+  standard_name = air_temperature_of_new_state
+  long_name = updated temperature
+  units = K
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[u1]
+  standard_name = x_wind_of_new_state
+  long_name = updated x-direction wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[v1]
+  standard_name = y_wind_of_new_state
+  long_name = updated y-direction wind
+  units = m s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qc1]
+  standard_name = cloud_liquid_water_mixing_ratio_of_new_state
+  long_name = cloud water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qi1]
+  standard_name = cloud_ice_mixing_ratio_of_new_state
+  long_name = ice water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
   intent = inout
