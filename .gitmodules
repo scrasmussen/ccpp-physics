@@ -2,10 +2,7 @@
   path = physics/rte-rrtmgp
   url = https://github.com/earth-system-radiation/rte-rrtmgp
   branch = dtc/ccpp
-[submodule "physics/rte-rrtmgp"]
-  path = physics/mmm_physics
-  url = https://github.com/ldfowler58/SCM-physics.git
-  branch = main
 [submodule "physics/mmm_physics"]
-	path = physics/mmm_physics
-	url = https://github.com/ldfowler58/SCM-physics.git
+  path = physics/mmm_physics
+  url = https://github.com/dustinswales/mmm_physics.git
+  branch = main

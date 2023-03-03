@@ -191,12 +191,12 @@ contains
     else
        do iLay = 1,nLay
           do iCol = 1,nCol
-             u1(iCol,iLay)  = u(iCol,iLay)     + dtp*dudt_pbl(iCol,iLay)
-             v1(iCol,iLay)  = v(iCol,iLay)     + dtp*dvdt_pbl(iCol,iLay)
-             t1(iCol,iLay)  = t(iCol,iLay)     + dtp*dtdt_pbl(iCol,iLay)
-             q1(iCol,iLay)  = q(iCol,iLay,1)   + dtp*dqvdt_pbl(iCol,iLay)
-             qc1(iCol,iLay) = q(iCo,iLay,ntcw) + dtp*dqcdt_pbl(iCol,iLay)
-             qi1(iCol,iLay) = q(iCo,iLay,ntiw) + dtp*dqidt_pbl(iCol,iLay)
+             u1(iCol,iLay)  = u(iCol,iLay)      + dtp*dudt_pbl(iCol,iLay)
+             v1(iCol,iLay)  = v(iCol,iLay)      + dtp*dvdt_pbl(iCol,iLay)
+             t1(iCol,iLay)  = t(iCol,iLay)      + dtp*dtdt_pbl(iCol,iLay)
+             q1(iCol,iLay)  = q(iCol,iLay,1)    + dtp*dqvdt_pbl(iCol,iLay)
+             qc1(iCol,iLay) = q(iCol,iLay,ntcw) + dtp*dqcdt_pbl(iCol,iLay)
+             qi1(iCol,iLay) = q(iCol,iLay,ntiw) + dtp*dqidt_pbl(iCol,iLay)
           enddo
        enddo
     endif
