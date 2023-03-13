@@ -93,7 +93,7 @@ contains
     integer :: iCol, iLay, ysu_topdown_pblmix_int !*NOTE* This will go away if/when bl_ysu_run accepts this switch directly as a logical.
     real(kind_phys) :: tvcon
     real(kind_phys),dimension(nCol) :: xland, hfx, qfx, rho, ust, znt
-    real(kind_phys),dimension(nCol, nLay) :: rthraten, dz
+    real(kind_phys),dimension(nCol, nLay) :: rthraten, dz, exch_hx2D, exch_mx2D
     real(kind_phys),dimension(nCol, nLay+1) :: zi
     integer :: i,k
 
@@ -165,9 +165,13 @@ contains
          do_ysu_cldliq, do_ysu_cldice, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,  &
          dqidt_pbl, dqtdt_pbl, con_cp, con_g, rovcp, con_rd, rovg, ep1, ep2, karman, xlv,   &
          con_rv, dz, ps, znt, ust, hpbl, psim, psih, xland, hfx, qfx, wspd, br, dtp, kpbl1d,&
-         exch_hx, exch_mx, wstar, delta, u10, v10, uo_sfc, vo_sfc, rthraten,                &
+         exch_hx2D, exch_mx2D, wstar, delta, u10, v10, uo_sfc, vo_sfc, rthraten,            &
          ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,&
          b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay, nLay+1, errmsg, errflg)
+
+    ! Only need exchange coefficients at the surface.
+    exch_hx(:) = exch_hx2D(:,1)
+    exch_mx(:) = exch_mx2D(:,1)
 
     ! #######################################################################################
     !
