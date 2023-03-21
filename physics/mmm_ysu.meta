@@ -463,6 +463,38 @@
   type = real
   kind = kind_phys
   intent = out
+[dusfc]
+  standard_name = instantaneous_surface_x_momentum_flux
+  long_name = x momentum flux
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dvsfc]
+  standard_name = instantaneous_surface_y_momentum_flux
+  long_name = y momentum flux
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dtsfc]
+  standard_name = instantaneous_surface_upward_sensible_heat_flux
+  long_name = surface upward sensible heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[dqsfc]
+  standard_name = instantaneous_surface_upward_latent_heat_flux
+  long_name = surface upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
 [u10]
   standard_name = x_wind_at_10m
   long_name = x component of wind at 10 m

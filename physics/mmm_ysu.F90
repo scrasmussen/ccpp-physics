@@ -53,7 +53,7 @@ contains
        do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, ysu_timesplit, uo_sfc, vo_sfc, ctopo,&
        ctopo2, frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk,&
        dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl, dqidt_pbl, dqtdt_pbl, exch_hx,   &
-       exch_mx, hpbl, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
+       exch_mx, hpbl, dusfc, dvsfc, dtsfc, dqsfc, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
        qtnp, u1, v1, t1, q1, qc1, qi1, errmsg, errflg)
 
     ! Inputs
@@ -78,7 +78,8 @@ contains
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg
     integer,          intent(out), dimension(:) :: kpbl1d
-    real(kind_phys),  intent(out), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx
+    real(kind_phys),  intent(out), dimension(:) :: hpbl, wstar, delta, exch_hx, exch_mx,  &
+         dusfc, dvsfc, dtsfc, dqsfc
     real(kind_phys),  intent(out), dimension(:,:) :: dudt_pbl, dvdt_pbl, dtdt_pbl,        &
          dqvdt_pbl, dqcdt_pbl, dqidt_pbl
     real(kind_phys),  intent(out), dimension(:,:,:) :: dqtdt_pbl
@@ -164,10 +165,11 @@ contains
     call bl_ysu_run(u, v, t, q(:,:,1), q(:,:,ntcw), q(:,:,ntiw), ntrac, q, p, pi, prslk,    &
          do_ysu_cldliq, do_ysu_cldice, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,  &
          dqidt_pbl, dqtdt_pbl, con_cp, con_g, rovcp, con_rd, rovg, ep1, ep2, karman, xlv,   &
-         con_rv, dz, ps, znt, ust, hpbl, psim, psih, xland, hfx, qfx, wspd, br, dtp, kpbl1d,&
-         exch_hx2D, exch_mx2D, wstar, delta, u10, v10, uo_sfc, vo_sfc, rthraten,            &
-         ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,&
-         b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay, nLay+1, errmsg, errflg)
+         con_rv, dz, ps, znt, ust, hpbl, dusfc, dvsfc, dtsfc, dqsfc, psim, psih, xland, hfx,&
+         qfx, wspd, br, dtp, kpbl1d, exch_hx2D, exch_mx2D, wstar, delta, u10, v10, uo_sfc,  &
+         vo_sfc, rthraten, ysu_topdown_pblmix_int, ctopo, ctopo2, a_u, a_v, a_t, a_q, a_e,  &
+         b_u, b_v, b_t, b_q, b_e, sfk, vlk, dlu, dlg, frcurb, ysu_add_bep, 1, nCol, nLay,   &
+         nLay+1, errmsg, errflg)
 
     ! Only need exchange coefficients at the surface.
     exch_hx(:) = exch_hx2D(:,1)
