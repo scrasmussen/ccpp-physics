@@ -49,16 +49,20 @@ contains
   ! #########################################################################################
   subroutine mmm_ysu_run(nCol, nLay, ntrac, slimask, u, v, t, q, ntcw, ntiw, p, pi, phii,   &
        prslk, ps, zorl, psim, psih, heat, evap, sfc_tau, wspd, u10, v10, con_cp, con_g,     &
-       con_rd, ep1, ep2, br, karman, dtp, xlv, con_rv, xmu, lwh, swh, do_ysu_cldliq,        &
-       do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, ysu_timesplit, uo_sfc, vo_sfc, ctopo,&
-       ctopo2, frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q, b_e, dlu, dlg, sfk, vlk,&
-       dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl, dqidt_pbl, dqtdt_pbl, exch_hx,   &
-       exch_mx, hpbl, dusfc, dvsfc, dtsfc, dqsfc, kpbl1d, wstar, delta, utnp, vtnp, ttnp,   &
-       qtnp, u1, v1, t1, q1, qc1, qi1, errmsg, errflg)
+       ntqv, index_of_temperature, index_of_x_wind, index_of_y_wind, index_of_process_pbl,  &
+       dtend, dtidx, con_rd, ep1, ep2, br, karman, dtp, xlv, con_rv, xmu, lwh, swh,         &
+       do_ysu_cldliq, do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, ysu_timesplit,        &
+       flag_for_pbl_generic_tend, lssav, ldiag3d,                                           &
+       uo_sfc, vo_sfc, ctopo, ctopo2, frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,  &
+       b_e, dlu, dlg, sfk, vlk, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,         &
+       dqidt_pbl, dqtdt_pbl, exch_hx, exch_mx, hpbl, dusfc, dvsfc, dtsfc, dqsfc, kpbl1d,    &
+       wstar, delta, utnp, vtnp, ttnp, qtnp, u1, v1, t1, q1, qc1, qi1, errmsg, errflg)
 
     ! Inputs
-    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix, ysu_timesplit
-    integer, intent(in) :: nCol, nLay, ntrac, ntcw, ntiw
+    logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix, ysu_timesplit, &
+         flag_for_pbl_generic_tend, lssav, ldiag3d
+    integer, intent(in) :: nCol, nLay, ntrac, ntcw, ntiw, ntqv, index_of_temperature,       &
+         index_of_x_wind, index_of_y_wind, index_of_process_pbl
     integer, intent(in),dimension(:) :: slimask
     real(kind_phys),intent(in) :: con_cp, con_g, con_rd, ep1, ep2, karman, con_rv, xlv, dtp
     real(kind_phys),intent(in),dimension(:) :: ps, zorl, psim, psih, heat, evap, sfc_tau,   &
@@ -90,13 +94,16 @@ contains
     real(kind_phys),  intent(inout), dimension(:,:,:) :: qtnp
     real(kind_phys),  intent(inout), dimension(:,:)   :: u1, v1, t1, q1, qc1, qi1
 
+    real(kind_phys),  intent(inout), dimension(:,:,:) :: dtend
+    integer,          intent(in),    dimension(:,:)   :: dtidx
+
     ! Locals
     integer :: iCol, iLay, ysu_topdown_pblmix_int !*NOTE* This will go away if/when bl_ysu_run accepts this switch directly as a logical.
     real(kind_phys) :: tvcon
     real(kind_phys),dimension(nCol) :: xland, hfx, qfx, rho, ust, znt
     real(kind_phys),dimension(nCol, nLay) :: rthraten, dz, exch_hx2D, exch_mx2D
     real(kind_phys),dimension(nCol, nLay+1) :: zi
-    integer :: i,k
+    integer :: i,k,idtend
 
     ! Initialize CCPP error handling
     errmsg = ''
@@ -205,6 +212,32 @@ contains
              qi1(iCol,iLay) = q(iCol,iLay,ntiw) + dtp*dqidt_pbl(iCol,iLay)
           enddo
        enddo
+    endif
+
+    ! Save physics tendencies.
+    if(lssav .and. ldiag3d .and. .not. flag_for_pbl_generic_tend) then
+       ! Temperature
+       idtend = dtidx(index_of_temperature,index_of_process_pbl)
+       if(idtend>=1) then
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dudt_pbl
+       endif
+       ! Specific-humidity
+       idtend = dtidx(ntqv+100,index_of_process_pbl)
+       if(idtend>=1) then
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dqvdt_pbl
+       endif
+       ! Zonal-wind
+       idtend = dtidx(index_of_x_wind,index_of_process_pbl)
+       if(idtend>=1) then
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dudt_pbl
+       endif
+       ! Meridional-wind
+       idtend = dtidx(index_of_y_wind,index_of_process_pbl)
+       if(idtend>=1) then
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dvdt_pbl
+       endif
+       ! Cloud liquid
+       ! Cloud ice
     endif
 
   end subroutine mmm_ysu_run
