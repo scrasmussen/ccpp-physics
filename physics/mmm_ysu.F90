@@ -52,7 +52,7 @@ contains
        ntqv, index_of_temperature, index_of_x_wind, index_of_y_wind, index_of_process_pbl,  &
        dtend, dtidx, con_rd, ep1, ep2, br, karman, dtp, xlv, con_rv, xmu, lwh, swh,         &
        do_ysu_cldliq, do_ysu_cldice, ysu_add_bep, ysu_topdown_pblmix, ysu_timesplit,        &
-       flag_for_pbl_generic_tend, lssav, ldiag3d,                                           &
+       flag_for_pbl_generic_tend, lssav, ldiag3d, top_at_1,                                 &
        uo_sfc, vo_sfc, ctopo, ctopo2, frcurb, a_u, a_v, a_t, a_q, a_e, b_u, b_v, b_t, b_q,  &
        b_e, dlu, dlg, sfk, vlk, dudt_pbl, dvdt_pbl, dtdt_pbl, dqvdt_pbl, dqcdt_pbl,         &
        dqidt_pbl, dqtdt_pbl, exch_hx, exch_mx, hpbl, dusfc, dvsfc, dtsfc, dqsfc, kpbl1d,    &
@@ -60,7 +60,7 @@ contains
 
     ! Inputs
     logical, intent(in) :: do_ysu_cldliq, do_ysu_cldice, ysu_topdown_pblmix, ysu_timesplit, &
-         flag_for_pbl_generic_tend, lssav, ldiag3d
+         flag_for_pbl_generic_tend, lssav, ldiag3d, top_at_1
     integer, intent(in) :: nCol, nLay, ntrac, ntcw, ntiw, ntqv, index_of_temperature,       &
          index_of_x_wind, index_of_y_wind, index_of_process_pbl
     integer, intent(in),dimension(:) :: slimask
@@ -182,6 +182,17 @@ contains
     exch_hx(:) = exch_hx2D(:,1)
     exch_mx(:) = exch_mx2D(:,1)
 
+    ! Convert tendencies from potential-temperature -> temperature
+    do iCol = 1,nCol
+       if (top_at_1) then
+          dtsfc(iCol) = dtsfc(iCol) * prslk(iCol,nLay)
+       else
+          dtsfc(iCol) = dtsfc(iCol) * prslk(iCol,1)
+       endif
+       do iLay = 1,nLay
+          dtdt_pbl(iCol,iLay) = dtdt_pbl(iCol,iLay)*prslk(iCol,iLay)
+       enddo
+    enddo
     ! #######################################################################################
     !
     ! GFS MMM-YSU-PBL post (couple YSU scheme...) 
@@ -219,22 +230,22 @@ contains
        ! Temperature
        idtend = dtidx(index_of_temperature,index_of_process_pbl)
        if(idtend>=1) then
-          dtend(:,:,idtend) = dtend(:,:,idtend) + dudt_pbl
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dtp*dtdt_pbl
        endif
        ! Specific-humidity
        idtend = dtidx(ntqv+100,index_of_process_pbl)
        if(idtend>=1) then
-          dtend(:,:,idtend) = dtend(:,:,idtend) + dqvdt_pbl
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dtp*dqvdt_pbl
        endif
        ! Zonal-wind
        idtend = dtidx(index_of_x_wind,index_of_process_pbl)
        if(idtend>=1) then
-          dtend(:,:,idtend) = dtend(:,:,idtend) + dudt_pbl
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dtp*dudt_pbl
        endif
        ! Meridional-wind
        idtend = dtidx(index_of_y_wind,index_of_process_pbl)
        if(idtend>=1) then
-          dtend(:,:,idtend) = dtend(:,:,idtend) + dvdt_pbl
+          dtend(:,:,idtend) = dtend(:,:,idtend) + dtp*dvdt_pbl
        endif
        ! Cloud liquid
        ! Cloud ice

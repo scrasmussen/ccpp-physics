@@ -398,6 +398,13 @@
   dimensions = ()
   type = logical
   intent = in
+[top_at_1]
+  standard_name = flag_for_vertical_ordering_in_radiation
+  long_name = flag for vertical ordering in radiation
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
 [dudt_pbl]
   standard_name = instantaneous_tendency_of_x_wind_due_to_boundary_layer
   long_name = tendency of x wind due to boundary layer
