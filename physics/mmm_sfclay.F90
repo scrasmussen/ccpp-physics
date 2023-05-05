@@ -1,6 +1,6 @@
 ! ###########################################################################################
 !
-! This is a ccpp-compliant wrapper to call the orographic gravity wave drag scheme implemented
+! This is a ccpp-compliant wrapper to call the MYNN surface-layer physics scheme implemented
 ! by NCAR MMM.
 !
 ! ###########################################################################################
@@ -40,35 +40,31 @@ contains
   ! #########################################################################################
   !
   ! #########################################################################################
-  subroutine mmm_sfclay_run(nCol, nLay, mmm_ogwd_sfcflx, dx, slimask, ps, tsfc, qsfc,  &
-        lh, br1, chs2, cqs2, u, v, t, q, p, pi, phii, con_1ograv, con_cp, con_g,       &
-       con_rocp, con_rd, con_hvap, ep1, ep2, karman, prsl1, hpbl, stress_wat, stress_lnd,   &
-       stress_ice,rmol, zorl, mol, u10, v10, t2m, q2m, hflx, qflx, flhc, flqc, zol, wspd, psim, psih,   &
-       isftcflx, iz0tlnd, ustm, ck, cka, cd, cda, errmsg, errflg)
+  subroutine mmm_sfclay_run(nCol, nLay, dx, slimask, ps, tsfc, qsfc, lh, &
+       br1, chs2, cqs2, u, v, t, q, p, pi, phii, con_1ograv, con_cp, con_g, con_rocp,       &
+       con_rd, con_hvap, ep1, ep2, karman, stress, prsl1, hpbl, &
+       rmol, zorl, ust, mol, u10, v10, t2m, q2m, hflx, qflx, flhc, flqc, zol, wspd, fm, fh,  fm10, fh2, &
+       sfclay_compute_flux, isftcflx, iz0tlnd, ustm, ck, cd, errmsg, errflg)
 
     ! Inputs
     integer, intent(in) :: &
          nCol,         & ! Number of horizontal gridpoints
-         nLay,         & ! Number of vertical layers
-         mmm_ogwd_sfcflx ! If true, use supplied surface heat/moisture fluxes in scheme.
+         nLay            ! Number of vertical layers
     real(kind_phys), intent(in) :: &
-         con_1ograv,   & ! Physical constant
-         con_cp,       & ! Physical constant
-         con_g,        & ! Physical constant
-         con_rocp,     & ! Physical constant
-         con_rd,       & ! Physical constant
-         con_hvap,     & ! Physical constant
-         ep1,          & ! Physical constant
-         ep2,          & ! Physical constant
-         karman          ! Physical constant
+         con_1ograv,   & ! Physical constant: 1/gravity          (s2 m-1)
+         con_cp,       & ! Physical constant: cp                 (J kg-1 K-1)
+         con_g,        & ! Physical constant: gravity            (m s-2)
+         con_rocp,     & ! Physical constant: Rd/cp              (none)
+         con_rd,       & ! Physical constant: Rd                 (J kg-1 K-1)
+         con_hvap,     & ! Physical constant: latent heat of vap (J kg-1 K-1)
+         ep1,          & ! Physical constant: Rv/Rd - 1          (none)
+         ep2,          & ! Physical constant: Rd/Rv              (none)
+         karman          ! Physical constant: von karman cnst.   (none)
     integer, dimension(:), intent(in) :: &
          slimask         ! landmask: sea/land/ice=0/1/2          (none)
     real(kind_phys), dimension(:), intent(in) :: &
          prsl1,        & ! Air pressure @ lowest model-layer     (Pa)
          hpbl,         & ! PBL height                            (m)
-         stress_wat,   & ! Wind-stress @ surface over water      (m2 s-2)
-         stress_lnd,   & ! Wind-stress @ surface over land       (m2 s-2)
-         stress_ice,   & ! Wind-stress @ surface over ice        (m2 s-2)
          ps,           & ! Air pressure @ surface                (Pa)
          tsfc,         & ! Air temperature @ surface             (K)
          dx              ! Horizontal grid size                  (m)
@@ -83,10 +79,12 @@ contains
 
     ! Input/Output
     real(kind_phys), dimension(:), intent(inout) :: &
+         stress,       & ! Surface wind stress 
          qsfc,         & ! Surface specific-humidity             (kg kg-1)
          lh,           & ! Latent heat @ surface                 (W m-2)
          rmol,         & ! Reciprocal of Monin-Obukhov length    (m-1)
          zorl,         & ! Surface roughness-length              (cm)
+         ust,          & ! Surface friction velocity             (m s-1)
          mol,          & ! T* (similarity theory)                (K)
          flhc,         & ! Exchange coefficient for heat         (W m-2 K-1)
          flqc,         & ! Exchange coefficient for moisture     (kg m-2 s-1)
@@ -102,31 +100,37 @@ contains
          hflx,         & ! Upward sensible heat flux @ surface   (K m s-1)
          qflx            ! Upward latent heat flux @ surface     (kg kg-1 m s-1)
     ! Outputs
-    real(kind_phys), dimension(:), intent(out) :: &
-         psim,         & ! MO similarity parameter for momentum  (none)
-         psih            ! MO similarity parameter for heat      (none)
+    real(kind_phys), dimension(:), intent(inout) :: &
+         fm,           & ! MO similarity parameter for momentum  (none)
+         fh,           & ! MO similarity parameter for heat      (none)
+         fm10,         & !               @10m for      momentum  (none)
+         fh2             !               @2m for       heat      (none)
     character(len=*), intent(out) :: &
          errmsg          ! CCPP error message
     integer, intent(out) :: &
          errflg          ! CCPP error code
 
     ! Optional
+    logical, intent(in), optional :: &
+         sfclay_compute_flux
     integer, intent(in), optional :: &
          isftcflx,     & ! Flag to control thermal roughness-length over water.
          iz0tlnd         ! Flag to control thermal roughness-length over land.
     real(kind_phys), intent(out),   dimension(:), optional :: &
-         ck,           & ! Enthalpy exchange coeff @ 10m
-         cka,          & ! Enthalpy exchange coeff @ lowest model level
-         cd,           & ! Momentum exchange coeff @ 10m
-         cda             ! Momentum exchange coeff @ lowest model level 
+         ck,           & ! Enthalpy exchange coeff @ lowest model level
+!         ck10,         & ! Enthalpy exchange coeff @ 10m
+         cd!,           & ! Momentum exchange coeff @ lowest model level
+!         cd10            ! Momentum exchange coeff @ 10m 
     real(kind_phys), intent(inout), dimension(:), optional :: &
          ustm            ! u* in similarity theory (m/s) w* added to wspd
 
     ! Locals
-    integer :: iCol, iLay, isfc, isfflx, shalwater_z0
+    integer :: iCol, iLay, isfc, isfflx, shalwater_z0, sfclay_compute_fluxi
     real(kind_phys) :: tvcon, p1000mb=100000.
-    real(kind_phys), dimension(nCol) :: ust, sfc_mavail, xland, rho, chs, cpm, pbl_regime, &
-         fm, fh, gz1oz0, water_depth, znt, qgh
+    real(kind_phys), dimension(nCol) :: sfc_mavail, xland, chs, cpm, pbl_regime, &
+         gz1oz0, znt, qgh
+    real(kind_phys), dimension(nCol) :: water_depth, cd10, ck10 ! DJS2023: not used
+
     real(kind_phys), dimension(nCol,nLay) :: dz
     real(kind_phys), dimension(nCol,nLay+1) :: zi
     real(kind_phys), parameter :: svp1    = 0.6112
@@ -175,9 +179,7 @@ contains
 
     ! Surface friction velocity (from surface wind-stress)
     do iCol = 1,nCol
-       if (slimask(iCol) == 0) ust(icol) = sqrt(stress_wat(iCol))
-       if (slimask(iCol) == 1) ust(iCol) = sqrt(stress_lnd(iCol))
-       if (slimask(iCol) == 2) ust(iCol) = sqrt(stress_ice(iCol))
+       ust(iCol) = amax1(0.001, sqrt(stress(iCol)))
     enddo
 
     ! Convert roughness length (cm -> m)
@@ -188,24 +190,51 @@ contains
 
     isfc = 1
 
+    !
+    if (sfclay_compute_flux) then
+       sfclay_compute_fluxi = 1
+    else
+       sfclay_compute_fluxi = 0
+    endif
+
     ! #######################################################################################
     !
     ! Call NCAR MMM surface-layer scheme
     !
     ! #######################################################################################
-    write(*,'(a12,12f10.6)') 'MMM_SFCLAY:',hflx, qflx, tsfc, u10, v10, t2m, t2m, q2m, flhc, flqc, qgh, qsfc
+    ! Initialize locals
+    chs        = 0.
+    cpm        = 0.
+    pbl_regime = 0.
+    gz1oz0     = 0.
+    qgh        = 0.
+    ck10       = 0.
+    cd10       = 0.
+
+!    write(*,'(a50)') '---------------------------------------------------------------------------'
+!    write(*,'(a18,6f12.2)') 'MMM_SFCLAY(preE):', u(:,isfc), v(:,isfc), t(:,isfc), q(:,isfc), p(:,isfc), dz(:,isfc)
+
     call sf_sfclayrev_run(u(:,isfc), v(:,isfc), t(:,isfc), q(:,isfc), p(:,isfc), dz(:,isfc),&
          con_cp, con_g, con_rocp, con_rd, con_hvap, prsl1, chs, chs2, cqs2, cpm, hpbl, rmol,&
-         znt, ust, sfc_mavail, zol, mol, pbl_regime, psim, psih, fm, fh, xland, hflx, qflx, &
+         znt, ust, sfc_mavail, zol, mol, pbl_regime, fm, fh, fm10, fh2, xland, hflx, qflx, &
          tsfc, u10, v10, t2m, t2m, q2m, flhc, flqc, qgh, qsfc, lh, gz1oz0, wspd, br1,       &
          isfflx, dx, svp1, svp2, svp3, svpt0, ep1, ep2, karman, eomeg, stbolt, p1000mb,     &
-         shalwater_z0, water_depth, shalwater_depth, isftcflx, iz0tlnd, mmm_ogwd_sfcflx,    &
-         ustm, ck, cka, cd, cda, 1, nCol, errmsg, errflg)
-    write(*,'(a12,12f10.6)') 'MMM_SFCLAY:',hflx, qflx, tsfc, u10, v10, t2m, t2m, q2m, flhc, flqc, qgh, qsfc
+         shalwater_z0, water_depth, shalwater_depth, isftcflx, iz0tlnd, sfclay_compute_fluxi,  &
+         ustm, ck, ck10, cd, cd10, 1, nCol, errmsg, errflg)
+!    write(*,'(a50)') '...'
+!    write(*,'(a18,7f12.2)') 'MMM_SFCLAY(pstA):', pbl_regime, hflx, qflx, qsfc, mol, rmol, gz1oz0
+!    write(*,'(a18,7f12.2)') 'MMM_SFCLAY(pstB):', wspd, br1, fm, fh, fm10, fh2, znt
+!    write(*,'(a18,7f12.2)') 'MMM_SFCLAY(pstC):', zol, ust, cpm, chs2, cqs2, chs, flhc
+!    write(*,'(a18,6f12.6)') 'MMM_SFCLAY(pstD):', flqc, qgh, ck, cd, ck10, cd10
 
     ! #######################################################################################
     !
     ! #######################################################################################
+
+    ! Surface wind stress (m2 s-2)
+    do iCol = 1,nCol
+       stress(iCol) = ust(iCol)*ust(iCol)
+    enddo
 
     ! Convert roughness length (m -> cm)
     zorl(:) = znt(:)*100.
