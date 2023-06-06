@@ -4,5 +4,5 @@
   branch = dtc/ccpp
 [submodule "physics/mmm_physics"]
   path = physics/mmm_physics
-  url = https://github.com/dustinswales/mmm_physics.git
+  url = https://github.com/bluefinweiwei/MMM_physics.git
   branch = main
