@@ -182,7 +182,6 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  intent = out
   kind = kind_phys
   intent = inout
 [dqidt_pbl]
