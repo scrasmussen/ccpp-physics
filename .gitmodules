@@ -2,3 +2,6 @@
   path = physics/rte-rrtmgp
   url = https://github.com/earth-system-radiation/rte-rrtmgp
   branch = main
+[submodule "physics/SCM-physics"]
+	path = physics/SCM-physics
+	url = git@github.com:scrasmussen/SCM-physics.git
