@@ -24,13 +24,13 @@
  radiative flux divergence can produce substantial cooling,
  particularly at the tops of clouds, which can have strong dynamical
  effects on cloud evolution.
- 
+
  Since 2007, the longwave (LW) and the shortwave (SW) radiation
  parameterizations in NCEP's operational GFS are both modified and
  optimized versions of the Rapid Radiative Transfer Model for GCMs
  (RRTMG_LW and RRTMG_SW, respectively) developed at AER \a inc.
  (Atmospheric and Environmental Research)
- (Iacono et al.(2008) \cite iacono_et_al_2008; Mlawer et al.(1997) \cite mlawer_et_al_1997; 
+ (Iacono et al.(2008) \cite iacono_et_al_2008; Mlawer et al.(1997) \cite mlawer_et_al_1997;
   Iacono et al.(2000) \cite iacono_et_al_2000; Clough et al. 2005 \cite clough_et_al_2005). The LW algorithm
  contains 140 unevenly distributed g-points (quadrature points) in 16
  broad spectral bands, while the SW algorithm includes 112 g-points
@@ -43,7 +43,7 @@
  Approximation (\b McICA) method is used in the RRTMG radiative transfer.
  Several cloud overlap methods, including maximum-random, exponential,
  and exponential-random are available in both LW and SW
- radiation calculations. 
+ radiation calculations.
 
  Radiative fields from model outputs (\f$W m^{-2}\f$) include:
 - At surface total sky
@@ -76,8 +76,8 @@
 
 Requests have been made by many physics developers and users to rewrite
 the cloud routines (routines progcld) for radiation computation in the program
-radiation_clouds.f. Those cloud subroutines are very similar, and
-have many lines of common code. We modified the radiation_clouds.f module,
+radiation_clouds.F90. Those cloud subroutines are very similar, and
+have many lines of common code. We modified the radiation_clouds.F90 module,
 and includes all the calculations of the cloud properties to a new subroutine
 radiation_clouds_prop. We also moved the common code from subroutines
 progcld to this new subroutine. Subroutine radiation_clouds_prop can be
@@ -86,9 +86,9 @@ radiation_clouds_prop can connect to the calculations of the cloud
 radiation properties for all the microphysics schemes.
 
 Summary of the major changes:
-- radiation_clouds.f
+- radiation_clouds.F90
 
-  A new subroutine “radiation_clouds_prop” was added to radiation_clouds.f. This new subroutine calculates all cloud radiation properties for all the microphysics schemes. Subroutines "progcld*" were renamed based on the input variables \p imp_physics, and the inactive subroutines were removed from file radiation_clouds.f
+  A new subroutine “radiation_clouds_prop” was added to radiation_clouds.F90. This new subroutine calculates all cloud radiation properties for all the microphysics schemes. Subroutines "progcld*" were renamed based on the input variables \p imp_physics, and the inactive subroutines were removed from file radiation_clouds.F90
  -       'progcld1'        --- > progcld_zhao_carr
  -       'progcld3'        --- > progcld_zhao_carr_pdf
  -       'progcld4'        --- > progcld_gfdl_lin

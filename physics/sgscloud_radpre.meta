@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = sgscloud_radpre
   type = scheme
-  dependencies = funcphys.f90,iounitdef.f,machine.F,module_bfmicrophysics.f,physcons.F90,radcons.f90,radiation_clouds.f,module_mp_thompson.F90
+  dependencies = funcphys.f90,iounitdef.f,machine.F,module_bfmicrophysics.f,physcons.F90,radcons.f90,radiation_clouds.F90,module_mp_thompson.F90
 
 ########################################################################
 [ccpp-arg-table]
@@ -404,7 +404,7 @@
   dimensions = (horizontal_loop_extent,adjusted_vertical_layer_dimension_for_radiation)
   type = real
   kind = kind_phys
-  intent = in 
+  intent = in
 [xlat]
   standard_name = latitude
   long_name = grid latitude

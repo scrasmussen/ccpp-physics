@@ -1,11 +1,11 @@
-!>  \file radiation_clouds.f
+!>  \file radiation_clouds.F90
 !!  This file contains routines to compute cloud related quantities
 !!  for radiation computations.
 
 !              module_radiation_clouds description             !!!!!
 !  ==========================================================  !!!!!
 !                                                                      !
-!    the 'radiation_clouds.f' contains:                                !
+!    the 'radiation_clouds.F90' contains:                              !
 !                                                                      !
 !       'module_radiation_clouds' ---  compute cloud related quantities!
 !                for radiation computations                            !
@@ -56,8 +56,8 @@
 !       'gethml'                 --- get diagnostic hi, mid, low clouds       !
 !                                                                      !
 !    cloud property array description:                                 !
-!          cld_frac  (:,:)  -  layer total cloud fraction              ! 
-!          cld_lwp   (:,:)  -  layer cloud liq water path              ! 
+!          cld_frac  (:,:)  -  layer total cloud fraction              !
+!          cld_lwp   (:,:)  -  layer cloud liq water path              !
 !          cld_reliq (:,:)  -  mean effective radius for liquid cloud  !
 !          cld_iwp   (:,:)  -  layer cloud ice water path              !
 !          cld_reice (:,:)  -  mean effective radius for ice cloud     !
@@ -167,7 +167,7 @@
 !
       use module_iounitdef,    only : NICLTUN
       use module_radiation_cloud_overlap, only: cmp_dcorr_lgth,         &
-     &                                          get_alpha_exper
+                                               get_alpha_exper
       use machine,             only : kind_phys
 !
       implicit   none
@@ -176,8 +176,8 @@
 
 !  ---  version tag and last revision date
       character(40), parameter ::                                       &
-     &   VTAGCLD='NCEP-Radiation_clouds    v5.1  Nov 2012 '
-!    &   VTAGCLD='NCEP-Radiation_clouds    v5.0  Aug 2012 '
+        VTAGCLD='NCEP-Radiation_clouds    v5.1  Nov 2012 '
+!       VTAGCLD='NCEP-Radiation_clouds    v5.0  Aug 2012 '
 
 !  ---  set constant parameters
       real (kind=kind_phys) :: gfac,gord
@@ -208,29 +208,29 @@
 
       ! Default ice crystal sizes vs. temperature following Kristjansson and Mitchell
       real (kind=kind_phys), dimension(95), parameter :: retab =(/      &
-     &                   5.92779, 6.26422, 6.61973, 6.99539, 7.39234,   &
-     &           7.81177, 8.25496, 8.72323, 9.21800, 9.74075, 10.2930,  &
-     &           10.8765, 11.4929, 12.1440, 12.8317, 13.5581, 14.2319,  &
-     &           15.0351, 15.8799, 16.7674, 17.6986, 18.6744, 19.6955,  &
-     &           20.7623, 21.8757, 23.0364, 24.2452, 25.5034, 26.8125,  &
-     &           27.7895, 28.6450, 29.4167, 30.1088, 30.7306, 31.2943,  &
-     &           31.8151, 32.3077, 32.7870, 33.2657, 33.7540, 34.2601,  &
-     &           34.7892, 35.3442, 35.9255, 36.5316, 37.1602, 37.8078,  &
-     &           38.4720, 39.1508, 39.8442, 40.5552, 41.2912, 42.0635,  &
-     &           42.8876, 43.7863, 44.7853, 45.9170, 47.2165, 48.7221,  &
-     &           50.4710, 52.4980, 54.8315, 57.4898, 60.4785, 63.7898,  &
-     &           65.5604, 71.2885, 75.4113, 79.7368, 84.2351, 88.8833,  &
-     &           93.6658, 98.5739, 103.603, 108.752, 114.025, 119.424,  &
-     &           124.954, 130.630, 136.457, 142.446, 148.608, 154.956,  &
-     &           161.503, 168.262, 175.248, 182.473, 189.952, 197.699,  &
-     &           205.728, 214.055, 222.694, 231.661, 240.971, 250.639/)
+                          5.92779, 6.26422, 6.61973, 6.99539, 7.39234,  &
+                 7.81177, 8.25496, 8.72323, 9.21800, 9.74075, 10.2930,  &
+                 10.8765, 11.4929, 12.1440, 12.8317, 13.5581, 14.2319,  &
+                 15.0351, 15.8799, 16.7674, 17.6986, 18.6744, 19.6955,  &
+                 20.7623, 21.8757, 23.0364, 24.2452, 25.5034, 26.8125,  &
+                 27.7895, 28.6450, 29.4167, 30.1088, 30.7306, 31.2943,  &
+                 31.8151, 32.3077, 32.7870, 33.2657, 33.7540, 34.2601,  &
+                 34.7892, 35.3442, 35.9255, 36.5316, 37.1602, 37.8078,  &
+                 38.4720, 39.1508, 39.8442, 40.5552, 41.2912, 42.0635,  &
+                 42.8876, 43.7863, 44.7853, 45.9170, 47.2165, 48.7221,  &
+                 50.4710, 52.4980, 54.8315, 57.4898, 60.4785, 63.7898,  &
+                 65.5604, 71.2885, 75.4113, 79.7368, 84.2351, 88.8833,  &
+                 93.6658, 98.5739, 103.603, 108.752, 114.025, 119.424,  &
+                 124.954, 130.630, 136.457, 142.446, 148.608, 154.956,  &
+                 161.503, 168.262, 175.248, 182.473, 189.952, 197.699,  &
+                 205.728, 214.055, 222.694, 231.661, 240.971, 250.639/)
 
       public progcld_zhao_carr, progcld_zhao_carr_pdf,                  &
-     &       progcld_gfdl_lin, progclduni, progcld_fer_hires,           &
-     &       cld_init, radiation_clouds_prop,                           &
-     &       progcld_thompson_wsm6, progcld_thompson, cal_cldfra3,      &
-     &       find_cloudLayers, adjust_cloudIce, adjust_cloudH2O,        &
-     &       adjust_cloudFinal, gethml
+             progcld_gfdl_lin, progclduni, progcld_fer_hires,           &
+             cld_init, radiation_clouds_prop,                           &
+             progcld_thompson_wsm6, progcld_thompson, cal_cldfra3,      &
+             find_cloudLayers, adjust_cloudIce, adjust_cloudH2O,        &
+             adjust_cloudFinal, gethml
 
 ! =================
       contains
@@ -252,7 +252,7 @@
 !!\param me              print control flag
 !>\section cld_init General Algorithm
       subroutine cld_init                                               &
-     &     ( si, NLAY, imp_physics, me, con_g, con_rd, errflg, errmsg )
+           ( si, NLAY, imp_physics, me, con_g, con_rd, errflg, errmsg )
 !  ===================================================================  !
 !                                                                       !
 ! abstract: cld_init is an initialization program for cloud-radiation   !
@@ -319,10 +319,10 @@
             print *,'   --- NSSL cloud microphysics'
          else
             print *,'  !!! ERROR in cloud microphysc specification!!!', &
-     &              '  imp_physics (NP3D) =',imp_physics
+                    '  imp_physics (NP3D) =',imp_physics
             errflg = 1
             errmsg = 'ERROR(cld_init): cloud mp specification is not'// &
-     &       ' valid'
+             ' valid'
             return
          endif
       endif
@@ -336,29 +336,29 @@
 !! for different cloud microphysics schemes.
 !>\section radiation_clouds_prop General Algorithm
       subroutine radiation_clouds_prop                                  &
-     &     ( plyr, plvl, tlyr, tvly, qlyr, qstl, rhly,                  &    !  ---  inputs:
-     &       ccnd, ncndl, cnvw, cnvc, tracer1,                          &
-     &       xlat, xlon, slmsk, dz, delp, IX, LM, NLAY, NLP1,           &
-     &       deltaq, sup, dcorr_con, me, icloud, kdt,                   &
-     &       ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt,              &
-     &       imp_physics, imp_physics_nssl, imp_physics_fer_hires,      &
-     &       imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,  &
-     &       imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,          &
-     &       imp_physics_mg, iovr, iovr_rand, iovr_maxrand, iovr_max,   &
-     &       iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con,      &
-     &       idcor_hogan, idcor_oreopoulos, lcrick, lcnorm,             &
-     &       imfdeepcnv, imfdeepcnv_gf, imfdeepcnv_c3,                  &
-     &       do_mynnedmf, lgfdlmprad,                                   &
-     &       uni_cld, lmfshal, lmfdeep2, cldcov, clouds1,               &
-     &       effrl, effri, effrr, effrs, effr_in,                       &
-     &       effrl_inout, effri_inout, effrs_inout,                     &
-     &       lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
-     &       dzlay, latdeg, julian, yearlen, gridkm, top_at_1, si,      &
-     &       con_ttp, con_pi, con_g, con_rd, con_thgni,                 &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,          &    !  ---  outputs:
-     &       cld_rwp, cld_rerain, cld_swp, cld_resnow,                  &    
-     &       clds, mtop, mbot, de_lgth, alpha                           &    
-     &      )
+           ( plyr, plvl, tlyr, tvly, qlyr, qstl, rhly,                  &    !  ---  inputs:
+             ccnd, ncndl, cnvw, cnvc, tracer1,                          &
+             xlat, xlon, slmsk, dz, delp, IX, LM, NLAY, NLP1,           &
+             deltaq, sup, dcorr_con, me, icloud, kdt,                   &
+             ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt,              &
+             imp_physics, imp_physics_nssl, imp_physics_fer_hires,      &
+             imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,  &
+             imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,          &
+             imp_physics_mg, iovr, iovr_rand, iovr_maxrand, iovr_max,   &
+             iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con,      &
+             idcor_hogan, idcor_oreopoulos, lcrick, lcnorm,             &
+             imfdeepcnv, imfdeepcnv_gf, imfdeepcnv_c3,                  &
+             do_mynnedmf, lgfdlmprad,                                   &
+             uni_cld, lmfshal, lmfdeep2, cldcov, clouds1,               &
+             effrl, effri, effrr, effrs, effr_in,                       &
+             effrl_inout, effri_inout, effrs_inout,                     &
+             lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
+             dzlay, latdeg, julian, yearlen, gridkm, top_at_1, si,      &
+             con_ttp, con_pi, con_g, con_rd, con_thgni,                 &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,          &    !  ---  outputs:
+             cld_rwp, cld_rerain, cld_swp, cld_resnow,                  &
+             clds, mtop, mbot, de_lgth, alpha                           &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -509,47 +509,47 @@
 !  ---  inputs
       integer,  intent(in) :: IX, LM, NLAY, NLP1, me, ncndl, icloud
       integer,  intent(in) :: ntrac, ntcw, ntiw, ntrw, ntsw, ntgl,      &
-     &                        ntclamt
+                              ntclamt
       integer,  intent(in) :: kdt, imfdeepcnv, imfdeepcnv_gf,           &
-     &     imfdeepcnv_c3
+           imfdeepcnv_c3
       integer,  intent(in) ::                                           &
-     &     imp_physics,                 ! Flag for MP scheme
-     &     imp_physics_nssl,            ! Flag for NSSL scheme
-     &     imp_physics_fer_hires,       ! Flag for fer-hires scheme
-     &     imp_physics_gfdl,            ! Flag for gfdl scheme
-     &     imp_physics_thompson,        ! Flag for thompsonscheme
-     &     imp_physics_wsm6,            ! Flag for wsm6 scheme
-     &     imp_physics_zhao_carr,       ! Flag for zhao-carr scheme
-     &     imp_physics_zhao_carr_pdf,   ! Flag for zhao-carr+PDF scheme
-     &     imp_physics_mg               ! Flag for MG scheme
+           imp_physics,               & ! Flag for MP scheme
+           imp_physics_nssl,          & ! Flag for NSSL scheme
+           imp_physics_fer_hires,     & ! Flag for fer-hires scheme
+           imp_physics_gfdl,          & ! Flag for gfdl scheme
+           imp_physics_thompson,      & ! Flag for thompsonscheme
+           imp_physics_wsm6,          & ! Flag for wsm6 scheme
+           imp_physics_zhao_carr,     & ! Flag for zhao-carr scheme
+           imp_physics_zhao_carr_pdf, & ! Flag for zhao-carr+PDF scheme
+           imp_physics_mg               ! Flag for MG scheme
 
       integer,              intent(in)  ::                               &
-     &     iovr,                         !
-     &     iovr_rand,                    ! Flag for random cloud overlap method
-     &     iovr_maxrand,                 ! Flag for maximum-random cloud overlap method
-     &     iovr_max,                     ! Flag for maximum cloud overlap method
-     &     iovr_dcorr,                   ! Flag for decorrelation-length cloud overlap method
-     &     iovr_exp,                     ! Flag for exponential cloud overlap method
-     &     iovr_exprand,                 ! Flag for exponential-random cloud overlap method
-     &     idcor,
-     &     idcor_con,                   
-     &     idcor_hogan,                 
-     &     idcor_oreopoulos
+           iovr,                      &  !
+           iovr_rand,                 &  ! Flag for random cloud overlap method
+           iovr_maxrand,              &  ! Flag for maximum-random cloud overlap method
+           iovr_max,                  &  ! Flag for maximum cloud overlap method
+           iovr_dcorr,                &  ! Flag for decorrelation-length cloud overlap method
+           iovr_exp,                  &  ! Flag for exponential cloud overlap method
+           iovr_exprand,              &  ! Flag for exponential-random cloud overlap method
+           idcor,                     &
+           idcor_con,                 &
+           idcor_hogan,               &
+           idcor_oreopoulos
 
 
       logical, intent(in)  :: uni_cld, lmfshal, lmfdeep2, effr_in,      &
-     &     do_mynnedmf, lgfdlmprad, top_at_1, lcrick, lcnorm
+           do_mynnedmf, lgfdlmprad, top_at_1, lcrick, lcnorm
 
       real (kind=kind_phys), dimension(:,:,:), intent(in) :: ccnd,      &
-     &                                                       tracer1
+                                                             tracer1
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr,  tvly,  qlyr,  qstl, rhly, cnvw, cnvc, cldcov,       &
-     &       delp, dz, effrl, effri, effrr, effrs, dzlay, clouds1
+             tlyr,  tvly,  qlyr,  qstl, rhly, cnvw, cnvc, cldcov,       &
+             delp, dz, effrl, effri, effrr, effrs, dzlay, clouds1
 
       real (kind=kind_phys), intent(in) :: sup, dcorr_con, con_ttp,     &
-     &     con_pi, con_g, con_rd, con_thgni 
+           con_pi, con_g, con_rd, con_thgni
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk, si
+             slmsk, si
 
       real(kind=kind_phys), dimension(:), intent(in) :: latdeg, gridkm
       real(kind=kind_phys), intent(in) :: julian
@@ -558,15 +558,15 @@
 !  ---  inout
       real(kind=kind_phys),dimension(:,:) :: deltaq
       real(kind=kind_phys),dimension(:,:),intent(inout) ::               &
-     &       effrl_inout, effri_inout, effrs_inout
+             effrl_inout, effri_inout, effrs_inout
       real(kind=kind_phys), dimension(:), intent(inout) ::               &
-     &      lwp_ex, iwp_ex, lwp_fc, iwp_fc
+            lwp_ex, iwp_ex, lwp_fc, iwp_fc
 
 !  ---  outputs
 
       real (kind=kind_phys), dimension(:,:),   intent(out) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
       real (kind=kind_phys), dimension(:,:),   intent(out) :: clds
       real (kind=kind_phys), dimension(:),     intent(out) :: de_lgth
       real (kind=kind_phys), dimension(:,:),   intent(out) :: alpha
@@ -575,12 +575,12 @@
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: ptop1(IX,NK_CLDS+1), rxlat(ix)
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -591,9 +591,9 @@
 !
 !===> ... begin here
 !
-      if (me == 0 .and. kdt == 1) then                                   &
+      if (me == 0 .and. kdt == 1) then
           print*, 'in radiation_clouds_prop=', imp_physics, uni_cld,     &
-     &           ncndl, lgfdlmprad, do_mynnedmf, imfdeepcnv, kdt
+                 ncndl, lgfdlmprad, do_mynnedmf, imfdeepcnv, kdt
       end if
 
       do k = 1, NLAY
@@ -618,64 +618,64 @@
       end do
 
       if (imp_physics == imp_physics_zhao_carr .or.                     &
-     &    imp_physics == imp_physics_mg) then ! zhao/moorthi's p
+          imp_physics == imp_physics_mg) then ! zhao/moorthi's p
                   ! or unified cloud and/or with MG microphysics
 
         if (uni_cld .and. ncndl >= 2) then
           call progclduni (plyr, plvl, tlyr, tvly, ccnd, ncndl,         & !  ---  inputs
-     &                     xlat, xlon, slmsk, dz, delp,                 &
-     &                     IX, NLAY, NLP1, cldcov,                      &
-     &                     effrl, effri, effrr, effrs, effr_in,         &
-     &                     dzlay,                                       & 
-     &                     cldtot, cldcnv, lcrick, lcnorm, con_ttp,     & ! inout
-     &                     cld_frac, cld_lwp, cld_reliq, cld_iwp,       & !  ---  outputs
-     &                     cld_reice,cld_rwp, cld_rerain,cld_swp,       &  
-     &                     cld_resnow)
+                           xlat, xlon, slmsk, dz, delp,                 &
+                           IX, NLAY, NLP1, cldcov,                      &
+                           effrl, effri, effrr, effrs, effr_in,         &
+                           dzlay,                                       &
+                           cldtot, cldcnv, lcrick, lcnorm, con_ttp,     & ! inout
+                           cld_frac, cld_lwp, cld_reliq, cld_iwp,       & !  ---  outputs
+                           cld_reice,cld_rwp, cld_rerain,cld_swp,       &
+                           cld_resnow)
         else
           call progcld_zhao_carr (plyr ,plvl, tlyr, tvly, qlyr,         & !  ---  inputs
-     &                    qstl, rhly, ccnd(1:IX,1:NLAY,1), xlat, xlon,  &
-     &                    slmsk, dz, delp, IX, NLAY, NLP1, uni_cld,     &
-     &                    lmfshal, lmfdeep2,                            &
-     &                    cldcov, effrl, effri, effrr, effrs, effr_in,  &
-     &                    dzlay,                                        &
-     &                    cldtot, cldcnv, lcrick, lcnorm, con_ttp,      & ! inout
-     &                    cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
-     &                    cld_reice,cld_rwp, cld_rerain,cld_swp,        & 
-     &                    cld_resnow)
+                          qstl, rhly, ccnd(1:IX,1:NLAY,1), xlat, xlon,  &
+                          slmsk, dz, delp, IX, NLAY, NLP1, uni_cld,     &
+                          lmfshal, lmfdeep2,                            &
+                          cldcov, effrl, effri, effrr, effrs, effr_in,  &
+                          dzlay,                                        &
+                          cldtot, cldcnv, lcrick, lcnorm, con_ttp,      & ! inout
+                          cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
+                          cld_reice,cld_rwp, cld_rerain,cld_swp,        &
+                          cld_resnow)
         endif
 
       elseif(imp_physics == imp_physics_zhao_carr_pdf) then      ! zhao/moorthi's prognostic cloud+pdfcld
 
         call progcld_zhao_carr_pdf (plyr, plvl, tlyr, tvly, qlyr,       &  !  ---  inputs
-     &                 qstl, rhly, ccnd(1:IX,1:NLAY,1), cnvw, cnvc,     &
-     &                 xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,     &
-     &                 deltaq, sup, kdt, me, dzlay,                     & 
-     &                 cldtot, cldcnv, lcrick, lcnorm, con_thgni,       &  ! inout
-     &                 con_ttp, cld_frac, cld_lwp, cld_reliq, cld_iwp,  &  !  ---  outputs
-     &                 cld_reice,cld_rwp, cld_rerain,cld_swp,           & 
-     &                 cld_resnow)
+                       qstl, rhly, ccnd(1:IX,1:NLAY,1), cnvw, cnvc,     &
+                       xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,     &
+                       deltaq, sup, kdt, me, dzlay,                     &
+                       cldtot, cldcnv, lcrick, lcnorm, con_thgni,       &  ! inout
+                       con_ttp, cld_frac, cld_lwp, cld_reliq, cld_iwp,  &  !  ---  outputs
+                       cld_reice,cld_rwp, cld_rerain,cld_swp,           &
+                       cld_resnow)
 
       elseif (imp_physics == imp_physics_gfdl) then           ! GFDL cloud scheme
 
         if (.not. lgfdlmprad) then
           call progcld_gfdl_lin (plyr, plvl, tlyr, tvly, qlyr,          &    !  ---  inputs
-     &                    qstl, rhly, ccnd(1:IX,1:NLAY,1), cnvw, cnvc,  &
-     &                    xlat, xlon, slmsk, cldcov, dz, delp,          &
-     &                    IX, NLAY, NLP1, dzlay,                        &
-     &                    cldtot, cldcnv, lcrick, lcnorm, con_ttp,      &  ! inout
-     &                    cld_frac, cld_lwp, cld_reliq, cld_iwp,        &  !  ---  outputs
-     &                    cld_reice,cld_rwp, cld_rerain,cld_swp,        &
-     &                    cld_resnow)
+                          qstl, rhly, ccnd(1:IX,1:NLAY,1), cnvw, cnvc,  &
+                          xlat, xlon, slmsk, cldcov, dz, delp,          &
+                          IX, NLAY, NLP1, dzlay,                        &
+                          cldtot, cldcnv, lcrick, lcnorm, con_ttp,      &  ! inout
+                          cld_frac, cld_lwp, cld_reliq, cld_iwp,        &  !  ---  outputs
+                          cld_reice,cld_rwp, cld_rerain,cld_swp,        &
+                          cld_resnow)
         else
 
           call progclduni (plyr, plvl, tlyr, tvly, ccnd, ncndl, xlat,   &    !  ---  inputs
-     &                   xlon, slmsk, dz,delp, IX, NLAY, NLP1, cldcov,  &
-     &                   effrl, effri, effrr, effrs, effr_in,           &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         & 
-     &                   cld_resnow)
+                         xlon, slmsk, dz,delp, IX, NLAY, NLP1, cldcov,  &
+                         effrl, effri, effrr, effrs, effr_in,           &
+                         dzlay,                                         &
+                         cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
         endif
 
 
@@ -687,22 +687,22 @@
           endif
 
           call progcld_fer_hires (plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,   &  !  --- inputs
-     &                    tracer1,xlat,xlon,slmsk,dz,delp,              &
-     &                    ntrac-1, ntcw-1,ntiw-1,ntrw-1,                &
-     &                    IX,NLAY,NLP1, icloud, uni_cld,                &
-     &                    lmfshal, lmfdeep2,                            &
-     &                    cldcov(:,1:NLAY),effrl_inout(:,:),            &
-     &                    effri_inout(:,:), effrs_inout(:,:),           &
-     &                    dzlay,                                        &
-     &                    cldtot, cldcnv, lcnorm,                       &  ! inout
-     &                    cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
-     &                    cld_reice,cld_rwp, cld_rerain,cld_swp,        & 
-     &                    cld_resnow)
+                          tracer1,xlat,xlon,slmsk,dz,delp,              &
+                          ntrac-1, ntcw-1,ntiw-1,ntrw-1,                &
+                          IX,NLAY,NLP1, icloud, uni_cld,                &
+                          lmfshal, lmfdeep2,                            &
+                          cldcov(:,1:NLAY),effrl_inout(:,:),            &
+                          effri_inout(:,:), effrs_inout(:,:),           &
+                          dzlay,                                        &
+                          cldtot, cldcnv, lcnorm,                       &  ! inout
+                          cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
+                          cld_reice,cld_rwp, cld_rerain,cld_swp,        &
+                          cld_resnow)
 
         elseif ( imp_physics == imp_physics_nssl ) then                              ! NSSL MP
 
           if(do_mynnedmf .or. imfdeepcnv == imfdeepcnv_gf .or.          &
-     &          imfdeepcnv == imfdeepcnv_c3) then ! MYNN PBL or GF or unified conv
+                imfdeepcnv == imfdeepcnv_c3) then ! MYNN PBL or GF or unified conv
               !-- MYNN PBL or convective GF
               !-- use cloud fractions with SGS clouds
               do k=1,NLAY
@@ -714,49 +714,49 @@
                 ! --- use clduni with the NSSL microphysics.
                 ! --- make sure that effr_in=.true. in the input.nml!
                 call progclduni (plyr, plvl, tlyr, tvly, ccnd, ncndl,   & !  ---  inputs
-     &                   xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,   &
-     &                   cld_frac,                                      &
-     &                   effrl, effri, effrr, effrs, effr_in ,          &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         &
-     &                   cld_resnow)
+                         xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,   &
+                         cld_frac,                                      &
+                         effrl, effri, effrr, effrs, effr_in ,          &
+                         dzlay,                                         &
+                         cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
           else
             ! MYNN PBL or GF convective are not used
               call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,     & !  --- inputs
-     &                   rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
-     &                   ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
-     &                   ntsw-1,ntgl-1,con_ttp,                         &
-     &                   IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
-     &                   cldcov(:,1:NLAY), cnvw, effrl_inout,           &
-     &                   effri_inout, effrs_inout,                      &
-     &                   lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcnorm,                        &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         &
-     &                   cld_resnow)
+                         rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
+                         ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
+                         ntsw-1,ntgl-1,con_ttp,                         &
+                         IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
+                         cldcov(:,1:NLAY), cnvw, effrl_inout,           &
+                         effri_inout, effrs_inout,                      &
+                         lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
+                         dzlay,                                         &
+                         cldtot, cldcnv, lcnorm,                        &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
           endif ! MYNN PBL or GF
 
         elseif(imp_physics == imp_physics_thompson) then                              ! Thompson MP
 
           if(do_mynnedmf .or. imfdeepcnv == imfdeepcnv_gf               &
-     &          .or. imfdeepcnv == imfdeepcnv_c3) then ! MYNN PBL or GF conv
+                .or. imfdeepcnv == imfdeepcnv_c3) then ! MYNN PBL or GF conv
 
             if (icloud == 3) then
               call progcld_thompson (plyr,plvl,tlyr,qlyr,qstl,rhly,     & !  --- inputs
-     &                    tracer1,xlat,xlon,slmsk,dz,delp,              &
-     &                    ntrac-1, ntcw-1,ntiw-1,ntrw-1,                &
-     &                    ntsw-1,ntgl-1,                                &
-     &                    IX, LM, NLP1, uni_cld, lmfshal, lmfdeep2,     &
-     &                    cldcov(:,1:LM), effrl, effri, effrs,          &
-     &                    lwp_ex, iwp_ex, lwp_fc, iwp_fc,               &
-     &                    dzlay,  gridkm, top_at_1,                     &
-     &                    cldtot, cldcnv,                               &  ! inout
-     &                    cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
-     &                    cld_reice,cld_rwp, cld_rerain,cld_swp,        & 
-     &                    cld_resnow)
+                          tracer1,xlat,xlon,slmsk,dz,delp,              &
+                          ntrac-1, ntcw-1,ntiw-1,ntrw-1,                &
+                          ntsw-1,ntgl-1,                                &
+                          IX, LM, NLP1, uni_cld, lmfshal, lmfdeep2,     &
+                          cldcov(:,1:LM), effrl, effri, effrs,          &
+                          lwp_ex, iwp_ex, lwp_fc, iwp_fc,               &
+                          dzlay,  gridkm, top_at_1,                     &
+                          cldtot, cldcnv,                               &  ! inout
+                          cld_frac, cld_lwp, cld_reliq, cld_iwp,        & !  ---  outputs
+                          cld_reice,cld_rwp, cld_rerain,cld_swp,        &
+                          cld_resnow)
             else
 
               !-- MYNN PBL or convective GF
@@ -770,14 +770,14 @@
                 ! --- use clduni as with the GFDL microphysics.
                 ! --- make sure that effr_in=.true. in the input.nml!
                 call progclduni (plyr, plvl, tlyr, tvly, ccnd, ncndl,   & !  ---  inputs
-     &                   xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,   &
-     &                   cld_frac,                                      &
-     &                   effrl, effri, effrr, effrs, effr_in ,          &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         & 
-     &                   cld_resnow)
+                         xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,   &
+                         cld_frac,                                      &
+                         effrl, effri, effrr, effrs, effr_in ,          &
+                         dzlay,                                         &
+                         cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
             endif
 
           else
@@ -785,31 +785,31 @@
 
             if (icloud == 3) then
               call progcld_thompson (plyr,plvl,tlyr,qlyr,qstl,rhly,     & !  --- inputs
-     &                   tracer1,xlat,xlon,slmsk,dz,delp,               &
-     &                   ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
-     &                   ntsw-1,ntgl-1,                                 &
-     &                   IX, LM, NLP1, uni_cld, lmfshal, lmfdeep2,      &
-     &                   cldcov(:,1:LM), effrl, effri, effrs,           &
-     &                   lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
-     &                   dzlay,  gridkm, top_at_1,                      &
-     &                   cldtot, cldcnv,                                &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         & 
-     &                   cld_resnow)
+                         tracer1,xlat,xlon,slmsk,dz,delp,               &
+                         ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
+                         ntsw-1,ntgl-1,                                 &
+                         IX, LM, NLP1, uni_cld, lmfshal, lmfdeep2,      &
+                         cldcov(:,1:LM), effrl, effri, effrs,           &
+                         lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
+                         dzlay,  gridkm, top_at_1,                      &
+                         cldtot, cldcnv,                                &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
 
             else
               call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,     & !  --- inputs
-     &                   rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
-     &                   ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
-     &                   ntsw-1,ntgl-1,con_ttp,                         &
-     &                   IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
-     &                   cldcov(:,1:NLAY), cnvw, effrl, effri, effrs,   &
-     &                   lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcnorm,                        &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         & 
-     &                   cld_resnow)
+                         rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
+                         ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
+                         ntsw-1,ntgl-1,con_ttp,                         &
+                         IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
+                         cldcov(:,1:NLAY), cnvw, effrl, effri, effrs,   &
+                         lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
+                         dzlay,                                         &
+                         cldtot, cldcnv, lcnorm,                        &  ! inout
+                         cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+                         cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+                         cld_resnow)
             endif
           endif ! MYNN PBL or GF
 
@@ -832,7 +832,7 @@
           ptop1(i,id) = ptopc(id,1) + tem1*max( 0.0, 4.0*rxlat(i)-1.0 )
         enddo
       enddo
-        
+
       ! Compute cloud decorrelation length
       if (idcor == idcor_hogan) then
         call cmp_dcorr_lgth(ix, xlat, con_pi, de_lgth)
@@ -846,9 +846,9 @@
 
       ! Call subroutine get_alpha_exper to define alpha parameter for exponential cloud overlap options
       if ( iovr == iovr_dcorr .or. iovr == iovr_exp                      &
-     &     .or. iovr == iovr_exprand) then
+           .or. iovr == iovr_exprand) then
          call get_alpha_exper(ix, nLay, iovr, iovr_exprand, dzlay,       &
-     &                        de_lgth, cld_frac, alpha)
+                              de_lgth, cld_frac, alpha)
       else
          de_lgth(:) = 0.
          alpha(:,:) = 0.
@@ -865,12 +865,12 @@
 
       call gethml                                                       &
 !  ---  inputs:
-     &     ( plyr, ptop1, cldtot, cldcnv, dz, de_lgth, alpha,           &
-     &       IX, NLAY, iovr, iovr_rand, iovr_maxrand, iovr_max,         &
-     &       iovr_dcorr, iovr_exp, iovr_exprand, top_at_1, si,          &
+           ( plyr, ptop1, cldtot, cldcnv, dz, de_lgth, alpha,           &
+             IX, NLAY, iovr, iovr_rand, iovr_maxrand, iovr_max,         &
+             iovr_dcorr, iovr_exp, iovr_exprand, top_at_1, si,          &
 !  ---  outputs:
-     &       clds, mtop, mbot                                           &
-     &     )
+             clds, mtop, mbot                                           &
+           )
 
       return
 !...................................
@@ -880,14 +880,14 @@
 !! zhao/moorthi's prognostic cloud microphysics scheme.
 !>\section progcld_zhao_carr General Algorithm
       subroutine progcld_zhao_carr                                      &
-     &     ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,                    &    !  ---  inputs:
-     &       xlat,xlon,slmsk,dz,delp, IX, NLAY, NLP1,                   &
-     &       uni_cld, lmfshal, lmfdeep2, cldcov,                        &
-     &       effrl,effri,effrr,effrs,effr_in,                           &
-     &       dzlay, cldtot, cldcnv, lcrick, lcnorm, con_ttp,            &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,                    &    !  ---  inputs:
+             xlat,xlon,slmsk,dz,delp, IX, NLAY, NLP1,                   &
+             uni_cld, lmfshal, lmfdeep2, cldcov,                        &
+             effrl,effri,effrr,effrs,effr_in,                           &
+             dzlay, cldtot, cldcnv, lcrick, lcnorm, con_ttp,            &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -966,28 +966,28 @@
       integer,  intent(in) :: IX, NLAY, NLP1
 
       logical, intent(in)  :: uni_cld, lmfshal, lmfdeep2, effr_in,      &
-     &     lcrick, lcnorm
+           lcrick, lcnorm
 
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr,  tvly,  qlyr,  qstl, rhly, clw, cldcov, delp, dz,    &
-     &       effrl, effri, effrr, effrs, dzlay
+             tlyr,  tvly,  qlyr,  qstl, rhly, clw, cldcov, delp, dz,    &
+             effrl, effri, effrr, effrs, dzlay
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
       real (kind=kind_phys), intent(in) :: con_ttp
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -1089,13 +1089,13 @@
 
         if (.not. lmfshal) then
           call cloud_fraction_XuRandall                                 &
-     &      ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
-     &        cldtot )                                                  & !  ---  outputs 
+            ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
+              cldtot )                                                  & !  ---  outputs
         else
           call cloud_fraction_mass_flx_1                                &
-     &      ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
-     &        cldtot ) 
-        endif  
+            ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
+              cldtot )
+        endif
 
       endif                                ! if (uni_cld) then
 
@@ -1179,14 +1179,14 @@
 !! zhao/moorthi's prognostic cloud microphysics scheme + pdfcld.
 !>\section progcld_zhao_carr_pdf General Algorithm
       subroutine progcld_zhao_carr_pdf                                  &
-     &     ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,cnvw,cnvc,          &    !  ---  inputs:
-     &       xlat,xlon,slmsk, dz, delp,                                 &
-     &       ix, nlay, nlp1,                                            &
-     &       deltaq,sup,kdt,me,                                         &
-     &       dzlay, cldtot, cldcnv, lcrick, lcnorm, con_thgni, con_ttp, &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,cnvw,cnvc,          &    !  ---  inputs:
+             xlat,xlon,slmsk, dz, delp,                                 &
+             ix, nlay, nlp1,                                            &
+             deltaq,sup,kdt,me,                                         &
+             dzlay, cldtot, cldcnv, lcrick, lcnorm, con_thgni, con_ttp, &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -1258,8 +1258,8 @@
       integer,  intent(in) :: ix, nlay, nlp1,kdt
       logical,  intent(in) :: lcrick, lcnorm
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,    &
-     &       tlyr, tvly, qlyr, qstl, rhly, clw, dz, delp, dzlay
-!     &       tlyr, tvly, qlyr, qstl, rhly, clw, cnvw, cnvc
+             tlyr, tvly, qlyr, qstl, rhly, clw, dz, delp, dzlay
+!             tlyr, tvly, qlyr, qstl, rhly, clw, cnvw, cnvc
 !      real (kind=kind_phys), dimension(:,:), intent(in) :: deltaq
       real (kind=kind_phys), intent(in) :: con_thgni, con_ttp
       real (kind=kind_phys), dimension(:,:) :: deltaq, cnvw, cnvc
@@ -1268,21 +1268,21 @@
       real (kind=kind_phys), parameter :: epsq = 1.0e-12
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,    &
-     &       slmsk
+             slmsk
       integer :: me
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(ix,nlay) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -1474,13 +1474,13 @@
 !! GFDL Lin MP prognostic cloud microphysics scheme.
 !>\section progcld_gfdl_lin General Algorithm
       subroutine progcld_gfdl_lin                                       &
-     &     ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,cnvw,cnvc,          & !  ---  inputs:
-     &       xlat,xlon,slmsk,cldtot, dz, delp,                          &
-     &       IX, NLAY, NLP1,                                            &
-     &       dzlay, cldtot1, cldcnv, lcrick, lcnorm, con_ttp,           &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,cnvw,cnvc,          & !  ---  inputs:
+             xlat,xlon,slmsk,cldtot, dz, delp,                          &
+             IX, NLAY, NLP1,                                            &
+             dzlay, cldtot1, cldcnv, lcrick, lcnorm, con_ttp,           &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -1528,7 +1528,7 @@
 !                     =f: do not apply layer smoothing                  !
 !   lcnorm          : control flag for in-cld condensate                !
 !                     =t: normalize cloud condensate                    !
-!                     =f: not normalize cloud condensate                ! 
+!                     =f: not normalize cloud condensate                !
 !                                                                       !
 ! output variables:                                                     !
 !   cloud profiles:                                                     !
@@ -1550,27 +1550,27 @@
       integer,  intent(in) :: IX, NLAY, NLP1
       logical,  intent(in) :: lcrick, lcnorm
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr, tvly, qlyr, qstl, rhly, clw, cldtot, cnvw, cnvc,     &
-     &       delp, dz, dzlay
+             tlyr, tvly, qlyr, qstl, rhly, clw, cldtot, cnvw, cnvc,     &
+             delp, dz, dzlay
       real (kind=kind_phys) :: con_ttp
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
 
       real (kind=kind_phys), dimension(:,:), intent(inout) :: cldtot1
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldcnv,              &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -1714,16 +1714,16 @@
 !! This subroutine computes cloud related quantities using
 !! Ferrier-Aligo cloud microphysics scheme.
       subroutine progcld_fer_hires                                      &
-     &     ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,                    &    !  ---  inputs:
-     &       xlat,xlon,slmsk,dz,delp,                                   &
-     &       ntrac,ntcw,ntiw,ntrw,                                      &
-     &       IX, NLAY, NLP1, icloud,                                    &
-     &       uni_cld, lmfshal, lmfdeep2, cldcov,                        &
-     &       re_cloud,re_ice,re_snow,                                   &
-     &       dzlay, cldtot, cldcnv, lcnorm,                             &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,tvly,qlyr,qstl,rhly,clw,                    &    !  ---  inputs:
+             xlat,xlon,slmsk,dz,delp,                                   &
+             ntrac,ntcw,ntiw,ntrw,                                      &
+             IX, NLAY, NLP1, icloud,                                    &
+             uni_cld, lmfshal, lmfdeep2, cldcov,                        &
+             re_cloud,re_ice,re_snow,                                   &
+             dzlay, cldtot, cldcnv, lcnorm,                             &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -1801,28 +1801,28 @@
       logical, intent(in)  :: uni_cld, lmfshal, lmfdeep2, lcnorm
 
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr, tvly, qlyr, qstl, rhly, cldcov, delp, dz, dzlay
+             tlyr, tvly, qlyr, qstl, rhly, cldcov, delp, dz, dzlay
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::           &
-     &      re_cloud, re_ice, re_snow
+            re_cloud, re_ice, re_snow
 
       real (kind=kind_phys), dimension(:,:,:), intent(in) :: clw
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -1900,12 +1900,12 @@
 
         if (.not. lmfshal) then
           call cloud_fraction_XuRandall                                 &
-     &      ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
-     &        cldtot )                                                  & !  ---  outputs
+            ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
+              cldtot )                                                  & !  ---  outputs
         else
           call cloud_fraction_mass_flx_1                                &
-     &      ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
-     &        cldtot )
+            ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
+              cldtot )
         endif
 
       endif                                ! if (uni_cld) then
@@ -1961,17 +1961,17 @@
 
 ! This subroutine is used by Thompson/WSM6/NSSL cloud microphysics (EMC)
       subroutine progcld_thompson_wsm6                                  &
-     &     ( plyr,plvl,tlyr,qlyr,qstl,rhly,clw,                         &    !  ---  inputs:
-     &       xlat,xlon,slmsk,dz,delp,                                   &
-     &       ntrac,ntcw,ntiw,ntrw,ntsw,ntgl,con_ttp,                    &
-     &       IX, NLAY, NLP1,                                            &
-     &       uni_cld, lmfshal, lmfdeep2, cldcov, cnvw,                  &
-     &       re_cloud,re_ice,re_snow,                                   &
-     &       lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
-     &       dzlay, cldtot, cldcnv, lcnorm,                             &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,qlyr,qstl,rhly,clw,                         &    !  ---  inputs:
+             xlat,xlon,slmsk,dz,delp,                                   &
+             ntrac,ntcw,ntiw,ntrw,ntsw,ntgl,con_ttp,                    &
+             IX, NLAY, NLP1,                                            &
+             uni_cld, lmfshal, lmfdeep2, cldcov, cnvw,                  &
+             re_cloud,re_ice,re_snow,                                   &
+             lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
+             dzlay, cldtot, cldcnv, lcnorm,                             &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -2024,7 +2024,7 @@
 !                     =f: do not apply layer smoothing                  !
 !   lcnorm          : control flag for in-cld condensate                !
 !                     =t: normalize cloud condensate                    !
-!                     =f: not normalize cloud condensate                !  
+!                     =f: not normalize cloud condensate                !
 !                                                                       !
 ! output variables:                                                     !
 !   cloud profiles:                                                     !
@@ -2054,28 +2054,28 @@
       logical, intent(in)  :: uni_cld, lmfshal, lmfdeep2, lcnorm
 
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr, qlyr, qstl, rhly, cldcov, delp, dz, dzlay,           &
-     &       re_cloud, re_ice, re_snow, cnvw
+             tlyr, qlyr, qstl, rhly, cldcov, delp, dz, dzlay,           &
+             re_cloud, re_ice, re_snow, cnvw
       real (kind=kind_phys), dimension(:), intent(inout) ::             &
-     &       lwp_ex, iwp_ex, lwp_fc, iwp_fc
+             lwp_ex, iwp_ex, lwp_fc, iwp_fc
 
       real (kind=kind_phys), dimension(:,:,:), intent(in) :: clw
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
       real (kind=kind_phys), intent(in) :: con_ttp
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
+             cwp, cip, crp, csp, rew, rei, res, rer, tem2d, clwf
 
       real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,       &
-     &       tem1, tem2, tem3
+             tem1, tem2, tem3
 
       integer :: i, k, id, nf
 
@@ -2125,7 +2125,7 @@
         do k = 1, NLAY
           do i = 1, IX
             clwf(i,k) = clw(i,k,ntcw) +  clw(i,k,ntiw) + clw(i,k,ntsw)
-     &      + clw(i,k,ntrw) + cnvw(i,k)
+            + clw(i,k,ntrw) + cnvw(i,k)
           enddo
         enddo
 
@@ -2135,18 +2135,18 @@
           do i = 1, IX
             tem1 = cnvw(i,k)*(1.-tem2d(i,k))
             cwp(i,k) = max(0.0, (clw(i,k,ntcw)+tem1) *
-     &                 gfac * delp(i,k))
+                       gfac * delp(i,k))
             if(tem1 > 1.e-12 .and.  clw(i,k,ntcw) < 1.e-12)
-     &                 rew(i,k)=reliq_def
+                       rew(i,k)=reliq_def
             tem2 = cnvw(i,k)*tem2d(i,k)
             cip(i,k) = max(0.0, (clw(i,k,ntiw) +
-     &             snow2ice*clw(i,k,ntsw) + tem2) *
-     &             gfac * delp(i,k))
+                   snow2ice*clw(i,k,ntsw) + tem2) *
+                   gfac * delp(i,k))
             if(tem2 > 1.e-12 .and.  clw(i,k,ntiw) < 1.e-12)
-     &             rei(i,k)=reice_def
+                   rei(i,k)=reice_def
             crp(i,k) = max(0.0, clw(i,k,ntrw) * gfac * delp(i,k))
             csp(i,k) = max(0.0, (1.-snow2ice)*clw(i,k,ntsw) *
-     &             gfac * delp(i,k))
+                   gfac * delp(i,k))
           enddo
         enddo
 
@@ -2178,12 +2178,12 @@
 
         if (.not. lmfshal) then
           call cloud_fraction_XuRandall                                 &
-     &      ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
-     &        cldtot )                                                  & !  ---  outputs
+            ( IX, NLAY, plyr, clwf, rhly, qstl,                         & !  ---  inputs
+              cldtot )                                                  & !  ---  outputs
         else
           call cloud_fraction_mass_flx_2                                &
-     &      ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
-     &        cldtot )
+            ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
+              cldtot )
         endif
 
       endif                                ! if (uni_cld) then
@@ -2258,17 +2258,17 @@
 !! to cloud liquid water and ice or else there is zero impact in the
 !! RRTMG radiation scheme.
       subroutine progcld_thompson                                       &
-     &     ( plyr,plvl,tlyr,qlyr,qstl,rhly,clw,                         &    !  ---  inputs:
-     &       xlat,xlon,slmsk,dz,delp,                                   &
-     &       ntrac,ntcw,ntiw,ntrw,ntsw,ntgl,                            &
-     &       IX, NLAY, NLP1,                                            &
-     &       uni_cld, lmfshal, lmfdeep2, cldcov,                        &
-     &       re_cloud,re_ice,re_snow,                                   &
-     &       lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
-     &       dzlay,  gridkm, top_at_1, cldtot, cldcnv,                  &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,qlyr,qstl,rhly,clw,                         &    !  ---  inputs:
+             xlat,xlon,slmsk,dz,delp,                                   &
+             ntrac,ntcw,ntiw,ntrw,ntsw,ntgl,                            &
+             IX, NLAY, NLP1,                                            &
+             uni_cld, lmfshal, lmfdeep2, cldcov,                        &
+             re_cloud,re_ice,re_snow,                                   &
+             lwp_ex, iwp_ex, lwp_fc, iwp_fc,                            &
+             dzlay,  gridkm, top_at_1, cldtot, cldcnv,                  &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -2347,29 +2347,29 @@
       logical, intent(in)  :: uni_cld, lmfshal, lmfdeep2, top_at_1
 
       real (kind=kind_phys), dimension(:,:), intent(in) :: plvl, plyr,  &
-     &       tlyr, qlyr, qstl, rhly, cldcov, delp, dz, dzlay,           &
-     &       re_cloud, re_ice, re_snow
+             tlyr, qlyr, qstl, rhly, cldcov, delp, dz, dzlay,           &
+             re_cloud, re_ice, re_snow
       real (kind=kind_phys), dimension(:), intent(inout) ::             &
-     &       lwp_ex, iwp_ex, lwp_fc, iwp_fc
+             lwp_ex, iwp_ex, lwp_fc, iwp_fc
 
       real (kind=kind_phys), dimension(:,:,:), intent(in) :: clw
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
       real(kind=kind_phys), dimension(:), intent(in) :: gridkm
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldtot, cldcnv,      &
-     &       cwp, cip, crp, csp, rew, rei, res, rer
+             cwp, cip, crp, csp, rew, rei, res, rer
 
       real (kind=kind_phys), dimension(NLAY) :: cldfra1d, qv1d,         &
-     &                                 qc1d, qi1d, qs1d, dz1d, p1d, t1d
+                                       qc1d, qi1d, qs1d, dz1d, p1d, t1d
 
       real (kind=kind_phys) :: clwmin, tem1
       real (kind=kind_phys) :: corr, xland, snow_mass_factor
@@ -2408,11 +2408,11 @@
           crp(i,k) = 0.0
           snow_mass_factor = 0.90
           cip(i,k) = max(0.0, (clw(i,k,ntiw)                            &
-     &             + (1.0-snow_mass_factor)*clw(i,k,ntsw))*dz(i,k)*1.E6)
+                   + (1.0-snow_mass_factor)*clw(i,k,ntsw))*dz(i,k)*1.E6)
           if (re_snow(i,k) .gt. snow_max_radius)then
              snow_mass_factor = min(snow_mass_factor,                   &
-     &                              (snow_max_radius/re_snow(i,k))      &
-     &                             *(snow_max_radius/re_snow(i,k)))
+                                    (snow_max_radius/re_snow(i,k))      &
+                                   *(snow_max_radius/re_snow(i,k)))
              res(i,k) = snow_max_radius
           endif
           csp(i,k) = max(0.,snow_mass_factor*clw(i,k,ntsw)*dz(i,k)*1.E6)
@@ -2471,9 +2471,9 @@
             enddo
          endif
 
-         call cal_cldfra3(cldfra1d, qv1d, qc1d, qi1d, qs1d, dz1d,       &
-     &                    p1d, t1d, xland, gridkm(i),                   &
-     &                    .false., max_relh, 1, nlay, .false.)
+         call cal_cldfra3(cldfra1d, qv1d, qc1d, qi1d, qs1d, dz1d, &
+                          p1d, t1d, xland, gridkm(i), &
+                          .false., max_relh, 1, nlay, .false.)
 
          do k = 1, NLAY
             cldtot(i,k) = cldfra1d(k)
@@ -2483,16 +2483,16 @@
                   rew(i,k) = 9.5
                else                                                      !--- Land
                   rew(i,k) = 5.5
-               endif 
-            endif 
+               endif
+            endif
             if (qi1d(k).gt.clwmin .and. cldfra1d(k).lt.ovcst) then
                cip(i,k) = qi1d(k) * dz1d(k)*1000.
                idx_rei = int(t1d(k)-179.)
                idx_rei = min(max(idx_rei,1),75)
                corr = t1d(k) - int(t1d(k))
                rei(i,K) = max(5.0, retab(idx_rei)*(1.-corr) +           &
-     &                                 retab(idx_rei+1)*corr)
-            endif 
+                                       retab(idx_rei+1)*corr)
+            endif
          enddo
       enddo
 
@@ -2539,13 +2539,13 @@
 !! for unified cloud microphysics scheme.
 !>\section progclduni General Algorithm
       subroutine progclduni                                             &
-     &     ( plyr,plvl,tlyr,tvly,ccnd,ncnd,                             &    !  ---  inputs:
-     &       xlat,xlon,slmsk,dz,delp, IX, NLAY, NLP1, cldtot,           &
-     &       effrl,effri,effrr,effrs,effr_in,                           &
-     &       dzlay, cldtot1, cldcnv, lcrick, lcnorm, con_ttp,           &
-     &       cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
-     &       cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
-     &      )
+           ( plyr,plvl,tlyr,tvly,ccnd,ncnd,                             &    !  ---  inputs:
+             xlat,xlon,slmsk,dz,delp, IX, NLAY, NLP1, cldtot,           &
+             effrl,effri,effrr,effrs,effr_in,                           &
+             dzlay, cldtot1, cldcnv, lcrick, lcnorm, con_ttp,           &
+             cld_frac, cld_lwp, cld_reliq, cld_iwp,                     & !  ---  outputs
+             cld_reice,cld_rwp, cld_rerain,cld_swp, cld_resnow          &
+            )
 
 ! =================   subprogram documentation block   ================ !
 !                                                                       !
@@ -2632,23 +2632,23 @@
       real (kind=kind_phys), intent(in) :: con_ttp
       real (kind=kind_phys), dimension(:,:,:), intent(in) :: ccnd
       real (kind=kind_phys), dimension(:,:),   intent(in) :: plvl, plyr,&
-     &       tlyr, tvly, cldtot, effrl, effri, effrr, effrs, dz, delp,  &
-     &       dzlay
+             tlyr, tvly, cldtot, effrl, effri, effrr, effrs, dz, delp,  &
+             dzlay
 
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
-     &       slmsk
+             slmsk
 
       real (kind=kind_phys), dimension(:,:), intent(inout) :: cldtot1
 
 !  --- inputs/outputs
 
       real (kind=kind_phys), dimension(:,:), intent(inout) ::            &
-     &   cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
-     &   cld_rwp, cld_rerain, cld_swp, cld_resnow
+         cld_frac, cld_lwp, cld_reliq, cld_iwp, cld_reice,               &
+         cld_rwp, cld_rerain, cld_swp, cld_resnow
 
 !  ---  local variables:
       real (kind=kind_phys), dimension(IX,NLAY) :: cldcnv, cwp, cip,    &
-     &       crp, csp, rew, rei, res, rer
+             crp, csp, rew, rei, res, rer
       real (kind=kind_phys), dimension(IX,NLAY,ncnd) :: cndf
 
       real (kind=kind_phys) :: tem1, tem2, tem3
@@ -2683,7 +2683,7 @@
           do k = 2, NLAY-1
             do i = 1, IX
               cndf(i,K,n) = 0.25 * (ccnd(i,k-1,n) + ccnd(i,k+1,n))      &
-     &                    + 0.5  *  ccnd(i,k,n)
+                          + 0.5  *  ccnd(i,k,n)
             enddo
           enddo
         enddo
@@ -2846,11 +2846,11 @@
 !!
 !>\section detail Detailed Algorithm
       subroutine gethml                                                 &
-     &     ( plyr, ptop1, cldtot, cldcnv, dz, de_lgth, alpha,           &       !  ---  inputs:
-     &       IX, NLAY, iovr, iovr_rand, iovr_maxrand, iovr_max,         &
-     &       iovr_dcorr, iovr_exp, iovr_exprand, top_at_1, si,          &
-     &       clds, mtop, mbot                                           &       !  ---  outputs:
-     &     )
+           ( plyr, ptop1, cldtot, cldcnv, dz, de_lgth, alpha,           &       !  ---  inputs:
+             IX, NLAY, iovr, iovr_rand, iovr_maxrand, iovr_max,         &
+             iovr_dcorr, iovr_exp, iovr_exprand, top_at_1, si,          &
+             clds, mtop, mbot                                           &       !  ---  outputs:
+           )
 
 !  ===================================================================  !
 !                                                                       !
@@ -2904,16 +2904,16 @@
       logical, intent(in) :: top_at_1
       integer, intent(in) :: IX, NLAY
       integer, intent(in) ::                                            &
-     &     iovr,                         !
-     &     iovr_rand,                    ! Flag for random cloud overlap method
-     &     iovr_maxrand,                 ! Flag for maximum-random cloud overlap method
-     &     iovr_max,                     ! Flag for maximum cloud overlap method
-     &     iovr_dcorr,                   ! Flag for decorrelation-length cloud overlap method
-     &     iovr_exp,                     ! Flag for exponential cloud overlap method
-     &     iovr_exprand                  ! Flag for exponential-random cloud overlap method
+           iovr,                         !
+           iovr_rand,                    ! Flag for random cloud overlap method
+           iovr_maxrand,                 ! Flag for maximum-random cloud overlap method
+           iovr_max,                     ! Flag for maximum cloud overlap method
+           iovr_dcorr,                   ! Flag for decorrelation-length cloud overlap method
+           iovr_exp,                     ! Flag for exponential cloud overlap method
+           iovr_exprand                  ! Flag for exponential-random cloud overlap method
 
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, ptop1, &
-     &       cldtot, cldcnv, dz
+             cldtot, cldcnv, dz
       real (kind=kind_phys), dimension(:),   intent(in) :: de_lgth, si
       real (kind=kind_phys), dimension(:,:), intent(in) :: alpha
 
@@ -3051,7 +3051,7 @@
               alfa = exp( -0.5*((dz1(i)+dz(i,k)))/de_lgth(i) )
               dz1(i) = dz(i,k)
               cl2(i) =    alfa      * min(cl2(i), (1.0 - ccur))         & ! maximum part
-     &               + (1.0 - alfa) * (cl2(i) * (1.0 - ccur))             ! random part
+                     + (1.0 - alfa) * (cl2(i) * (1.0 - ccur))             ! random part
             else                                               ! clear layer
               cl1(i) = cl1(i) * cl2(i)
               cl2(i) = 1.0
@@ -3079,7 +3079,7 @@
             ccur = min( ovcst, max( cldtot(i,k), cldcnv(i,k) ))
             if (ccur >= climit) then                           ! cloudy layer
               cl2(i) =   alpha(i,k) * min(cl2(i), (1.0 - ccur))          & ! maximum part
-     &               + (1.0 - alpha(i,k)) * (cl2(i) * (1.0 - ccur))        ! random part
+                     + (1.0 - alpha(i,k)) * (cl2(i) * (1.0 - ccur))        ! random part
             else                                               ! clear layer
               cl1(i) = cl1(i) * cl2(i)
               cl2(i) = 1.0
@@ -3159,9 +3159,9 @@
 
               if (cnxt < climit .or. pnxt < ptop1(i,id1)) then
                 kbt1(i) = nint( (cl1(i)*kbt1(i) + cl2(i)*kbt2(i) )      &
-     &                  / (cl1(i) + cl2(i)) )
+                        / (cl1(i) + cl2(i)) )
                 kth1(i) = nint( (cl1(i)*kth1(i) + cl2(i)*kth2(i) )      &
-     &                  / (cl1(i) + cl2(i)) )
+                        / (cl1(i) + cl2(i)) )
                 cl1 (i) = cl1(i) + cl2(i) - cl1(i)*cl2(i)
 
                 kbt2(i) = k - 1
@@ -3241,9 +3241,9 @@
 
               if (cnxt < climit .or. pnxt < ptop1(i,id1)) then
                 kbt1(i) = nint( (cl1(i)*kbt1(i) + cl2(i)*kbt2(i))       &
-     &                  / (cl1(i) + cl2(i)) )
+                        / (cl1(i) + cl2(i)) )
                 kth1(i) = nint( (cl1(i)*kth1(i) + cl2(i)*kth2(i))       &
-     &                  / (cl1(i) + cl2(i)) )
+                        / (cl1(i) + cl2(i)) )
                 cl1 (i) = cl1(i) + cl2(i) - cl1(i)*cl2(i)
 
                 kbt2(i) = k + 1
@@ -3289,9 +3289,9 @@
 !! RH threshold, one each for land v. ocean points based on
 !! experiences with HWRF testing.
       SUBROUTINE cal_cldfra3(CLDFRA, qv, qc, qi, qs, dz,                &
-     &                 p, t, XLAND, gridkm,                             &
-     &                 modify_qvapor, max_relh,                         &
-     &                 kts,kte, debug_flag)
+                       p, t, XLAND, gridkm,                             &
+                       modify_qvapor, max_relh,                         &
+                       kts,kte, debug_flag)
 !
       USE module_mp_thompson   , ONLY : rsif, rslf
       IMPLICIT NONE
@@ -3363,10 +3363,10 @@
          RHUM = rh(k)
 
          if (qc(k).ge.1.E-6 .or. qi(k).ge.1.E-7                         &
-     &                    .or. (qs(k).gt.1.E-6 .and. t(k).lt.273.)) then
+                          .or. (qs(k).gt.1.E-6 .and. t(k).lt.273.)) then
             CLDFRA(K) = 1.0
          elseif (((qc(k)+qi(k)).gt.1.E-10) .and.                        &
-     &                                    ((qc(k)+qi(k)).lt.1.E-6)) then
+                                          ((qc(k)+qi(k)).lt.1.E-6)) then
             var_temp = MIN(0.99, 0.1*(11.0 + log10(qc(k)+qi(k))))
             CLDFRA(K) = var_temp*var_temp
          else
@@ -3408,7 +3408,7 @@
       ENDDO
 
       call find_cloudLayers(qvs, cldfra, T, P, Dz, entrmnt,             &
-     &                      debug_flag, qc, qi, qs, kts,kte)
+                            debug_flag, qc, qi, qs, kts,kte)
 
 !..Do a final total column adjustment since we may have added more than 1 mm
 !.. LWP/IWP for multiple cloud decks.
@@ -3434,7 +3434,7 @@
 !! a reasonable value of LWP or IWP that might be contained in that depth,
 !! unless existing LWC/IWC is already there.
       SUBROUTINE find_cloudLayers(qvs1d, cfr1d, T1d, P1d, Dz1d, entrmnt,&
-     &                            debugfl, qc1d, qi1d, qs1d, kts,kte)
+                                  debugfl, qc1d, qi1d, qs1d, kts,kte)
 !
       IMPLICIT NONE
 !
@@ -3458,7 +3458,7 @@
       DO k = kte, kts, -1
          theta(k) = T1d(k)*((100000.0/P1d(k))**(287.05/1004.))
          if (T1d(k)-273.16 .gt. -12.0 .and. P1d(k).gt.10100.0)          &
-     &                   k_m12C = MAX(k_m12C, k)
+                         k_m12C = MAX(k_m12C, k)
          if (P1d(k).gt.19999.0 .and. k_p200.eq.0) k_p200 = k
       ENDDO
       if (k_m12C .le. kts) k_m12C = kts
@@ -3467,7 +3467,7 @@
 !.. wish to put fake clouds into the stratosphere.  The 10/1500 ratio
 !.. d(Theta)/d(Z) approximates a vertical line on typical SkewT chart
 !.. near typical (mid-latitude) tropopause height.  Since messy data
-!.. could give us a false signal of such a transition, do the check over 
+!.. could give us a false signal of such a transition, do the check over
 !.. three K-level change, not just a level-to-level check.  This method
 !.. has potential failure in arctic-like conditions with extremely low
 !.. tropopause height, as would any other diagnostic, so ensure resulting
@@ -3479,7 +3479,7 @@
          theta2 = theta(k+2)
          delz = 0.5*dz1d(k) + dz1d(k+1) + 0.5*dz1d(k+2)
          if ( (((theta2-theta1)/delz).lt.10./1500.) .OR.                &
-     &                       P1d(k).gt.70000.) EXIT
+                             P1d(k).gt.70000.) EXIT
       ENDDO
       k_tropo = MAX(kts+2, MIN(k+2, kte-1))
 
@@ -3489,7 +3489,7 @@
             theta2 = theta(k+2)
             delz = 0.5*dz1d(k) + dz1d(k+1) + 0.5*dz1d(k+2)
             if ( (((theta2-theta1)/delz).lt.10./1500.) .AND.            &
-     &                                    P1d(k).gt.9000.) EXIT
+                                          P1d(k).gt.9000.) EXIT
          ENDDO
          k_tropo = MAX(k_p200-1, MIN(k+2, kte-1))
       endif
@@ -3511,17 +3511,17 @@
       kbot = MAX(kts+1, k-2)
       DO k = kts, kbot
          if (cfr1d(k).gt.0.0 .and. cfr1d(k).lt.1.0)                     &
-     &              cfr1d(k) = MAX(0.01,0.33*cfr1d(k))
+                    cfr1d(k) = MAX(0.01,0.33*cfr1d(k))
       ENDDO
       DO k = kts,k_tropo
          if (cfr1d(k).gt.0.0) kbot = MIN(k,kbot)
       ENDDO
 
 !..Starting below tropo height, if cloud fraction greater than 1 percent,
-!.. compute an approximate total layer depth of cloud, determine a total 
-!.. liquid water/ice path (LWP/IWP), then reduce that amount with tuning 
+!.. compute an approximate total layer depth of cloud, determine a total
+!.. liquid water/ice path (LWP/IWP), then reduce that amount with tuning
 !.. parameter to represent entrainment factor, then divide up LWP/IWP
-!.. into delta-Z weighted amounts for individual levels per cloud layer. 
+!.. into delta-Z weighted amounts for individual levels per cloud layer.
 
       k_cldb = k_tropo
       in_cloud = .false.
@@ -3544,11 +3544,11 @@
          endif
          if ((k_cldt - k_cldb + 1) .ge. 2) then
             call adjust_cloudIce(cfr1d, qi1d, qs1d, qvs1d, T1d, Dz1d,   &
-     &                           entrmnt, k_cldb,k_cldt,kts,kte)
+                                 entrmnt, k_cldb,k_cldt,kts,kte)
             k = k_cldb
          elseif ((k_cldt - k_cldb + 1) .eq. 1) then
             if (cfr1d(k_cldb).gt.0.and.cfr1d(k_cldb).lt.1.)             &
-     &        qi1d(k_cldb)=qi1d(k_cldb)+0.05*qvs1d(k_cldb)*cfr1d(k_cldb)
+              qi1d(k_cldb)=qi1d(k_cldb)+0.05*qvs1d(k_cldb)*cfr1d(k_cldb)
             k = k_cldb
          endif
          k = k - 1
@@ -3575,11 +3575,11 @@
          endif
          if ((k_cldt - k_cldb + 1) .ge. 2) then
             call adjust_cloudH2O(cfr1d, qc1d, qvs1d, T1d, Dz1d,         &
-     &                           entrmnt, k_cldb,k_cldt,kts,kte)
+                                 entrmnt, k_cldb,k_cldt,kts,kte)
             k = k_cldb
          elseif ((k_cldt - k_cldb + 1) .eq. 1) then
             if (cfr1d(k_cldb).gt.0.and.cfr1d(k_cldb).lt.1.)             &
-     &        qc1d(k_cldb)=qc1d(k_cldb)+0.05*qvs1d(k_cldb)*cfr1d(k_cldb)
+              qc1d(k_cldb)=qc1d(k_cldb)+0.05*qvs1d(k_cldb)*cfr1d(k_cldb)
             k = k_cldb
          endif
          k = k - 1
@@ -3718,13 +3718,13 @@
 
 !> This subroutine computes the Xu-Randall cloud fraction scheme.
       subroutine cloud_fraction_XuRandall                               &
-     &     ( IX, NLAY, plyr, clwf, rhly, qstl,                          & !  ---  inputs
-     &       cldtot )                                                   & !  ---  outputs
- 
+           ( IX, NLAY, plyr, clwf, rhly, qstl,                          & !  ---  inputs
+             cldtot )                                                   & !  ---  outputs
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+                                                           rhly, qstl
 
 !  ---  outputs
       real (kind=kind_phys), dimension(:,:), intent(inout) :: cldtot
@@ -3732,7 +3732,7 @@
 !  ---  local variables:
 
        real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,      &
-     &       tem1, tem2
+             tem1, tem2
        integer :: i, k
 
 !> - Compute layer cloud fraction.
@@ -3759,17 +3759,17 @@
         enddo
 
       end subroutine cloud_fraction_XuRandall
- 
+
 !>
       subroutine cloud_fraction_mass_flx_1                              &
-     &     ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
-     &       cldtot )                                                   & !  ---  outputs
- 
+           ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
+             cldtot )                                                   & !  ---  outputs
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), intent(in)                 :: xrc3
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+                                                           rhly, qstl
       logical, intent(in) :: lmfdeep2
 
 !  ---  outputs
@@ -3778,7 +3778,7 @@
 !  ---  local variables:
 
        real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,      &
-     &       tem1, tem2
+             tem1, tem2
        integer :: i, k
 
 !> - Compute layer cloud fraction.
@@ -3809,17 +3809,17 @@
         enddo
 
       end subroutine cloud_fraction_mass_flx_1
- 
+
 !>
       subroutine cloud_fraction_mass_flx_2                              &
-     &     ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
-     &       cldtot )                                                   & !  ---  outputs
- 
+           ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
+             cldtot )                                                   & !  ---  outputs
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), intent(in)                 :: xrc3
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+                                                           rhly, qstl
       logical, intent(in) :: lmfdeep2
 
 !  ---  outputs
@@ -3828,7 +3828,7 @@
 !  ---  local variables:
 
        real (kind=kind_phys) :: clwmin, clwm, clwt, onemrh, value,      &
-     &       tem1, tem2
+             tem1, tem2
        integer :: i, k
 
 !> - Compute layer cloud fraction.
@@ -3863,7 +3863,7 @@
         enddo
         enddo
 
-      end subroutine cloud_fraction_mass_flx_2 
+      end subroutine cloud_fraction_mass_flx_2
 !........................................!
       end module module_radiation_clouds
 !>@}

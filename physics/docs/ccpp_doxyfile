@@ -91,7 +91,7 @@ GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       = YES
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = NO
-SHOW_FILES             = NO 
+SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    =
 LAYOUT_FILE            = ccpp_dox_layout.xml
@@ -108,7 +108,7 @@ WARN_IF_INCOMPLETE_DOC = YES
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_FORMAT            =
-WARN_LOGFILE           = 
+WARN_LOGFILE           =
 
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
@@ -193,7 +193,7 @@ INPUT                  =  pdftxt/mainpage.txt              \
                         ../rrtmg_lw_post.F90             \
                         ../radiation_aerosols.f          \
                         ../radiation_astronomy.f         \
-                        ../radiation_clouds.f            \
+                        ../radiation_clouds.F90            \
                         ../radiation_cloud_overlap.F90    \
                         ../radiation_gases.f             \
                         ../radiation_surface.f           \
@@ -290,7 +290,7 @@ INPUT                  =  pdftxt/mainpage.txt              \
                         ../radcons.f90      \
                         ../mersenne_twister.f \
                         ../maximum_hourly_diagnostics.F90   \
-                        ../phys_tend.F90  
+                        ../phys_tend.F90
 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.f \
@@ -306,7 +306,7 @@ EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = pdftxt/RE6 \
                          doc/html
-EXAMPLE_PATTERNS       = 
+EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = img
 INPUT_FILTER           =
@@ -349,11 +349,11 @@ HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = _doxygen/header.html
 HTML_FOOTER            = _doxygen/footer.html
-HTML_STYLESHEET        = 
+HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = _doxygen/doxygen-awesome.css  \
                          _doxygen/doxygen-awesome-sidebar-only.css \
                          _doxygen/doxygen-awesome-sidebar-only-darkmode-toggle.css    \
-                         _doxygen/doxygen-awesome-ccpp.css 
+                         _doxygen/doxygen-awesome-ccpp.css
 HTML_EXTRA_FILES       = _doxygen/doxygen-awesome-darkmode-toggle.js \
                          _doxygen/doxygen-awesome-ccpp.js
 HTML_COLORSTYLE_HUE    = 209
@@ -522,7 +522,7 @@ HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = YES
 DOT_NUM_THREADS        = 0
 DOT_FONTNAME           = Source Sans Pro
-DOT_FONTSIZE           = 
+DOT_FONTSIZE           =
 DOT_FONTPATH           =
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
@@ -541,7 +541,7 @@ DIRECTORY_GRAPH        = YES
 DIR_GRAPH_MAX_DEPTH    = 1
 DOT_IMAGE_FORMAT       = SVG
 INTERACTIVE_SVG        = NO
-DOT_PATH               = 
+DOT_PATH               =
 DOTFILE_DIRS           =
 MSCFILE_DIRS           =
 DIAFILE_DIRS           =
