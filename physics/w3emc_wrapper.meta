@@ -1,0 +1,9 @@
+[ccpp-table-properties]
+  name = w3emc_wrapper
+  type = module
+  dependencies =
+
+########################################################################
+[ccpp-arg-table]
+  name = w3emc_wrapper
+  type = module
