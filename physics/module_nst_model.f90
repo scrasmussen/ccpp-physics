@@ -1,5 +1,5 @@
 !>\file module_nst_model.f90
-!! This file contains the diurnal thermocline layer model (DTM) of 
+!! This file contains the diurnal thermocline layer model (DTM) of
 !! the GFS NSST scheme.
 
 !>\defgroup dtm_module GFS NSST Diurnal Thermocline Model
@@ -12,7 +12,7 @@
 module nst_module
 
 !
-! the module of diurnal thermocline layer model 
+! the module of diurnal thermocline layer model
 !
  use machine , only : kind_phys
  use module_nst_parameters, only: z_w_max,z_w_min,z_w_ini,eps_z_w,eps_conv,    &
@@ -77,7 +77,7 @@ module nst_module
                    beta,alon,sinlat,soltim,grav,le,xt,xs,xu,xv,xz,xzts,xtts)
   elseif ( xt > 0.0 ) then              ! dtl already exists
 !
-! forward the system one time step 
+! forward the system one time step
 !
     call eulerm(kdt,timestep,rich,tox,toy,i0,q,sss,sep,q_ts,hl_ts,rho,alpha,   &
                 beta,alon,sinlat,soltim,grav,le,d_conv,                        &
@@ -150,7 +150,7 @@ module nst_module
   xtts0 = xtts
   xzts0 = xzts
   speed = max(1.0e-8, xu0*xu0+xv0*xv0)
-  
+
   alat  = asin(sinlat)*rad2deg
 
   fc    = const_rot*sinlat
@@ -189,7 +189,7 @@ module nst_module
         +( (tox*xu0+toy*xv0)/rho+(3.0*drho-alpha*i0*aw*xz0/(rho*cp_w))         &
                                          *grav*xz0*xz0/(4.0*rich) )*xzts0 ))
   xtts1 = xtts0 + timestep*(i0*aw*xzts0-q_ts)/(rho*cp_w)
-           
+
 ! if ( 2.0*xt1/xz1 > 0.001 ) then
 ! write(*,'(a,i5,2f8.3,4f8.2,f10.6,10f8.4)') 'eulerm_01 : ',kdt,alat,alon,soltim/3600.,i0,q,q_warm,sep,&
 !          2.0*xt1/xz1,2.0*xs1/xz1,2.0*xu1/xz1,2.0*xv1/xz1,xz1,xtts1,xzts1,d_conv,t_fcl,te
@@ -249,7 +249,7 @@ module nst_module
 !                        free convection adjustment (fca);
 !                        top layer adjustment (tla);
 !                        maximum warming adjustment (mwa)
-!   
+!
    integer, intent(in) :: kdt
    real(kind=kind_phys), intent(in)    :: timestep,i0,q,rho,d_conv
    real(kind=kind_phys), intent(inout) :: xt,xs,xu,xv,xz
@@ -269,7 +269,7 @@ module nst_module
 !  apply fca
    if ( d_conv > 0.0 ) then
      xz_fca = 2.0*xt/((2.0*xt/xz)*(1.0-d_conv/(2.0*xz)))
-     tr_fca = 1.0 
+     tr_fca = 1.0
      if ( xz_fca >= z_w_max ) then
        call dtl_reset_cv(xt,xs,xu,xv,xz)
        go to 10
@@ -286,7 +286,7 @@ module nst_module
      ttop = ((xt+xt)/xz)*(1.0-dz/(xz+xz))
      if ( ttop > ttop0 ) then
        xz_tla = (xt+sqrt(xt*(xt-delz*ttop0)))/ttop0
-       tr_tla = 1.0 
+       tr_tla = 1.0
        if ( xz_tla >= z_w_max ) then
          call dtl_reset_cv(xt,xs,xu,xv,xz)
          go to 10
@@ -306,7 +306,7 @@ module nst_module
    xz = max(xz_mda,xz_fca,xz_tla,xz_mwa)
 
  10 continue
-   
+
  end subroutine dtm_1p_zwa
 
 !>\ingroup gfs_nst_main_mod
@@ -314,7 +314,7 @@ module nst_module
  subroutine dtm_1p_fca(d_conv,xt,xtts,xz,xzts)
 
 !  apply xz adjustment:  free convection adjustment (fca);
-!   
+!
    real(kind=kind_phys), intent(in)    :: d_conv,xt,xtts
    real(kind=kind_phys), intent(inout) :: xz,xzts
 !  local variables
@@ -332,7 +332,7 @@ module nst_module
  subroutine dtm_1p_tla(dz,te,xt,xtts,xz,xzts)
 
 !  apply xz adjustment: top layer adjustment (tla);
-! 
+!
    real(kind=kind_phys), intent(in)    :: dz,te,xt,xtts
    real(kind=kind_phys), intent(inout) :: xz,xzts
 !  local variables
@@ -488,7 +488,7 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 !
 ! determine xz iteratively (starting wit fw = 0.5) and then update the other 6 variables
 !
-           
+
    integer,intent(in) :: kdt
    real(kind=kind_phys), intent(in) :: timestep,rich,tox,toy,i0,q,sss,sep,q_ts,&
                                        hl_ts,rho,alpha,beta,alon,sinlat,soltim,grav,le
@@ -519,9 +519,9 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 ! output variables
 !
 ! xt      :       onset t content in dtl
-! xs      :       onset s content in dtl 
-! xu      :       onset u content in dtl 
-! xv      :       onset v content in dtl 
+! xs      :       onset s content in dtl
+! xu      :       onset u content in dtl
+! xv      :       onset v content in dtl
 ! xz      :       onset dtl thickness               (m)
 ! xzts    :       onset d(xz)/d(ts)                 (m/k )
 ! xtts    :       onset d(xt)/d(ts)                 (m)
@@ -539,7 +539,7 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
  z_w_tmp=z_w_ini
 
  call sw_ps_9b(z_w_tmp,fw)
-! fw=0.5                         ! 
+! fw=0.5                         !
  q_warm=fw*i0-q                                !total heat abs in warm layer
 
  if ( abs(alat) > 1.0 ) then
@@ -633,13 +633,13 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
   if ( xt < 0.0 .or. xz > z_w_max ) then
     call dtl_reset(xt,xs,xu,xv,xz,xtts,xzts)
   endif
- 
+
  return
 
  end subroutine dtm_onset
 
 !>\ingroup gfs_nst_main_mod
-!! This subroutine computes coefficients (\a w_0 and \a w_d) to 
+!! This subroutine computes coefficients (\a w_0 and \a w_d) to
 !! calculate d(tw)/d(ts).
  subroutine cal_w(kdt,xz,xt,xzts,xtts,w_0,w_d)
 !
@@ -648,15 +648,15 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 ! input variables
 !
 ! kdt     :       the number of time step
-! xt      :       dtl heat content  
-! xz      :       dtl depth         
+! xt      :       dtl heat content
+! xz      :       dtl depth
 ! xzts    :       d(zw)/d(ts)
 ! xtts    :       d(xt)/d(ts)
 !
 ! output variables
 !
-! w_0     :       coefficint 1 to calculate d(tw)/d(ts) 
-! w_d     :       coefficint 2 to calculate d(tw)/d(ts) 
+! w_0     :       coefficint 1 to calculate d(tw)/d(ts)
+! w_d     :       coefficint 2 to calculate d(tw)/d(ts)
 
   integer, intent(in) :: kdt
   real(kind=kind_phys), intent(in) :: xz,xt,xzts,xtts
@@ -719,18 +719,18 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 ! alpha
 ! beta
 ! grav
-! d_1p    :       dtl depth before sfs applied  
+! d_1p    :       dtl depth before sfs applied
 !
 ! output variables
 !
-! xz      :       dtl depth                    
+! xz      :       dtl depth
 
   integer, intent(in) :: kdt
   real(kind=kind_phys), intent(in) :: xt,xs,xu,xv,alpha,beta,grav,d_1p
   real(kind=kind_phys), intent(out) :: xz
 ! real(kind=kind_phys) :: ze,cc,xz0,l,d_sfs, t_sfs, tem
   real(kind=kind_phys) ::    cc,l,d_sfs,tem
-  real(kind=kind_phys), parameter :: c2 = 0.3782
+  real(kind=kind_phys), parameter :: c2 = 0.3782, zero=0.0
   integer :: n
 
   cc  = ri_g/(grav*c2)
@@ -750,10 +750,10 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 !   if ( abs(d_sfs-xz0) < eps_sfs .and. n <= niter_sfs ) exit iter_sfs
 !   xz0 = d_sfs
 ! enddo iter_sfs
-  
+
 ! ze = a2*d_sfs             ! not used!
 
-  l = int_epn(0.0,d_sfs,0.0,d_sfs,2)
+  l = int_epn(zero,d_sfs,zero,d_sfs,2)
 
 ! t_sfs = xt/l
 ! xz = (xt+xt) / t_sfs
@@ -774,14 +774,14 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
 ! kdt     :       the number of record
 ! xt      :       heat content in dtl
 ! xz      :       dtl depth                           (m)
-! c_0     :       coefficint 1 to calculate d(tc)/d(ts) 
-! c_d     :       coefficint 2 to calculate d(tc)/d(ts) 
-! w_0     :       coefficint 1 to calculate d(tw)/d(ts) 
-! w_d     :       coefficint 2 to calculate d(tw)/d(ts) 
+! c_0     :       coefficint 1 to calculate d(tc)/d(ts)
+! c_d     :       coefficint 2 to calculate d(tc)/d(ts)
+! w_0     :       coefficint 1 to calculate d(tw)/d(ts)
+! w_d     :       coefficint 2 to calculate d(tw)/d(ts)
 !
 ! output variables
 !
-! tztr     :      d(tz)/d(tr) 
+! tztr     :      d(tz)/d(tr)
 
   integer, intent(in) :: kdt
   real(kind=kind_phys), intent(in) :: xt,c_0,c_d,w_0,w_d,zc,zw,z
@@ -812,7 +812,7 @@ subroutine convdepth(kdt,timestep,i0,q,sss,sep,rho,alpha,beta,xt,xs,xz,d_conv)
  end subroutine cal_tztr
 
 !>\ingroup gfs_nst_main_mod
-!> This subroutine contains the upper ocean cool-skin parameterization 
+!> This subroutine contains the upper ocean cool-skin parameterization
 !! (Fairall et al, 1996 \cite fairall_et_al_1996).
 subroutine cool_skin(ustar_a,f_nsol,f_sol_0,evap,sss,alpha,beta,rho_w,rho_a,ts,q_ts,hl_ts,grav,le,deltat_c,z_c,c_0,c_d)
 !
@@ -831,8 +831,8 @@ subroutine cool_skin(ustar_a,f_nsol,f_sol_0,evap,sss,alpha,beta,rho_w,rho_a,ts,q
 ! ts      : oceanic surface temperature
 ! q_ts    : d(q)/d(ts) : q = the sum of non-solar heat fluxes
 ! hl_ts   : d(hl)/d(ts)
-! grav    : gravity 
-! le      : 
+! grav    : gravity
+! le      :
 !
 ! output:
 ! deltat_c: cool-skin temperature correction (degrees k)
@@ -896,13 +896,13 @@ subroutine cool_skin(ustar_a,f_nsol,f_sol_0,evap,sss,alpha,beta,rho_w,rho_a,ts,q
 !     b_c = z_c**2*(q_ts+cc3*hl_ts)/(z_c**2*f_sol_0*a_c-4.0*(cc1*tcw)**3*(hb/alpha)**0.25/(cc2**0.75*z_c**2))     ! d(z_c)/d(ts)
       b_c  = (q_ts+cc3*hl_ts)/(f_sol_0*a_c                          &
            - 4.0*(cc1*tcw)**3*(hb/alpha)**0.25/(cc2**0.75*zcsq*zcsq))     ! d(z_c)/d(ts)
-      c_0 = (z_c*q_ts+(f_nsol-deltaf-f_sol_0*a_c*z_c)*b_c)*tcwi                    
-      c_d = (f_sol_0*a_c*z_c*b_c-q_ts)*tcwi                                   
+      c_0 = (z_c*q_ts+(f_nsol-deltaf-f_sol_0*a_c*z_c)*b_c)*tcwi
+      c_d = (f_sol_0*a_c*z_c*b_c-q_ts)*tcwi
 
     else
       b_c   = 0.0
       zc_ts = 0.0
-      c_0   = z_c*q_ts*tcwi                                                
+      c_0   = z_c*q_ts*tcwi
       c_d   = -q_ts*tcwi
     endif
 
@@ -910,8 +910,8 @@ subroutine cool_skin(ustar_a,f_nsol,f_sol_0,evap,sss,alpha,beta,rho_w,rho_a,ts,q
 !     write(*,'(a,2f12.6,10f10.6)') ' c_0, c_d = ',c_0,c_d,b_c,zc_ts,hb,bc1,bc2,z_c,cc1,cc2,cc3,z_c**2
 !   endif
 
-!   c_0 = z_c*q_ts/tcw                                                
-!   c_d = -q_ts/tcw                                                  
+!   c_0 = z_c*q_ts/tcw
+!   c_d = -q_ts/tcw
 
   else
     c_0 = 0.0

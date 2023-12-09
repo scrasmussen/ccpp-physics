@@ -107,7 +107,7 @@ contains
              refdmax(i) = max(refdmax(i),refd(i))
              refdmax263k(i) = max(refdmax263k(i),refd263k(i))
           enddo
-          deallocate (refd) 
+          deallocate (refd)
           deallocate (refd263k)
        endif
 !
@@ -155,14 +155,14 @@ contains
          REAL(kind_phys), PARAMETER    :: clim2=0.40*1.22
          REAL(kind_phys), PARAMETER    :: clim3=0.02*1.22
          !  coef1 and coef2 are modified from the values given
-         !  in McCaul et al. 
+         !  in McCaul et al.
          !  coef1 is x 1000 x 1.22
          !  coef2 is x 1.22
          !  are these tuning factors, scale factors??
          !  McCaul et al. used a 2-km WRF simulation
          REAL(kind_phys), PARAMETER    :: coef1=0.042*1000.*1.22
          REAL(kind_phys), PARAMETER    :: coef2=0.20*1.22
-         
+
          REAL(kind_phys) :: totice_colint(im), ltg1, ltg2, high_ltg1, high_wgrs, high_graupel, rho
          LOGICAL :: ltg1_calc(im)
          integer :: k, i, count
@@ -185,7 +185,7 @@ contains
                    IF ( 0.5*(tgrs(i,k+1) + tgrs(i,k)) < 258.15 ) THEN
                       count = count + 1
                       ltg1_calc(i) = .true.
-                      
+
                       ltg1 = coef1*wgrs(i,k)* &
                            (( qgraupel(i,k+1) + qgraupel(i,k) )*0.5 )
                       if(ltg1 > high_ltg1) then
@@ -193,9 +193,9 @@ contains
                         high_graupel = qgraupel(i,k)
                         high_wgrs = wgrs(i,k)
                       endif
-                      
+
                       IF ( ltg1 .LT. clim1 ) ltg1 = 0.
-                      
+
                       IF ( ltg1 .GT. ltg1_max(i) ) THEN
                          ltg1_max(i) = ltg1
                       ENDIF
@@ -208,7 +208,7 @@ contains
              ltg2 = coef2 * totice_colint(i)
 
              IF ( ltg2 .LT. clim2 ) ltg2 = 0.
-             
+
              IF ( ltg2 .GT. ltg2_max(i) ) THEN
                 ltg2_max(i) = ltg2
              ENDIF
@@ -230,7 +230,7 @@ contains
       real :: dbz1avg,zmidp1,zmidloc,refl,fact
       real, dimension(im,levs) :: z
       real, dimension(im) :: zintsfc
-      real, dimension(:), intent(inout) :: refd,refd263k
+      real (kind=kind_phys), dimension(:), intent(inout) :: refd,refd263k
       REAL :: dbz1(2),dbzk,dbzk1
       logical :: counter
       do i=1,im
@@ -293,7 +293,7 @@ contains
 !           dbz1(l)=curefl+refl    !- in Z units
              dbz1(ll)=refl
          enddo
-!-- Take max of bounding reflectivity values 
+!-- Take max of bounding reflectivity values
          dbz1avg=maxval(dbz1)
 !-- Convert to dBZ (10*logZ) as the last step
          if (dbz1avg>0.01) then

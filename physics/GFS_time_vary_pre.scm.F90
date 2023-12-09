@@ -30,7 +30,7 @@
          errflg = 0
 
          if (is_initialized) return
- 
+
          !--- Call gfuncphys (funcphys.f) to compute all physics function tables.
          call gfuncphys ()
 
@@ -70,22 +70,22 @@
         julian, yearlen, ipt, lprnt, lssav, lsswr, lslwr, solhr, errmsg, errflg)
 
         use machine,               only: kind_phys, kind_dbl_prec, kind_sngl_prec
-
+        use w3emc_wrapper,         only: w3difdat_w
         implicit none
-        
+
         integer,                          intent(in)    :: idate(:)
         integer,                          intent(in)    :: jdat(:), idat(:)
         integer,                          intent(in)    :: nsswr, nslwr, me,     &
                                                            master, nscyc
         logical,                          intent(in)    :: debug
         real(kind=kind_phys),             intent(in)    :: dtp
-        
+
         integer,                          intent(out)   :: kdt, yearlen, ipt
         logical,                          intent(out)   :: lprnt, lssav, lsswr,  &
                                                            lslwr
         real(kind=kind_phys),             intent(out)   :: sec, phour, zhour,    &
                                                            fhour, julian, solhr
-        
+
         character(len=*),                 intent(out)   :: errmsg
         integer,                          intent(out)   :: errflg
 
@@ -95,7 +95,7 @@
         real(kind=kind_dbl_prec)  :: rinc8(5)
 
         integer :: w3kindreal,w3kindint
-        integer ::  iw3jdn      
+        integer ::  iw3jdn
         integer :: jd0, jd1
         real    :: fjd
 
@@ -117,11 +117,11 @@
         call w3kind(w3kindreal,w3kindint)
         if (w3kindreal == 8) then
            rinc8(1:5) = 0
-           call w3difdat(jdat,idat,4,rinc8)
+           call w3difdat_w(jdat,idat,4,rinc8)
            sec = rinc8(4)
         else if (w3kindreal == 4) then
            rinc4(1:5) = 0
-           call w3difdat(jdat,idat,4,rinc4)
+           call w3difdat_w(jdat,idat,4,rinc4)
            sec = rinc4(4)
         else
            write(0,*)' FATAL ERROR: Invalid w3kindreal'
@@ -132,13 +132,13 @@
         zhour = phour
         fhour = (sec + dtp)/con_hr
         kdt   = nint((sec + dtp)/dtp)
-        
-        !GJF* These calculations were originally in GFS_physics_driver.F90 for 
-        !     NoahMP. They were moved to this routine since they only depends 
-        !     on time (not space). Note that this code is included as-is from 
-        !     GFS_physics_driver.F90, but it may be simplified by using more 
-        !     NCEP W3 library calls (e.g., see W3DOXDAT, W3FS13 for Julian day 
-        !     of year and W3DIFDAT to determine the integer number of days in 
+
+        !GJF* These calculations were originally in GFS_physics_driver.F90 for
+        !     NoahMP. They were moved to this routine since they only depends
+        !     on time (not space). Note that this code is included as-is from
+        !     GFS_physics_driver.F90, but it may be simplified by using more
+        !     NCEP W3 library calls (e.g., see W3DOXDAT, W3FS13 for Julian day
+        !     of year and W3DIFDAT to determine the integer number of days in
         !     a given year). *GJF
         ! Julian day calculation (fcst day of the year)
         ! we need yearln and julian to
@@ -151,7 +151,7 @@
         fjd    = float(jdat(5))/24.0 + float(jdat(6))/1440.0
 
         julian = float(jd1-jd0) + fjd
-        
+
         !
         ! Year length
         !

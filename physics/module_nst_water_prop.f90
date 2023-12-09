@@ -42,7 +42,7 @@ contains
   ! ------------------------------------------------------
 !>\ingroup gfs_nst_main_mod
 !! This subroutine computes thermal expansion coefficient (alpha)
-!! and saline contraction coefficient (beta). 
+!! and saline contraction coefficient (beta).
   subroutine rhocoef(t, s, rhoref, alpha, beta)
     ! ------------------------------------------------------
 
@@ -124,7 +124,7 @@ contains
   !======================
   !
 !>\ingroup gfs_nst_main_mod
-!! This subroutine computes the fraction of the solar radiation absorbed 
+!! This subroutine computes the fraction of the solar radiation absorbed
 !! by the depth z following Paulson and Simpson (1981) \cite paulson_and_simpson_1981 .
   elemental subroutine sw_ps_9b(z,fxp)
     !
@@ -138,8 +138,8 @@ contains
     ! fxp: fraction of the solar radiation absorbed by the ocean at depth z (w/m^2)
     !
     implicit none
-    real,intent(in):: z
-    real,intent(out):: fxp
+    real(kind=kind_phys),intent(in):: z
+    real(kind=kind_phys),intent(out):: fxp
     real, dimension(9), parameter :: f=(/0.237,0.36,0.179,0.087,0.08,0.0246,0.025,0.007,0.0004/) &
                                 ,gamma=(/34.8,2.27,3.15e-2,5.48e-3,8.32e-4,1.26e-4,3.13e-4,7.82e-5,1.44e-5/)
     !
@@ -159,7 +159,7 @@ contains
   !======================
   !
 !>\ingroup gfs_nst_main_mod
-!! This subroutine 
+!! This subroutine
   elemental subroutine sw_ps_9b_aw(z,aw)
     !
     ! d(fw)/d(z) for 9-band
@@ -171,8 +171,8 @@ contains
     ! fxp: fraction of the solar radiation absorbed by the ocean at depth z (w/m^2)
     !
     implicit none
-    real,intent(in):: z
-    real,intent(out):: aw
+    real(kind=kind_phys),intent(in):: z
+    real(kind=kind_phys),intent(out):: aw
     real, dimension(9), parameter :: f=(/0.237,0.36,0.179,0.087,0.08,0.0246,0.025,0.007,0.0004/) &
                                 ,gamma=(/34.8,2.27,3.15e-2,5.48e-3,8.32e-4,1.26e-4,3.13e-4,7.82e-5,1.44e-5/)
     !
@@ -509,13 +509,14 @@ subroutine solar_time_from_julian(jday,xlon,soltim)
   real(kind=kind_phys), intent(in)  :: jday
   real(kind=kind_phys), intent(in)  :: xlon
   real(kind=kind_phys), intent(out) :: soltim
-  real(kind=kind_phys)                            :: fjd,xhr,xmin,xsec,intime
+  real(kind=kind_phys)                           :: fjd,xhr,xmin,xsec,intime
+  real(kind=kind_phys), parameter                :: twelve = 12.0
   integer                                        :: nn
   !
   fjd=jday-floor(jday)
   fjd=jday
-  xhr=floor(fjd*24.0)-sign(12.0,fjd-0.5)
-  xmin=nint(fjd*1440.0)-(xhr+sign(12.0,fjd-0.5))*60
+  xhr=floor(fjd*24.0)-sign(twelve,fjd-0.5)
+  xmin=nint(fjd*1440.0)-(xhr+sign(twelve,fjd-0.5))*60
   xsec=0
   intime=xhr+xmin/60.0+xsec/3600.0+24.0
   soltim=mod(xlon/15.0+intime,24.0)*3600.0

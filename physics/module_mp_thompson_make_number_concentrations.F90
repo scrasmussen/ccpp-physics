@@ -5,6 +5,7 @@
 module module_mp_thompson_make_number_concentrations
 
       use physcons, only: PI => con_pi
+      use machine,  only: kind_phys
 
       implicit none
 
@@ -21,8 +22,8 @@ module module_mp_thompson_make_number_concentrations
 !      make_RainNumber    is rain number mixing ratio, units of number per kg of m3
 !      qnwfa              is number of water-friendly aerosols in number per kg
 
-!+---+-----------------------------------------------------------------+ 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
+!+---+-----------------------------------------------------------------+
 
    contains
 !>\ingroup aathompson
@@ -35,17 +36,17 @@ module module_mp_thompson_make_number_concentrations
       !IMPLICIT NONE
       REAL, PARAMETER:: Ice_density = 890.0
       !REAL, PARAMETER:: PI = 3.1415926536
-      real, intent(in):: Q_ice, temp
+      real(kind=kind_phys), intent(in):: Q_ice, temp
       integer idx_rei
       real corr, reice, deice
       double precision lambda
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 !..Table of lookup values of radiative effective radius of ice crystals
 !.. as a function of Temperature from -94C to 0C.  Taken from WRF RRTMG
 !.. radiation code where it is attributed to Jon Egill Kristjansson
 !.. and coauthors.
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       !real retab(95)
       !data retab /                                                      &
@@ -88,11 +89,11 @@ module module_mp_thompson_make_number_concentrations
          return
       end if
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 !..From the model 3D temperature field, subtract 179K for which
 !.. index value of retab as a start.  Value of corr is for
 !.. interpolating between neighboring values in the table.
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       idx_rei = int(temp-179.)
       idx_rei = min(max(idx_rei,1),94)
@@ -100,7 +101,7 @@ module module_mp_thompson_make_number_concentrations
       reice = retab(idx_rei)*(1.-corr) + retab(idx_rei+1)*corr
       deice = 2.*reice * 1.E-6
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 !..Now we have the final radiative effective size of ice (as function
 !.. of temperature only).  This size represents 3rd moment divided by
 !.. second moment of the ice size distribution, so we can compute a
@@ -108,25 +109,25 @@ module module_mp_thompson_make_number_concentrations
 !.. The mean (radiative effective) diameter is 3./Slope for an inverse
 !.. exponential size distribution.  So, starting with slope, work
 !.. backwords to get number concentration.
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       lambda = 3.0 / deice
       make_IceNumber = Q_ice * lambda*lambda*lambda / (PI*Ice_density)
 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 !..Example1: Common ice size coming from Thompson scheme is about 30 microns.
 !.. An example ice mixing ratio could be 0.001 g/kg for a temperature of -50C.
 !.. Remember to convert both into MKS units.  This gives N_ice=357652 per kg.
 !..Example2: Lower in atmosphere at T=-10C matching ~162 microns in retab,
-!.. and assuming we have 0.1 g/kg mixing ratio, then N_ice=28122 per kg, 
+!.. and assuming we have 0.1 g/kg mixing ratio, then N_ice=28122 per kg,
 !.. which is 28 crystals per liter of air if the air density is 1.0.
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
 
       return
       end function make_IceNumber
 
-!+---+-----------------------------------------------------------------+ 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
+!+---+-----------------------------------------------------------------+
 
 !>\ingroup aathompson
 !!
@@ -134,7 +135,7 @@ module module_mp_thompson_make_number_concentrations
 
       !IMPLICIT NONE
 
-      real, intent(in):: Q_cloud, qnwfa
+      real(kind=kind_phys), intent(in):: Q_cloud, qnwfa
 
       !real, parameter:: PI = 3.1415926536
       real, parameter:: am_r = PI*1000./6.
@@ -164,8 +165,8 @@ module module_mp_thompson_make_number_concentrations
       return
       end function make_DropletNumber
 
-!+---+-----------------------------------------------------------------+ 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
+!+---+-----------------------------------------------------------------+
 
 !>\ingroup aathompson
 !!
@@ -173,7 +174,7 @@ module module_mp_thompson_make_number_concentrations
 
       IMPLICIT NONE
 
-      real, intent(in):: Q_rain, temp
+      real(kind=kind_phys), intent(in):: Q_rain, temp
       double precision:: lambda, N0, qnr
       !real, parameter:: PI = 3.1415926536
       real, parameter:: am_r = PI*1000./6.
@@ -183,14 +184,14 @@ module module_mp_thompson_make_number_concentrations
          return
       end if
 
-      !+---+-----------------------------------------------------------------+ 
+      !+---+-----------------------------------------------------------------+
       !.. Not thrilled with it, but set Y-intercept parameter to Marshal-Palmer value
       !.. that basically assumes melting snow becomes typical rain. However, for
       !.. -2C < T < 0C, make linear increase in exponent to attempt to keep
       !.. supercooled collision-coalescence (warm-rain) similar to drizzle rather
       !.. than bigger rain drops.  While this could also exist at T>0C, it is
       !.. more difficult to assume it directly from having mass and not number.
-      !+---+-----------------------------------------------------------------+ 
+      !+---+-----------------------------------------------------------------+
 
       N0 = 8.E6
 
@@ -207,7 +208,7 @@ module module_mp_thompson_make_number_concentrations
       return
       end function make_RainNumber
 
-!+---+-----------------------------------------------------------------+ 
-!+---+-----------------------------------------------------------------+ 
+!+---+-----------------------------------------------------------------+
+!+---+-----------------------------------------------------------------+
 
 end module module_mp_thompson_make_number_concentrations

@@ -10,13 +10,13 @@
 
 !>
       subroutine oro_wam_2017(im, levs,npt,ipt, kref,kdt,me,master,
-     &   dtp,dxres, taub, u1, v1, t1, xn, yn, bn2, rho, prsi, prsL, 
+     &   dtp,dxres, taub, u1, v1, t1, xn, yn, bn2, rho, prsi, prsL,
      &   del, sigma, hprime, gamma, theta,
      &   sinlat, xlatd, taup, taud, pkdis)
-! 
+!
       USE MACHINE ,      ONLY : kind_phys
       use ugwp_common_v0 ,  only : grav,  omega2
-!      
+!
       implicit none
 
       integer :: im, levs
@@ -34,7 +34,7 @@
 
       real(kind=kind_phys), intent(in), dimension(im, levs) ::
      &   u1, v1, t1,  bn2,  rho,   prsl, del
- 
+
       real(kind=kind_phys), intent(in), dimension(im, levs+1) :: prsi
 !
 ! out : taup,  taud, pkdis
@@ -196,16 +196,16 @@
                else
                  cdf2(iw) =  cxoro(iw)*cxoro(iw) -c2f2(iw)
                  if ( cdf2(iw) < cxmin2)  wave_act(iw,k:levs+1) = 0.0
-               endif       
-               if ( wave_act(iw,k) <= 0.0) cycle 
+               endif
+               if ( wave_act(iw,k) <= 0.0) cycle
 !
 ! upward propagation
-!          
-               kzw2 = Bv2/Cdf2(iw) - akx2(iw) 
+!
+               kzw2 = Bv2/Cdf2(iw) - akx2(iw)
 
-               if (kzw2 < mkz2min) then 
+               if (kzw2 < mkz2min) then
                  wave_act(iw,k:levs+1) = 0.0
-               else  
+               else
 !
 ! upward propagation w/o reflection
 !
@@ -266,7 +266,7 @@
 
           k = ksrc
           tauz(k)      = sum(tau_sp(:,k)*wave_act(:,k))
-          tauz(k)      = tauz(k+1)   ! zero momentum dep-n at k=ksrc 
+          tauz(k)      = tauz(k+1)   ! zero momentum dep-n at k=ksrc
 
           pkdis(j,k)   = sum(wkdis(:,k)*wave_act(:,k))
           rms_wind(k)  = sum(wrms(:,k)*wave_act(:,k))
@@ -287,15 +287,16 @@
      &           delp, rho, bn2, uzi, rhoi, ktur, kalp, dzi, xn, yn)
 
       use ugwp_common_v0 ,  only : grav, rgrav, rdi,  velmin, dw2min
+      use machine ,         only : kind_phys
       implicit none
 
       integer :: nz, nzi
-      real, dimension(nz  ) ::  u1,  v1, t1, delp, rho, pmid
-      real, dimension(nz  ) ::  bn2  ! define at the interfaces
-      real, dimension(nz+1) ::  pint
-      real                  ::  xn, yn
+      real(kind=kind_phys), dimension(nz  ) ::  u1, v1, t1, delp, rho
+      real(kind=kind_phys), dimension(nz  ) ::  pmid, bn2  ! define at the interfaces
+      real(kind=kind_phys), dimension(nz+1) ::  pint
+      real(kind=kind_phys)                  ::  xn, yn
 ! output
- 
+
       real, dimension(nz+1) ::  dzi,  uzi, rhoi, ktur, kalp
 
 ! locals
@@ -323,7 +324,7 @@
         uz      = u1(k)-u1(k-1)
         vz      = v1(k)-v1(k-1)
         shr2    = rdz*rdz*(max(uz*uz+vz*vz, dw2min))
-        zmet    = -hps*alog(pint(k)*rpspa)
+        zmet    = -hps*log(pint(k)*rpspa)
         zgrow   = exp(zmet*h4)
         kmol    =  2.e-5*exp(zmet*rhps)+kedmin
         ritur   = max(bn2(k)/shr2, rimin)
@@ -332,12 +333,12 @@
         ktur(k) = kamp * w1 * w1 +kmol
       enddo
 
-      k = 1 
+      k = 1
       uzi(k)  = uzi(k+1)
       ktur(k) = ktur(k+1)
       rhoi(k) = rdi*pint(k)/t1(k+1)
       dzi(k)  = rgrav*delp(k)/rhoi(k)
-      
+
       k = nzi
       uzi(k)  = uzi(k-1)
       ktur(k) = ktur(k-1)
@@ -345,15 +346,15 @@
       dzi(k)  =  dzi(k-1)
 
       end subroutine oro_meanflow_v0
-      
+
 !> This subroutine calculates TOFD as in BELJAARS-2004.
-      subroutine ugwpv0_tofd1d(levs, sigflt, elvmax, zsurf, 
+      subroutine ugwpv0_tofd1d(levs, sigflt, elvmax, zsurf,
      &   zpbl, u, v,  zmid, utofd, vtofd, epstofd, krf_tofd)
-       use machine ,      only : kind_phys 
-       use ugwp_common_v0  , only :  rcpd2         
+       use machine ,      only : kind_phys
+       use ugwp_common_v0  , only :  rcpd2
        use ugwpv0_oro_init, only : n_tofd, const_tofd, ze_tofd
        use ugwpv0_oro_init, only : a12_tofd, ztop_tofd
-!       
+!
       implicit none
       integer ::  levs
       real(kind_phys), dimension(levs)  ::   u, v, zmid
@@ -367,17 +368,17 @@
       real(kind_phys) :: sghmax = 5.
       real(kind_phys) :: sgh2, ekin, zdec, rzdec, umag, zmet
       real(kind_phys) ::  zarg, ztexp, krf
-!     
+!
       utofd =0.0   ; vtofd = 0.0
-      epstofd =0.0 ; krf_tofd =0.0    
-!         
+      epstofd =0.0 ; krf_tofd =0.0
+!
        zdec = max(n_tofd*sigflt, zpbl)          ! ntimes*sgh_turb or Zpbl
        zdec = min(ze_tofd, zdec)                ! cannot exceed 18 km
        rzdec = 1.0/zdec
        sgh2 = max(sigflt*sigflt, sghmax*sghmax) ! 25 meters dz-of the first layer
-       
-      do k=1, levs  
-         zmet = zmid(k)-zsurf   
+
+      do k=1, levs
+         zmet = zmid(k)-zsurf
       if (zmet > ztop_tofd) cycle
          ekin = u(k)*u(k) + v(k)*v(k)
          umag = sqrt(ekin)
@@ -391,7 +392,7 @@
                                        ! to update momentum and temp-re; epstofd(k) can be skipped
          krf_tofd(k) = krf
       enddo
-!                
+!
       end subroutine ugwpv0_tofd1d
       end module cires_orowam2017
 !>@}
