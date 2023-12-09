@@ -153,6 +153,7 @@ contains
 !**********************************************************************
       SUBROUTINE read_aerdataf ( me, master, iflip, idate, FHOUR, errmsg, errflg)
       use machine, only: kind_phys, kind_io4, kind_io8
+      use w3emc_wrapper, only: w3movdat_w
       use aerclm_def
 
 !--- in/out
@@ -168,7 +169,7 @@ contains
       real(8) RINC(5)
       integer jdow, jdoy, jday
       real(4) rinc4(5)
-      integer w3kindreal,w3kindint      
+      integer w3kindreal,w3kindint
 
       integer, allocatable  :: invardims(:)
 !
@@ -189,9 +190,9 @@ contains
       call w3kind(w3kindreal,w3kindint)
       if(w3kindreal == 4) then
         rinc4 = rinc
-        CALL W3MOVDAT(RINC4,IDAT,JDAT)
+        call w3movdat_w(RINC4,IDAT,JDAT)
       else
-        CALL W3MOVDAT(RINC,IDAT,JDAT)
+        call w3movdat_w(RINC,IDAT,JDAT)
       endif
 !
       jdow = 0
@@ -283,6 +284,7 @@ contains
                              ddy,iindx1,iindx2,ddx,lev,prsl,aerout, errmsg,errflg)
 !
       use machine, only: kind_phys, kind_io4, kind_io8
+      use w3emc_wrapper, only: w3movdat_w
       use aerclm_def
 
       implicit none
@@ -292,7 +294,7 @@ contains
       integer   i1,i2, iday,j,j1,j2,l,npts,nc,n1,n2,lev,k,i,ii, klev
       real(kind=kind_phys) fhour,temj, tx1, tx2,temi, tem
       real(kind=kind_phys), dimension(npts) :: temij,temiy,temjx,ddxy
-      
+
 !
 
       integer  JINDX1(npts), JINDX2(npts), iINDX1(npts), iINDX2(npts)
@@ -322,9 +324,9 @@ contains
       call w3kind(w3kindreal,w3kindint)
       if(w3kindreal == 4) then
         rinc4 = rinc
-        CALL W3MOVDAT(RINC4,IDAT,JDAT)
+        call w3movdat_w(RINC4,IDAT,JDAT)
       else
-        CALL W3MOVDAT(RINC,IDAT,JDAT)
+        call w3movdat_w(RINC,IDAT,JDAT)
       endif
 !
       jdow = 0
@@ -343,7 +345,7 @@ contains
       enddo
       n1 = n2 - 1
       if (n2 > 12) n2 = n2 -12
-!     need to read a new month 
+!     need to read a new month
       if (n1.ne.n1sv) then
 #ifdef DEBUG
         if (me == master) write(*,*)"read in a new month MERRA2", n2
@@ -462,7 +464,7 @@ contains
       real(kind=kind_io4),allocatable,dimension(:,:,:) :: buff
       real(kind=kind_io4),allocatable,dimension(:,:,:,:):: buffx
       real(kind=kind_io4),allocatable,dimension(:,:)   :: pres_tmp
-      
+
 !! ===================================================================
       allocate (buff(lonsaer, latsaer, levsw))
       allocate (pres_tmp(lonsaer, levsw))
@@ -474,7 +476,7 @@ contains
       pres_tmp = 0
       buffx = 0
 
-      write(mn,'(i2.2)') nf 
+      write(mn,'(i2.2)') nf
       fname=trim("aeroclim.m"//mn//".nc")
       ncid = -1
       if(.not.netcdf_check(nf90_open(fname , nf90_NOWRITE, ncid), &
@@ -558,4 +560,3 @@ contains
       END SUBROUTINE read_netfaer
 
 end module aerinterp
-

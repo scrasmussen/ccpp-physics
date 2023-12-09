@@ -127,7 +127,7 @@ contains
 !         jjindx2(j),' oz_lat=',oz_lat(jindx1(j)),              &
 !         oz_lat(jindx2(j)),' ddy=',ddy(j)
       ENDDO
- 
+
       RETURN
       END SUBROUTINE setindxoz
 !
@@ -136,12 +136,13 @@ contains
       SUBROUTINE ozinterpol(me,npts,IDATE,FHOUR,jindx1,jindx2,ozplout,ddy)
 !
       USE MACHINE,  ONLY : kind_phys
-      USE OZNE_DEF
+      use w3emc_wrapper, only: w3movdat_w
+      use ozne_def
       implicit none
       integer             iday,j,j1,j2,l,npts,nc,n1,n2
       real(kind=kind_phys) fhour,tem, tx1, tx2
 !
- 
+
       integer  JINDX1(npts), JINDX2(npts)
       integer  me, idate(4), IDAT(8),JDAT(8)
 !
@@ -163,9 +164,9 @@ contains
       call w3kind(w3kindreal,w3kindint)
       if(w3kindreal==4) then
         rinc4=rinc
-        CALL W3MOVDAT(RINC4,IDAT,JDAT)
+        call w3movdat_w(RINC4,IDAT,JDAT)
       else
-        CALL W3MOVDAT(RINC,IDAT,JDAT)
+        call w3movdat_w(RINC,IDAT,JDAT)
       endif
 !
       jdow = 0
@@ -199,8 +200,8 @@ contains
             J1  = JINDX1(J)
             J2  = JINDX2(J)
             TEM = 1.0 - DDY(J)
-            ozplout(j,L,nc) = & 
-            tx1*(TEM*ozplin(J1,L,nc,n1)+DDY(J)*ozplin(J2,L,nc,n1)) & 
+            ozplout(j,L,nc) = &
+            tx1*(TEM*ozplin(J1,L,nc,n1)+DDY(J)*ozplin(J2,L,nc,n1)) &
           + tx2*(TEM*ozplin(J1,L,nc,n2)+DDY(J)*ozplin(J2,L,nc,n2))
           ENDDO
         ENDDO

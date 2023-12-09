@@ -28,8 +28,8 @@ contains
       real(kind=4), allocatable, dimension(:) :: h2o_time4, tempin
 
       if (.not. h2o_phys) then
-        latsh2o   = 1 
-        levh2o    = 1 
+        latsh2o   = 1
+        levh2o    = 1
         h2o_coeff = 1
         timeh2o   = 1
 
@@ -121,7 +121,7 @@ contains
 !          jindx2(j),' h2o_lat=',h2o_lat(jindx1(j)),          &
 !          h2o_lat(jindx2(j)),' ddy=',ddy(j)
       enddo
- 
+
       return
       end subroutine setindxh2o
 !
@@ -132,12 +132,13 @@ contains
 ! May 2015 Shrinivas Moorthi - Prepare for H2O interpolation
 !
       use machine , only : kind_phys
+      use w3emc_wrapper, only: w3movdat_w
       use h2o_def
       implicit none
       integer             j,j1,j2,l,npts,nc,n1,n2
       real(kind=kind_phys) fhour,tem, tx1, tx2
 !
- 
+
       integer  jindx1(npts), jindx2(npts)
       integer  me,idate(4)
       integer  idat(8),jdat(8)
@@ -160,9 +161,9 @@ contains
       call w3kind(w3kindreal,w3kindint)
       if(w3kindreal==4) then
         rinc4 = rinc
-        CALL W3MOVDAT(RINC4,IDAT,JDAT)
+        call w3movdat_w(RINC4,IDAT,JDAT)
       else
-        CALL W3MOVDAT(RINC,IDAT,JDAT)
+        call w3movdat_w(RINC,IDAT,JDAT)
       endif
 !
       jdow = 0
@@ -194,8 +195,8 @@ contains
             j1  = jindx1(j)
             j2  = jindx2(j)
             tem = 1.0 - ddy(j)
-            h2oplout(j,l,nc) = & 
-              tx1*(tem*h2oplin(j1,l,nc,n1)+ddy(j)*h2oplin(j2,l,nc,n1)) & 
+            h2oplout(j,l,nc) = &
+              tx1*(tem*h2oplin(j1,l,nc,n1)+ddy(j)*h2oplin(j2,l,nc,n1)) &
             + tx2*(tem*h2oplin(j1,l,nc,n2)+ddy(j)*h2oplin(j2,l,nc,n2))
           enddo
         enddo

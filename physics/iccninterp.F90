@@ -23,7 +23,7 @@ contains
       integer, intent(in) :: me
       integer, intent(in) :: master
 !--- locals
-      integer :: i, n, k, ncid, varid,j,it
+      integer :: i, n, k, ncid, varid, j, it, stat
       real(kind=kind_phys), allocatable, dimension(:) :: hyam,hybm
       real(kind=4), allocatable, dimension(:,:,:) :: ci_ps
 
@@ -31,29 +31,29 @@ contains
       allocate (ciplin(lonscip,latscip,kcipl,timeci))
       allocate (ccnin(lonscip,latscip,kcipl,timeci))
       allocate (ci_pres(lonscip,latscip,kcipl,timeci))
-      call nf_open("cam5_4_143_NAAI_monclimo2.nc", NF90_NOWRITE, ncid)
-      call nf_inq_varid(ncid, "lat", varid)
-      call nf_get_var(ncid, varid, ci_lat)
-      call nf_inq_varid(ncid, "lon", varid)
-      call nf_get_var(ncid, varid, ci_lon)
-      call nf_inq_varid(ncid, "PS", varid)
-      call nf_get_var(ncid, varid, ci_ps)
-      call nf_inq_varid(ncid, "hyam", varid)
-      call nf_get_var(ncid, varid, hyam)
-      call nf_inq_varid(ncid, "hybm", varid)
-      call nf_get_var(ncid, varid, hybm)
-      call nf_inq_varid(ncid, "NAAI", varid)
-      call nf_get_var(ncid, varid, ciplin)
+      stat = nf90_open("cam5_4_143_NAAI_monclimo2.nc", NF90_NOWRITE, ncid)
+      stat = nf90_inq_varid(ncid, "lat", varid)
+      stat = nf90_get_var(ncid, varid, ci_lat)
+      stat = nf90_inq_varid(ncid, "lon", varid)
+      stat = nf90_get_var(ncid, varid, ci_lon)
+      stat = nf90_inq_varid(ncid, "PS", varid)
+      stat = nf90_get_var(ncid, varid, ci_ps)
+      stat = nf90_inq_varid(ncid, "hyam", varid)
+      stat = nf90_get_var(ncid, varid, hyam)
+      stat = nf90_inq_varid(ncid, "hybm", varid)
+      stat = nf90_get_var(ncid, varid, hybm)
+      stat = nf90_inq_varid(ncid, "NAAI", varid)
+      stat = nf90_get_var(ncid, varid, ciplin)
       do it = 1,timeci
         do k=1, kcipl
           ci_pres(:,:,k,it)=hyam(k)*1.e5+hybm(k)*ci_ps(:,:,it)
         end do
       end do
-      call nf_close(ncid)
-      call nf_open("cam5_4_143_NPCCN_monclimo2.nc", NF90_NOWRITE, ncid)
-      call nf_inq_varid(ncid, "NPCCN", varid)
-      call nf_get_var(ncid, varid, ccnin)
-      call nf_close(ncid)
+      stat = nf90_close(ncid)
+      stat = nf90_open("cam5_4_143_NPCCN_monclimo2.nc", NF90_NOWRITE, ncid)
+      stat = nf90_inq_varid(ncid, "NPCCN", varid)
+      stat = nf90_get_var(ncid, varid, ccnin)
+      stat = nf90_close(ncid)
 !---
       deallocate (hyam, hybm, ci_ps)
       if (me == master) then
@@ -118,7 +118,7 @@ contains
         ! iindx2(j),' ci_lon=',ci_lon(iindx1(j)),               &
         ! ci_lon(iindx2(j)),' ddx=',ddx(j)
       ENDDO
- 
+
       RETURN
       END SUBROUTINE setindxci
 !
@@ -129,12 +129,13 @@ contains
                  iindx1,iindx2,ddx,lev, prsl, ciplout,ccnout)
 !
       USE MACHINE,  ONLY : kind_phys
+      use w3emc_wrapper, only: w3movdat_w
       use iccn_def
       implicit none
       integer   i1,i2, iday,j,j1,j2,l,npts,nc,n1,n2,lev,k,i
       real(kind=kind_phys) fhour,temj, tx1, tx2,temi
 !
- 
+
       integer  JINDX1(npts), JINDX2(npts),iINDX1(npts),iINDX2(npts)
       integer  me,idate(4)
       integer  IDAT(8),JDAT(8)
@@ -159,9 +160,9 @@ contains
       call w3kind(w3kindreal,w3kindint)
       if(w3kindreal==4) then
         rinc4=rinc
-        CALL W3MOVDAT(RINC4,IDAT,JDAT)
+        call w3movdat_w(RINC4,IDAT,JDAT)
       else
-        CALL W3MOVDAT(RINC,IDAT,JDAT)
+        call w3movdat_w(RINC,IDAT,JDAT)
       endif
 !
       jdow = 0
@@ -196,23 +197,23 @@ contains
           I1  = IINDX1(J)
           I2  = IINDX2(J)
           TEMI = 1.0 - DDX(J)
-          cipm(j,L) =                                                           & 
+          cipm(j,L) =                                                           &
             tx1*(TEMI*TEMJ*ciplin(I1,J1,L,n1)+DDX(j)*DDY(J)*ciplin(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ciplin(I1,J2,L,n1)+DDX(j)*TEMJ*ciplin(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ciplin(I1,J2,L,n1)+DDX(j)*TEMJ*ciplin(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ciplin(I1,J1,L,n2)+DDX(j)*DDY(J)*ciplin(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ciplin(I1,J2,L,n2)+DDX(j)*TEMJ*ciplin(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ciplin(I1,J2,L,n2)+DDX(j)*TEMJ*ciplin(I2,J1,L,n2))
 
-          ccnpm(j,L) =                                                           & 
+          ccnpm(j,L) =                                                           &
             tx1*(TEMI*TEMJ*ccnin(I1,J1,L,n1)+DDX(j)*DDY(J)*ccnin(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ccnin(I1,J2,L,n1)+DDX(j)*TEMJ*ccnin(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ccnin(I1,J2,L,n1)+DDX(j)*TEMJ*ccnin(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ccnin(I1,J1,L,n2)+DDX(j)*DDY(J)*ccnin(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ccnin(I1,J2,L,n2)+DDX(j)*TEMJ*ccnin(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ccnin(I1,J2,L,n2)+DDX(j)*TEMJ*ccnin(I2,J1,L,n2))
 
-          cipres(j,L) =                                                          & 
+          cipres(j,L) =                                                          &
             tx1*(TEMI*TEMJ*ci_pres(I1,J1,L,n1)+DDX(j)*DDY(J)*ci_pres(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ci_pres(I1,J2,L,n1)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ci_pres(I1,J2,L,n1)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ci_pres(I1,J1,L,n2)+DDX(j)*DDY(J)*ci_pres(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ci_pres(I1,J2,L,n2)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ci_pres(I1,J2,L,n2)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n2))
         ENDDO
       ENDDO
 
