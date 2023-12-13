@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = gfs_mmm_sfclayrev_pre
   type = scheme
-  dependencies = machine.F
+  dependencies = machine.F, mmm_kinds.F90
 
 ########################################################################
 [ccpp-arg-table]
@@ -296,13 +296,6 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = out
-[scm_force_flux]
-  standard_name = do_not_compute_surface_scalar_fluxes
-  long_name = flag for not computing surface scalar fluxes
-  units = flag
-  dimensions = ()
-  type = logical
   intent = out
 [qgh]
   standard_name = saturation_mixing_ratio_at_lowest_model_level

@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = gfs_mmm_sfclayrev_post
   type = scheme
-  dependencies = machine.F
+  dependencies = machine.F, mmm_kinds.F90
 
 ########################################################################
 [ccpp-arg-table]
@@ -70,7 +70,7 @@
 [znt]
   standard_name = surface_roughness_length_in_m
   long_name = surface roughness length in meter
-  units = m 
+  units = m
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
