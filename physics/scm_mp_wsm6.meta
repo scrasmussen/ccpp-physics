@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = scm_mp_wsm6
   type = scheme
-  dependencies = ccpp_kinds.F90, SCM-physics/mp_wsm6.F90
+  dependencies = mmm_kinds.F90, SCM-physics/mp_wsm6.F90
 
 ########################################################################
 [ccpp-arg-table]
@@ -391,30 +391,30 @@
   kind = kind_phys
   intent = inout
 [its]
-  standard_name = starting_x_index_for_this_MPI_rank
+  standard_name = horizontal_begin
   long_name = starting index in the x direction for this MPI rank
-  units = none
+  units = count
   dimensions = ()
   type = integer
   intent = in
 [ite]
   standard_name = number_of_points_in_x_direction_for_this_MPI_rank
   long_name = number of points in x direction for this MPI rank
-  units = none
+  units = count
   dimensions = ()
   type = integer
   intent = in
 [kts]
   standard_name = vertical_layer_dimension
   long_name = number of vertical levels
-  units = none
+  units = count
   dimensions = ()
   type = integer
   intent = in
 [kte]
-  standard_name = vertical_end
-  long_name = vertical end
-  units = none
+  standard_name = vertical_dimension_end
+  long_name = vertical dimension end
+  units = count
   dimensions = ()
   type = integer
   intent = in

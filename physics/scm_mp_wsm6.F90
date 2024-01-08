@@ -8,7 +8,7 @@ module scm_mp_wsm6
 
       use ccpp_kinds, only : kind_phys
 
-      use mp_wsm6, only : wsm6_init,  wsm6_run, wsm6_finalize
+      use mp_wsm6, only : mp_wsm6_init,  mp_wsm6_run, mp_wsm6_finalize
       ! use module_mp_thompson, only : naIN0, naIN1, naCCN0, naCCN1, eps, Nt_c_l, Nt_c_o
       ! use module_mp_thompson, only : re_qc_min, re_qc_max, re_qi_min, re_qi_max, re_qs_min, re_qs_max
 
@@ -318,24 +318,24 @@ module scm_mp_wsm6
          real(kind=kind_phys), intent(in), dimension(its:ite,kts:kte) :: den
          real(kind=kind_phys), intent(in), dimension(its:ite,kts:kte) :: p
          real(kind=kind_phys), intent(in), dimension(its:ite,kts:kte) :: delz
-         real(kind=kind_phys), intent(in),                            :: delt
-         real(kind=kind_phys), intent(in),                            :: g
-         real(kind=kind_phys), intent(in),                            :: cpd
-         real(kind=kind_phys), intent(in),                            :: cpv
-         real(kind=kind_phys), intent(in),                            :: t0c
-         real(kind=kind_phys), intent(in),                            :: den0
-         real(kind=kind_phys), intent(in),                            :: rd
-         real(kind=kind_phys), intent(in),                            :: rv
-         real(kind=kind_phys), intent(in),                            :: ep1
-         real(kind=kind_phys), intent(in),                            :: ep2
-         real(kind=kind_phys), intent(in),                            :: qmin
-         real(kind=kind_phys), intent(in),                            :: xls
-         real(kind=kind_phys), intent(in),                            :: xlv0
-         real(kind=kind_phys), intent(in),                            :: xlf0
-         real(kind=kind_phys), intent(in),                            :: cliq
-         real(kind=kind_phys), intent(in),                            :: cice
-         real(kind=kind_phys), intent(in),                            :: psat
-         real(kind=kind_phys), intent(in),                            :: denr
+         real(kind=kind_phys), intent(in)                             :: delt
+         real(kind=kind_phys), intent(in)                             :: g
+         real(kind=kind_phys), intent(in)                             :: cpd
+         real(kind=kind_phys), intent(in)                             :: cpv
+         real(kind=kind_phys), intent(in)                             :: t0c
+         real(kind=kind_phys), intent(in)                             :: den0
+         real(kind=kind_phys), intent(in)                             :: rd
+         real(kind=kind_phys), intent(in)                             :: rv
+         real(kind=kind_phys), intent(in)                             :: ep1
+         real(kind=kind_phys), intent(in)                             :: ep2
+         real(kind=kind_phys), intent(in)                             :: qmin
+         real(kind=kind_phys), intent(in)                             :: xls
+         real(kind=kind_phys), intent(in)                             :: xlv0
+         real(kind=kind_phys), intent(in)                             :: xlf0
+         real(kind=kind_phys), intent(in)                             :: cliq
+         real(kind=kind_phys), intent(in)                             :: cice
+         real(kind=kind_phys), intent(in)                             :: psat
+         real(kind=kind_phys), intent(in)                             :: denr
          !inout arguments:
          real(kind=kind_phys),intent(inout),dimension(its:ite,kts:kte):: t
          real(kind=kind_phys),intent(inout),dimension(its:ite,kts:kte):: q
@@ -400,7 +400,7 @@ module scm_mp_wsm6
 
          if (.not. is_initialized) return
 
-         call mp_wsm6_finalize()
+         call mp_wsm6_finalize(errmsg, errflg)
 
          is_initialized = .false.
 
