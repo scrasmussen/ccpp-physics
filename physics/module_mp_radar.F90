@@ -200,7 +200,7 @@
       IMPLICIT NONE
       DOUBLE PRECISION, INTENT(IN):: T,lambda
       DOUBLE PRECISION:: epsinf,epss,epsr,epsi
-      DOUBLE PRECISION:: alpha,lambdas,sigma,nenner
+      DOUBLE PRECISION:: alpha,lambdas,nenner
       COMPLEX*16, PARAMETER:: i = (0d0,1d0)
       DOUBLE PRECISION, PARAMETER:: PIx=3.1415926535897932384626434d0
 
@@ -281,7 +281,7 @@
                                      host, hostmatrix, hostinclusion
 
       COMPLEX*16:: m_core, m_air
-      DOUBLE PRECISION:: D_large, D_g, rhog, x_w, xw_a, fm, fmgrenz,    &
+      DOUBLE PRECISION:: D_large, D_g, rhog, x_w, fm, fmgrenz,          &
                          volg, vg, volair, volice, volwater,            &
                          meltratio_outside_grenz, mra
       INTEGER:: error

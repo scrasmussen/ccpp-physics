@@ -2227,7 +2227,7 @@ contains
     implicit none
     real(krealfp) fthex
     real(krealfp),intent(in):: t,pk
-    real(krealfp) p,tr,pv,pd,el,expo,expmax
+    real(krealfp) p,tr,pv,pd,el,expo
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     p=pk**con_cpor
     tr=con_ttp/t
@@ -3366,7 +3366,7 @@ contains
     real(krealfp) ftlclx
     real(krealfp),intent(in):: t,tdpd
     real(krealfp),parameter:: terrm=1.e-4,tlmin=180.,tlminx=tlmin-5.
-    real(krealfp) tr,pvdew,tlcl,ta,pvlcl,el,dpvlcl,terr,terrp
+    real(krealfp) tr,pvdew,tlcl,ta,pvlcl,el,dpvlcl,terr
     integer i
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     tr=con_ttp/(t-tdpd)

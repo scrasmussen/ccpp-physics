@@ -42,7 +42,7 @@ contains
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
 
-      integer :: i, k, idtend
+      integer :: idtend
 
       ! Initialize CCPP error handling variables
       errmsg = ''

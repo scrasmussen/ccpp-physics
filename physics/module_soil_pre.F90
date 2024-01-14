@@ -103,7 +103,7 @@ contains
       REAL , ALLOCATABLE , DIMENSION(:) :: zhave
 
       logical :: debug_print = .false.
-      INTEGER :: i , j , l , lout , lin , lwant , lhave, k
+      INTEGER :: i , j , l , lout , lin , lwant , lhave
       REAL :: temp
 
       !  Allocate the soil layer array used for interpolating.      
