@@ -10633,7 +10633,7 @@ END SUBROUTINE nssl_2mom_driver
       real ex1, ft, rhoinv(ngs)
       double precision ec0(ngs)
       
-      real ac1,bc, taus, c1,d1,e1,f1,p380,tmp,tmp1,tmp2,tmp3,tmp4,tmp5,temp3 ! , sstdy, super
+      real taus, c1,d1,e1,f1,p380,tmp,tmp1,tmp2,tmp3,tmp4,tmp5,temp3 ! , sstdy, super
       real dw,dwr
       double precision :: tmpz, tmpzmlt
       real ratio, delx, dely
@@ -10681,7 +10681,7 @@ END SUBROUTINE nssl_2mom_driver
       double precision :: h1, h2, h3, h4,denomdp, denominvdp
       real r1,qevap ! ,slv
       
-      real vr,nrx,chw,g1,qr,z,z1,rdi,alp,xnutmp,xnuc,g1r,rd1,rdia,rmas
+      real vr,nrx,chw,g1,qr,z,z1,rdi,xnutmp,xnuc,g1r,rd1,rdia,rmas
       real :: snowmeltmass = 0
       
 !      real, parameter :: rhofrz = 900.   ! density of graupel from newly-frozen rain
@@ -11323,7 +11323,7 @@ END SUBROUTINE nssl_2mom_driver
       real ssival,tqvcon
       real cdx(lc:lhab)
       real cnox
-      real cval,aval,eval,fval,gval ,qsign,ftelwc,qconkq,elecfac,altelecfac
+      real cval,aval,eval,fval,gval ,qsign,ftelwc,qconkq,elecfac
       real qconm,qconn,cfce15,gf8,gf4i,gf3p5,gf1a,gf1p5,qdiff,argrcnw
       real c4,bradp,bl2,bt2,dthr,hrifac, hdia0,hdia1,civenta,civentb
       real civentc,civentd,civente,civentf,civentg,cireyn,xcivent
@@ -11337,7 +11337,6 @@ END SUBROUTINE nssl_2mom_driver
       real   gmventa, gmventb,  gmventc, ghventa, ghventb, ghventc
       real  dzfacp,  dzfacm,  cmassin,  cwdiar 
       real  rimmas, rhobar
-      real   argtim, argqcw, argqxw, argtem
       real   frcswsw, frcswgl, frcswgm, frcswgh, frcswfw, frcswsw1
       real   frcglgl, frcglgm, frcglgh,  frcglfw, frcglgl1
       real   frcgmgl, frcgmgm, frcgmgh,  frcgmfw, frcgmgm1
@@ -11355,7 +11354,7 @@ END SUBROUTINE nssl_2mom_driver
       real  sum,  qweps,  gf2a, gf4a, dqldt, dqidt, dqdt
       real frcghrgl, frcghrgm, frcghrgh, frcghrfw, frcghrgh1, frcrghgl
       real frcrghgm, frcrghgh,  frcrghfw, frcrghgh1
-      real    a1,a2,a3,a4,a5,a6
+      real    a1,a2,a3,a4
       real   gamss
       real cdw, cdi, denom1, denom2, delqci1, delqip1
       real cirtotn,  ciptotn, cgmtotn, chltotn,  cirtotp
@@ -11378,7 +11377,7 @@ END SUBROUTINE nssl_2mom_driver
       
 !   arrays for temporary bin space
 
-      real :: xden,xmlt,cmlt,cmlttot,fventm,fventh,am,ah,felfinv,dmwdt
+      real :: xden,xmlt,cmlt,cmlttot,fventm,fventh,felfinv,dmwdt
 
       real :: qhmlrtmp,qhmlrtmp2, chmlrtmp, chmlrtmpd1inf, chlmlrtmp, zhlmlrtmp, zhlmlrrtmp, qvs0,tmpcmlt
 
