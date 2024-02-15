@@ -1,0 +1,75 @@
+abstract: '<p>The Developmental Testbed Center (DTC) is pleased to announce the Common
+  Community Physics Package (CCPP) v6.0.0 public release on June 29, 2022.&nbsp;This
+  release contains the CCPP Physics, a library of physical parameterizations, the
+  CCPP Framework, an infrastructure that connects the physics to host models, and
+  the CCPP Single Column Model (SCM), a simple host model that employs the CCPP Physics
+  and CCPP Framework.&nbsp;Additional information and access to the code can be found&nbsp;<a
+  href="https://dtcenter.org/community-code/common-community-physics-package-ccpp/ccpp-scm-version-6-0-0">here</a>.</p>
+
+
+  <p>The CCPP Physics is envisioned to contain parameterizations used in the NOAA
+  Unified Forecast System (UFS) for weather through seasonal prediction timescales,
+  as well as developmental schemes under consideration for upcoming operational implementations.
+  This release contains updated versions of parameterizations used in NOAA&rsquo;s
+  operational Global Forecast System (GFS) v16 (implemented in 2021), new schemes
+  (the NOAA National Severe Storms Laboratory two-moment microphysics parameterization,
+  the NOAA Global Systems Laboratory Drag Suite, and the Mellow-Yamada-Nakanishi-Niino
+  surface layer scheme), as well as updated versions of developmental schemes. Additional
+  features include stochastically-perturbed parameterizations and a cellular automata
+  stochastic convective organization capability.&nbsp;</p>
+
+
+  <p>Updates to the CCPP Framework include a new treatment for optional variables,
+  two additional elective phases for the schemes to give them the ability to run selected
+  processes at the beginning and end of a timestep, the ability to track which schemes
+  use a given variable within a suite, and a&nbsp;<em>stub</em>&nbsp;capability to
+  build the basic software caps needed for the compilation of the host model without
+  including any of the physics itself.&nbsp;To facilitate CCPP development, a dictionary
+  of standard names has been created to catalog the names in use and to provide a
+  set of rules for creating new names.</p>
+
+
+  <p>Changes in the SCM include the ability to build using libraries provided via
+  the HPC Stack distribution (replacing the previously-used NCEPLIBS and NCEPLIBS-externals
+  distributions), the combination of single- and multi-run capabilities into one script,
+  an update to the vertical coordinate code to better match the latest Finite-Volume
+  Cubed-Sphere (FV3) vertical coordinate, a simplification of the case configuration
+  namelists, and greater flexibility for output location (outside of bin directory).
+  As in the previous release, five experimental cases are available for use with the
+  CCPP SCM: BOMEX maritime shallow convection, LASSO continental shallow convection,
+  ASTEX stratocumulus-to-cumulus transition, ARM SGP Summer 1997 continental deep
+  convection, and TWP-ICE maritime deep convection.</p>
+
+
+  <p>The CCPP parameterizations are aggregated in suites by the host models.&nbsp;CCPP
+  v6.0.0 is supported for use with the UFS Short Range Weather Application v2 (suites
+  GFS_v16, RRFS_v1beta, WoFS_v0, and HRRR) and with the CCPP SCM (all suites available
+  for SRW Application v2 plus the GFSv17_p8 and RAP suites).&nbsp;All suites supported
+  with CCPP v5 have been deprecated.&nbsp;The CCPP v6.0.0 is not intended for use
+  with the UFS Medium-Range Weather Application but a later version will be.&nbsp;</p>
+
+
+  <p>For access to the SCM and CCPP code and documentation, please visit the CCPP
+  website at&nbsp;<a href="https://dtcenter.org/ccpp">https://dtcenter.org/ccpp</a>,
+  where you will find a Users&rsquo; Guide, a list of known issues, frequently-asked
+  questions, technical documentation, and scientific documentation. For information
+  about the UFS, including its use with CCPP, please visit&nbsp;<a href="https://ufscommunity.org/">https://ufscommunity.org/</a>.&nbsp;</p>
+
+
+  <p>For questions or comments about the CCPP and the SCM, please use our Forum at&nbsp;<a
+  href="http://dtcenter.org/forum/ccpp-user-support">http://dtcenter.org/forum/ccpp-user-support</a>.
+  When using CCPP with the UFS, you can also direct your questions to the&nbsp;<a
+  href="https://forums.ufscommunity.org/">UFS community forum</a><strong>.</strong></p>'
+authors:
+- family-names: CCPP Community
+cff-version: 1.2.0
+date-released: '2022-06-29'
+doi: 10.5281/zenodo.6896438
+keywords:
+- Numerical Weather Prediction
+license:
+- apache-2.0
+title: Common Community Physics Package (CCPP) Single Column Model v6.0.0 (with Physics
+  and Framework)
+type: software
+version: v6.0.0
