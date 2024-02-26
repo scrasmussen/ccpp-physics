@@ -1,0 +1,4 @@
+[ccpp-table-properties]
+  name = mmm_kinds
+  type = module
+  dependencies = machine.F

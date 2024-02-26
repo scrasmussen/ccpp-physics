@@ -38,6 +38,11 @@
 !
 !      
 ! ###########################################################################################
+module mmm_kinds
+  use machine, only: kind_phys, kind_dbl_prec, kind_sngl_prec
+  implicit none
+end module mmm_kinds
+
 MODULE ccpp_kinds
   use machine,  only: kind_phys, kind_dbl_prec, kind_sngl_prec
   implicit none
