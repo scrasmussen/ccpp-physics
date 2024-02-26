@@ -38,6 +38,7 @@
 !!
 !-------------------------------------------------------------------------------
    subroutine ysuvdif_run(im,km,ux,vx,tx,qx,p2d,p2di,pi2d,karman,              &
+                    dudt_pbl,dvdt_pbl,dtdt_pbl,dqvdt_pbl,dqcdt_pbl,dqidt_pbl,  &
                     utnp,vtnp,ttnp,qtnp,                                       &
                     swh,hlw,xmu,ntrac,ndiff,ntcw,ntiw,                         &
                     phii,phil,psfcpa,                                          &
@@ -99,9 +100,18 @@
 !
    real(kind=kind_phys),     dimension( :,: )                                   , &
              intent(inout)   ::                                utnp,vtnp,ttnp
-   real(kind=kind_phys),     dimension( :,:,: )                              , &
+   real(kind=kind_phys),     dimension( :,:,: )                                 , &
              intent(inout)   ::                                          qtnp
    real(kind=kind_phys), optional, intent(inout) :: dtend(:,:,:)
+!-- WL -- output instantaneous tendencies due to physics scheme, herein PBL --
+   real(kind=kind_phys),     dimension( :, : )                                   , &
+             intent(out  )   ::                                          dudt_pbl, &
+                                                                         dvdt_pbl, &
+                                                                         dtdt_pbl, &
+                                                                        dqvdt_pbl, &
+                                                                        dqcdt_pbl, &
+                                                                        dqidt_pbl
+!-- WL --
    integer, intent(in) :: dtidx(:,:), ntqv, index_of_temperature,                  &
         index_of_x_wind, index_of_y_wind, index_of_process_pbl
 !
@@ -864,6 +874,9 @@
    do k = km,1,-1
      do i = 1,im
        ttend = (f1(i,k)-thx(i,k)+300.)*rdt*pi2d(i,k)
+!-- WL -- save into instantaneous arrays --
+       dtdt_pbl(i,k) = ttend
+!-- WL --
        ttnp(i,k) = ttnp(i,k)+ttend
        dtsfc(i) = dtsfc(i)+ttend*cont*del(i,k)
      enddo
@@ -978,6 +991,9 @@
    do k = km,1,-1
      do i = 1,im
        qtend = (f3(i,k,1)-qx(i,k,1))*rdt
+!-- WL -- save into instantaneous array
+       dqvdt_pbl(i,k) = qtend
+!-- WL --
        qtnp(i,k,1) = qtnp(i,k,1)+qtend
        dqsfc(i) = dqsfc(i)+qtend*conq*del(i,k)
      enddo
@@ -994,6 +1010,10 @@
        do k = km,1,-1
          do i = 1,im
            qtend = (f3(i,k,ic)-qx(i,k,ic))*rdt
+!-- WL -- save into instantaneous array
+           if(ic.eq.ntcw) dqcdt_pbl(i,k) = qtend
+           if(ic.eq.ntiw) dqidt_pbl(i,k) = qtend
+!-- WL --
            qtnp(i,k,ic) = qtnp(i,k,ic)+qtend
          enddo
        enddo
@@ -1080,6 +1100,10 @@
      do i = 1,im
        utend = (f1(i,k)-ux(i,k))*rdt
        vtend = (f2(i,k)-vx(i,k))*rdt
+!-- WL -- save into instantaneous arrays --
+       dudt_pbl(i,k) = utend
+       dvdt_pbl(i,k) = vtend
+!-- WL --
        utnp(i,k) = utnp(i,k)+utend
        vtnp(i,k) = vtnp(i,k)+vtend
        dusfc(i) = dusfc(i) + utend*conwrc*del(i,k)

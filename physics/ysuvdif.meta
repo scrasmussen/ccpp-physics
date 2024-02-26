@@ -111,6 +111,54 @@
   dimensions = ()
   type = real
   intent = in
+[dudt_pbl]
+  standard_name = instantaneous_tendency_of_x_wind_due_to_boundary_layer
+  long_name = tendency of x wind due to boundary layer
+  units = m s-2
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
+[dvdt_pbl]
+  standard_name = instantaneous_tendency_of_y_wind_due_to_boundary_layer
+  long_name = tendency of y wind due to boundary layer
+  units = m s-2
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
+[dtdt_pbl]
+  standard_name = instantaneous_tendency_of_potential_temperature_due_to_boundary_layer
+  long_name = tendency of potential temperature due to boundary layer
+  units =  K s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
+[dqvdt_pbl]
+  standard_name = instantaneous_tendency_of_water_vapor_mixing_ratio_due_to_boundary_layer
+  long_name = tendency of water vapor mixing ratio due to boundary layer
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
+[dqcdt_pbl]
+  standard_name = instantaneous_tendency_of_cloud_water_mixing_ratio_due_to_boundary_layer
+  long_name = tendency of cloud water mixing ratio due to boundary layer
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
+[dqidt_pbl]
+  standard_name = instantaneous_tendency_of_ice_water_mixing_ratio_due_to_boundary_layer
+  long_name = tendency of ice water mixing ratio due to boundary layer
+  units = kg kg-1 s-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = out
 [utnp]
   standard_name = process_split_cumulative_tendency_of_x_wind
   long_name = updated tendency of the x wind
