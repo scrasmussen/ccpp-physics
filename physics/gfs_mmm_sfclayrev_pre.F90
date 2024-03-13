@@ -17,15 +17,16 @@ contains
   !
   ! #########################################################################################
   subroutine gfs_mmm_sfclayrev_pre_run(do_mmm_sfclayrev, nCol, zorl, znt, wetness, mavail, pbl_regime, fm, fh, cpm, slimask, xland, &
-             wet, dry, icy, tsfc_wat, tsfc_lnd, tsfc_ice, qsfc_wat, qsfc_lnd, qsfc_ice, tsfc, qsfc, &
-             ep1, t, q, ps, con_rd, con_cp, hfx_wat, hfx_lnd, hfx_ice, hfx, qfx_wat, qfx_lnd, qfx_ice,qfx, scm_force_flux, &
-             qgh, gz1oz0, water_depth, shalwater_depth, svp1, svp2, svp3, svpt0, p1000mb, its, ite, errmsg, errflg)
+             wet, dry, icy, tsfc_wat, tsfc_lnd, tsfc_ice, qsfc_wat, qsfc_lnd, qsfc_ice, tsfc, qsfc, shum1d, rv1d, &
+             ep1, t, q, ps, con_rd, con_cp, hfx_wat, hfx_lnd, hfx_ice, hfx, qfx_wat, qfx_lnd, qfx_ice,qfx, scm_force_flux, isfflx, &
+             qgh, gz1oz0, water_depth, shalwater_depth, con_psat, svp1, svp2, svp3, p1000mb, its, ite, errmsg, errflg)
 
     ! Input
     logical,                       intent(in)           :: &
         do_mmm_sfclayrev  ! Flag for MMM SFCLAYREV scheme
     logical,                       intent(out)          :: &
-        scm_force_flux    ! Flag for not computing surface fluxes but prescribing
+        scm_force_flux, & ! Flag for not computing surface fluxes but prescribing them from a SCM
+        isfflx            ! Flag for computing surface heat and moisture fluxes in surface layer scheme  
     logical,         dimension(:), intent(in)           :: &
         wet,            & ! Flag indicating presence of some ocean or lake surface area fraction
         dry,            & ! Flag indicating presence of some land surface area fraction
@@ -39,7 +40,8 @@ contains
     real(kind_phys),               intent(in)           :: &
         ep1,            & ! (rv/rd) - 1
         con_rd,         & ! rd
-        con_cp            ! cp
+        con_cp,         & ! cp
+        con_psat          ! con_psat pres at H2O 3pt (Pa)
     real(kind_phys), dimension(:), intent(in)           :: &
         zorl,           & ! Surface roughness-length (cm)
         tsfc_wat,       & ! Surface skin temperature over water (K)
@@ -54,6 +56,7 @@ contains
         qfx_wat,        & ! Kinematic surface upward latent heat flux over water (kg kg-1 m s-1)
         qfx_lnd,        & ! Kinematic surface upward latent heat flux over land (kg kg-1 m s-1)
         qfx_ice,        & ! Kinematic surface upward latent heat flux over ice (kg kg-1 m s-1)
+        shum1d,         & ! Water vapor specific humidity at lowest model layer (kg kg-1)
         ps                ! Surface pressure (Pa)
     real(kind_phys), dimension(:), intent(in), optional :: &
         wetness           ! Normalized soil wetness (frac)  
@@ -63,10 +66,11 @@ contains
         q                 ! Model layer mean tracer concentration (kg kg-1)
 
     ! Outputs
-    real(kind=kind_phys),           intent(out) :: shalwater_depth, svp1, svp2, svp3, svpt0, p1000mb
+    real(kind=kind_phys),          intent(out) :: shalwater_depth, svp1, svp2, svp3, p1000mb
     real(kind_phys), dimension(:), intent(out) :: &
         tsfc,           & ! Surface skin temperature (K)
         qsfc,           & ! Surface specific humidity (kg kg-1)
+        rv1d,           & ! Water vapor mixing ratio at the lowest model level (kg kg-1)
         znt,            & ! Surface roughness-length (m)
         mavail,         & ! Surface moisture availability (frac; [0-1])
         pbl_regime,     & ! PBL regime categories
@@ -109,14 +113,15 @@ contains
     ! Pass in flag for computing or prescribing surface fluxes
     if (do_mmm_sfclayrev) then
         scm_force_flux = .false.
+        isfflx = .true.
     endif
 
-    ! Constants from module_sf_mynn.F90
     shalwater_depth=1.0
-    svp1 = 0.6112
+
+    ! Constants for calculating saturation vapor pressure of water (Bolton 1980)
+    svp1 = con_psat * 0.001 ! convert unit from Pa to kPa
     svp2 = 17.67
     svp3 = 29.65
-    svpt0 = 273.15
     p1000mb = 100000.
 
     ! Convert roughness length (cm -> m)
@@ -124,10 +129,15 @@ contains
         znt(iCol) = zorl(iCol) * 0.01
     end do
     ! Calculate surface available moisture (fraction [0-1])
-    mavail(:) = 1.0     ! WL2023 - should mavail be separated for dry, icy and wet?
-    if (present(wetness)) then
+    mavail(:) = 1.0 ! WL2023: lower values may be used over land 
+    if (present(wetness)) then ! only when RUC LSM used
         mavail(:) = wetness(:)
     end if
+
+    ! Convertion between specific humidity of water vapor to water vapor mixing ratio
+    do iCol=1,nCol
+       rv1d(iCol) = shum1d(iCol) / (1.0 - shum1d(iCol))
+    enddo
 
     ! Compute land/sea mask convention from (0-sea/1-land/2-ice) ---> (1-land/2-sea)
     do iCol=1,nCol
@@ -139,7 +149,7 @@ contains
     enddo
 
     do iCol = 1,nCol
-       tvcon = (1. + ep1 * q(iCol,1,1))
+       tvcon = (1.0 + ep1 * q(iCol,1,1))
        rho   = ps(iCol) / (con_rd * t(iCol,1) * tvcon)
         if (dry(iCol)) then
             hfx(iCol)  = rho * con_cp * hfx_lnd(iCol)

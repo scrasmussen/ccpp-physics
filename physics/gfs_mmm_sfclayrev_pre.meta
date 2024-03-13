@@ -185,6 +185,22 @@
   type = real
   kind = kind_phys
   intent = out
+[shum1d]
+  standard_name = specific_humidity_at_surface_adjacent_layer
+  long_name = water vapor specific humidity at surface adjacent layer
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[rv1d]
+  standard_name = water_vapor_mixing_ratio_at_surface_adjacent_layer
+  long_name =  water vapor mixing ratio at surface adjacent layer
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
 [ep1]
   standard_name = ratio_of_vapor_to_dry_air_gas_constants_minus_one
   long_name = rv/rd - 1 (rv = ideal gas constant for water vapor)
@@ -304,6 +320,13 @@
   dimensions = ()
   type = logical
   intent = out
+[isfflx]
+  standard_name = flag_to_compute_surface_heat_and_moisture_fluxes
+  long_name = flag to compute surface heat and moisture fluxes
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = out
 [qgh]
   standard_name = saturation_mixing_ratio_at_lowest_model_level
   long_name = saturation water vapor mixing ratio at lowest model level
@@ -336,10 +359,18 @@
   type = real
   kind = kind_phys
   intent = out
+[con_psat]
+  standard_name = saturation_pressure_at_triple_point_of_water
+  long_name = saturation pressure at triple point of water
+  units = Pa
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
 [svp1]
-  standard_name = saturation_vapor_pressure_constant_1
-  long_name = constant for saturation vapor pressure calculation
-  units = k Pa
+  standard_name = saturation_pressure_at_triple_point_of_water_in_kPa
+  long_name = saturation pressure at triple point of water in kPa
+  units = kPa
   dimensions = ()
   type = real
   kind = kind_phys
@@ -354,14 +385,6 @@
   intent = out
 [svp3]
   standard_name = saturation_vapor_pressure_constant_3
-  long_name = constant for saturation vapor pressure calculation
-  units = K
-  dimensions = ()
-  type = real
-  kind = kind_phys
-  intent = out
-[svpt0]
-  standard_name = saturation_vapor_pressure_constant_0
   long_name = constant for saturation vapor pressure calculation
   units = K
   dimensions = ()
