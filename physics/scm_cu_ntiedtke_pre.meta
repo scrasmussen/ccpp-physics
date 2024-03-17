@@ -1,8 +1,7 @@
 [ccpp-table-properties]
   name = scm_cu_ntiedtke_pre
   type = scheme
-  dependencies = ccpp_kind_types.F
-  dependencies = SCM-physics/cu_ntiedtke.F90
+  dependencies = mmm_kinds.F90,mmm_physics/cu_ntiedtke.F90
 
 ########################################################################
 [ccpp-arg-table]
@@ -28,7 +27,7 @@
 [con_rv]
   standard_name = gas_constant_water_vapor
   long_name = gas constant water vapor
-  units = J kg-1 K-1 
+  units = J kg-1 K-1
   dimensions = ()
   type = real | kind = kind_phys
   intent = in
@@ -36,15 +35,15 @@
 [con_hvap]
   standard_name = latent_heat_of_vaporization_of_water_at_0C
   long_name = latent heat of vaporization of water at 0c
-  units = J kg-1 
+  units = J kg-1
   dimensions = ()
   type = real | kind = kind_phys
   intent = in
   optional = F
 [con_xls]
   standard_name = latent_heat_of_sublimation_of_water_at_0C
-  long_name = latent heat of sublimation of water at 0C 
-  units = J kg-1 
+  long_name = latent heat of sublimation of water at 0C
+  units = J kg-1
   dimensions = ()
   type = real | kind = kind_phys
   intent = in

@@ -1,12 +1,13 @@
 [ccpp-table-properties]
   name = scm_cu_ntiedtke_post
   type = scheme
-  dependencies = SCM-physics/cu_ntiedtke.F90
-
+  dependencies = mmm_kinds.F90, mmm_physics/cu_ntiedtke.F90
+  
 ########################################################################
 [ccpp-arg-table]
   name = cu_ntietdke_post
   type = scheme
+  dependencies = mmm_physics/cu_ntiedtke.F90
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -24,4 +25,3 @@
   type = integer
   intent = out
   optional = F
-
