@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = scm_mp_wsm6_post
   type = scheme
-  dependencies = mmm_kinds.F90, SCM-physics/mp_wsm6.F90
+  dependencies = mmm_kinds.F90, mmm_physics/mp_wsm6.F90
 
 ########################################################################
 
