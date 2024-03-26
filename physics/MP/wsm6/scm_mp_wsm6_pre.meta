@@ -1,0 +1,71 @@
+[ccpp-table-properties]
+  name = scm_mp_wsm6_pre
+  type = scheme
+  dependencies = ../../hooks/mmm_kinds.F90, ../../mmm_physics/mp_wsm6.F90
+
+########################################################################
+[ccpp-arg-table]
+  name = scm_mp_wsm6_init
+  type = scheme
+[den0]
+  standard_name = density_of_dry_air
+  long_name = density of dry air
+  units = kg m-3
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[denr]
+  standard_name = fresh_liquid_water_density_at_0c
+  long_name = density of liquid water
+  units = kg m-3
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[dens]
+  standard_name = density_of_snow
+  long_name = density of snow
+  units = kg m-3
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[cl]
+  standard_name = specific_heat_of_liquid_water_at_constant_pressure
+  long_name = specific heat of liquid water at constant pressure
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[cpv]
+  standard_name = four_times_gas_constant_water_vapor
+  long_name = four times the gas constant water vapor
+  units = J kg-1 K-1
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[hail_opt]
+  standard_name = flag_for_hail_instead_of_graupel_parameters
+  long_name = flag for hail instead of graupel parameters (graupel  if false)
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = in
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
