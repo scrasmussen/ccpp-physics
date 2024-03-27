@@ -2,7 +2,7 @@
   path = physics/Radiation/RRTMGP/rte-rrtmgp
   url = https://github.com/earth-system-radiation/rte-rrtmgp
   branch = main
-[submodule "physics/SCM-physics"]
+[submodule "physics/mmm_physics"]
   path = physics/mmm_physics
   url = git@github.com:scrasmussen/SCM-physics.git
   branch = mmm_wsm6
