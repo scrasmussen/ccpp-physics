@@ -1,0 +1,24 @@
+[ccpp-table-properties]
+  name = scm_cu_ntiedtke_post
+  type = scheme
+  dependencies = ../../hooks/mmm_kinds.F90, ../../mmm_physics/cu_ntiedtke.F90
+
+########################################################################
+[ccpp-arg-table]
+  name = cu_ntietdke_post
+  type = scheme
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
