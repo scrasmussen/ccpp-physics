@@ -3,6 +3,8 @@
 
    module GFS_time_vary_pre
 
+      use w3emc, only: iw3jdn, w3difdat, w3kind
+
       use funcphys, only: gfuncphys
 
       implicit none
@@ -95,7 +97,6 @@
         real(kind=kind_dbl_prec)  :: rinc8(5)
 
         integer :: w3kindreal,w3kindint
-        integer ::  iw3jdn      
         integer :: jd0, jd1
         real    :: fjd
 
