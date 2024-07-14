@@ -245,6 +245,7 @@
 !!\n                     =98: Zhao-Carr/Sundqvist microphysics cloud = pdfcld
 !!\n                     =11: GFDL microphysics cloud
 !!\n                     =8:  Thompson microphysics
+!!\n                     =7:  WSM6 MMM microphysics
 !!\n                     =6:  WSM6 microphysics
 !!\n                     =10: MG microphysics
 !!\n                     =15: Ferrier-Aligo microphysics
@@ -309,6 +310,8 @@
             print *,'   --- GFDL Lin cloud microphysics'
          elseif (imp_physics == 8) then
             print *,'   --- Thompson cloud microphysics'
+         elseif (imp_physics == 7) then
+            print *,'   --- WSM6 MMM cloud microphysics'
          elseif (imp_physics == 6) then
             print *,'   --- WSM6 cloud microphysics'
          elseif (imp_physics == 10) then
@@ -343,6 +346,7 @@
      &       ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt,              &
      &       imp_physics, imp_physics_nssl, imp_physics_fer_hires,      &
      &       imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,  &
+     &       imp_physics_wsm6_mmm,                                      &
      &       imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,          &
      &       imp_physics_mg, iovr, iovr_rand, iovr_maxrand, iovr_max,   &
      &       iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con,      &
@@ -519,6 +523,7 @@
      &     imp_physics_gfdl,            ! Flag for gfdl scheme
      &     imp_physics_thompson,        ! Flag for thompsonscheme
      &     imp_physics_wsm6,            ! Flag for wsm6 scheme
+     &     imp_physics_wsm6_mmm,        ! Flag for wsm6 mmm scheme
      &     imp_physics_zhao_carr,       ! Flag for zhao-carr scheme
      &     imp_physics_zhao_carr_pdf,   ! Flag for zhao-carr+PDF scheme
      &     imp_physics_mg               ! Flag for MG scheme
@@ -532,8 +537,8 @@
      &     iovr_exp,                     ! Flag for exponential cloud overlap method
      &     iovr_exprand,                 ! Flag for exponential-random cloud overlap method
      &     idcor,
-     &     idcor_con,                   
-     &     idcor_hogan,                 
+     &     idcor_con,
+     &     idcor_hogan,
      &     idcor_oreopoulos
 
 
@@ -547,7 +552,7 @@
      &       delp, dz, effrl, effri, effrr, effrs, dzlay, clouds1
 
       real (kind=kind_phys), intent(in) :: sup, dcorr_con, con_ttp,     &
-     &     con_pi, con_g, con_rd, con_thgni 
+     &     con_pi, con_g, con_rd, con_thgni
       real (kind=kind_phys), dimension(:),   intent(in) :: xlat, xlon,  &
      &       slmsk, si
 
@@ -724,19 +729,19 @@
      &                   cld_resnow)
           else
             ! MYNN PBL or GF convective are not used
-              call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,     & !  --- inputs
-     &                   rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
-     &                   ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
-     &                   ntsw-1,ntgl-1,con_ttp,                         &
-     &                   IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
-     &                   cldcov(:,1:NLAY), cnvw, effrl_inout,           &
-     &                   effri_inout, effrs_inout,                      &
-     &                   lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
-     &                   dzlay,                                         &
-     &                   cldtot, cldcnv, lcnorm,                        &  ! inout
-     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
-     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         &
-     &                   cld_resnow)
+             call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,      & !  ---  outputs ! inout !  --- inputs
+     &            rhly,tracer1,xlat,xlon,slmsk,dz,delp,                 &
+     &            ntrac-1, ntcw-1,ntiw-1,ntrw-1,                        &
+     &            ntsw-1,ntgl-1,con_ttp,                                &
+     &            IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,           &
+     &            cldcov(:,1:NLAY), cnvw, effrl_inout,                  &
+     &            effri_inout, effrs_inout,                             &
+     &            lwp_ex, iwp_ex, lwp_fc, iwp_fc,                       &
+     &            dzlay,                                                &
+     &            cldtot, cldcnv, lcnorm,                               &
+     &            cld_frac, cld_lwp, cld_reliq, cld_iwp,                &
+     &            cld_reice, cld_rwp, cld_rerain,cld_swp,               &
+     &            cld_resnow)
           endif ! MYNN PBL or GF
 
         elseif(imp_physics == imp_physics_thompson) then                              ! Thompson MP
@@ -813,6 +818,25 @@
             endif
           endif ! MYNN PBL or GF
 
+          !!\n                     =6:  WSM6 microphysics
+        elseif(imp_physics == imp_physics_wsm6_mmm) then                              ! Thompson MP
+
+            ! MYNN PBL or GF convective are not used
+             call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,      & !  ---  outputs ! inout !  --- inputs
+     &            rhly,tracer1,xlat,xlon,slmsk,dz,delp,                 &
+     &            ntrac-1, ntcw-1,ntiw-1,ntrw-1,                        &
+     &            ntsw-1,ntgl-1,con_ttp,                                &
+     &            IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,           &
+     &            cldcov(:,1:NLAY), cnvw, effrl_inout,                  &
+     &            effri_inout, effrs_inout,                             &
+     &            lwp_ex, iwp_ex, lwp_fc, iwp_fc,                       &
+     &            dzlay,                                                &
+     &            cldtot, cldcnv, lcnorm,                               &
+     &            cld_frac, cld_lwp, cld_reliq, cld_iwp,                &
+     &            cld_reice, cld_rwp, cld_rerain,cld_swp,               &
+     &            cld_resnow)
+
+
         endif                            ! end if_imp_physics
 
 !> - Compute SFC/low/middle/high cloud top pressure for each cloud
@@ -832,7 +856,7 @@
           ptop1(i,id) = ptopc(id,1) + tem1*max( 0.0, 4.0*rxlat(i)-1.0 )
         enddo
       enddo
-        
+
       ! Compute cloud decorrelation length
       if (idcor == idcor_hogan) then
         call cmp_dcorr_lgth(ix, xlat, con_pi, de_lgth)
@@ -1094,8 +1118,8 @@
         else
           call cloud_fraction_mass_flx_1                                &
      &      ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,         & !  ---  inputs
-     &        cldtot ) 
-        endif  
+     &        cldtot )
+        endif
 
       endif                                ! if (uni_cld) then
 
@@ -2483,8 +2507,8 @@
                   rew(i,k) = 9.5
                else                                                      !--- Land
                   rew(i,k) = 5.5
-               endif 
-            endif 
+               endif
+            endif
             if (qi1d(k).gt.clwmin .and. cldfra1d(k).lt.ovcst) then
                cip(i,k) = qi1d(k) * dz1d(k)*1000.
                idx_rei = int(t1d(k)-179.)
@@ -2492,7 +2516,7 @@
                corr = t1d(k) - int(t1d(k))
                rei(i,K) = max(5.0, retab(idx_rei)*(1.-corr) +           &
      &                                 retab(idx_rei+1)*corr)
-            endif 
+            endif
          enddo
       enddo
 
@@ -3720,11 +3744,11 @@
       subroutine cloud_fraction_XuRandall                               &
      &     ( IX, NLAY, plyr, clwf, rhly, qstl,                          & !  ---  inputs
      &       cldtot )                                                   & !  ---  outputs
- 
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+     &                                                     rhly, qstl
 
 !  ---  outputs
       real (kind=kind_phys), dimension(:,:), intent(inout) :: cldtot
@@ -3759,17 +3783,17 @@
         enddo
 
       end subroutine cloud_fraction_XuRandall
- 
+
 !>
       subroutine cloud_fraction_mass_flx_1                              &
      &     ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
      &       cldtot )                                                   & !  ---  outputs
- 
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), intent(in)                 :: xrc3
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+     &                                                     rhly, qstl
       logical, intent(in) :: lmfdeep2
 
 !  ---  outputs
@@ -3809,17 +3833,17 @@
         enddo
 
       end subroutine cloud_fraction_mass_flx_1
- 
+
 !>
       subroutine cloud_fraction_mass_flx_2                              &
      &     ( IX, NLAY, lmfdeep2, xrc3, plyr, clwf, rhly, qstl,          & !  ---  inputs
      &       cldtot )                                                   & !  ---  outputs
- 
+
 !  ---  inputs:
       integer, intent(in) :: IX, NLAY
       real (kind=kind_phys), intent(in)                 :: xrc3
       real (kind=kind_phys), dimension(:,:), intent(in) :: plyr, clwf,  &
-     &                                                     rhly, qstl  
+     &                                                     rhly, qstl
       logical, intent(in) :: lmfdeep2
 
 !  ---  outputs
@@ -3863,7 +3887,7 @@
         enddo
         enddo
 
-      end subroutine cloud_fraction_mass_flx_2 
+      end subroutine cloud_fraction_mass_flx_2
 !........................................!
       end module module_radiation_clouds
 !>@}

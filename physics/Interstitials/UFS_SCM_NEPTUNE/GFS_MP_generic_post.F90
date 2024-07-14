@@ -19,7 +19,8 @@
 !> \section gfs_mp_gen GFS MP Generic Post General Algorithm
 !> @{
       subroutine GFS_MP_generic_post_run(                                                                                 &
-        im, levs, kdt, nrcm, nncl, ntcw, ntrac, imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_nssl,    &
+        im, levs, kdt, nrcm, nncl, ntcw, ntrac, imp_physics, imp_physics_gfdl, imp_physics_thompson, &
+        imp_physics_wsm6_mmm, imp_physics_nssl, &
         imp_physics_mg, imp_physics_fer_hires, cal_pre, cplflx, cplchm, cpllnd, progsigma, con_g, rhowater, rainmin, dtf, &
         frain, rainc, rain1, rann, xlat, xlon, gt0, gq0, prsl, prsi, phii, tsfc, ice, phil, htop, refl_10cm,              & 
         imfshalcnv,imfshalcnv_gf,imfdeepcnv,imfdeepcnv_gf,imfdeepcnv_samf, con_t0c, snow, graupel, save_t, save_q,        &
@@ -38,6 +39,7 @@
 
       integer, intent(in) :: im, levs, kdt, nrcm, nncl, ntcw, ntrac, num_dfi_radar, index_of_process_dfi_radar
       integer, intent(in) :: imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_mg, imp_physics_fer_hires
+      integer, intent(in) :: imp_physics_wsm6_mmm
       integer, intent(in) :: imp_physics_nssl, iopt_lake_clm, iopt_lake, lkm
       logical, intent(in) :: cal_pre, lssav, ldiag3d, qdiag3d, cplflx, cplchm, cpllnd, progsigma, exticeden
       integer, intent(in) :: index_of_temperature,index_of_process_mp,use_lake_model(:)
@@ -130,14 +132,16 @@
       errflg = 0
 
       onebg = one/con_g
-      
+
       do i = 1, im
         rain(i) = rainc(i) + frain * rain1(i) ! time-step convective plus explicit
       enddo
 !
 ! Combine convective reflectivity with MP reflectivity for selected
 ! parameterizations.
-     if ( (imp_physics==imp_physics_thompson .or. imp_physics==imp_physics_nssl) .and. &
+      if ( (imp_physics==imp_physics_thompson .or. &
+           imp_physics==imp_physics_nssl .or. &
+           imp_physics==imp_physics_wsm6_mmm) .and. &
        (imfdeepcnv==imfdeepcnv_samf .or. imfdeepcnv==imfdeepcnv_gf .or. imfshalcnv==imfshalcnv_gf) ) then
          do i=1,im
            factor(i) = 0.0
@@ -182,7 +186,10 @@
       endif
 
 ! compute surface snowfall, graupel/sleet, freezing rain and precip ice density
-      if (imp_physics == imp_physics_gfdl .or. imp_physics == imp_physics_thompson .or. imp_physics == imp_physics_nssl ) then
+      if (imp_physics == imp_physics_gfdl .or. &
+           imp_physics == imp_physics_thompson .or. &
+           imp_physics == imp_physics_wsm6_mmm .or. &
+           imp_physics == imp_physics_nssl ) then
          do i = 1, im
             if (gt0(i,1) .le. 273) then
                frzr(i) = frzr(i) + rain0(i)
@@ -260,7 +267,9 @@
         ice     = ice0
         snow    = snow0
       ! Do it right from the beginning for Thompson
-      else if (imp_physics == imp_physics_thompson .or. imp_physics == imp_physics_nssl ) then
+      else if (imp_physics == imp_physics_thompson .or. &
+          imp_physics == imp_physics_wsm6_mmm .or. &
+          imp_physics == imp_physics_nssl ) then
         tprcp   = max (zero, rainc + frain * rain1) ! time-step convective and explicit precip
         graupel = frain*graupel0              ! time-step graupel
         ice     = frain*ice0                  ! time-step ice
@@ -306,7 +315,10 @@
 !
 !       HCHUANG: use new precipitation type to decide snow flag for LSM snow accumulation
 
-        if (imp_physics /= imp_physics_gfdl .and. imp_physics /= imp_physics_thompson .and. imp_physics /= imp_physics_nssl) then
+        if (imp_physics /= imp_physics_gfdl .and. &
+             imp_physics /= imp_physics_thompson .and. &
+             imp_physics /= imp_physics_wsm6_mmm .and. &
+             imp_physics /= imp_physics_nssl) then
           do i=1,im
             tprcp(i)  = max(zero, rain(i) )
             if(doms(i) > zero .or. domip(i) > zero) then
@@ -393,7 +405,9 @@
 !! and convective rainfall from the cumulus scheme if the surface temperature is below
 !! \f$0^oC\f$.
 
-      if (imp_physics == imp_physics_gfdl .or. imp_physics == imp_physics_thompson .or. &
+      if (imp_physics == imp_physics_gfdl .or. &
+          imp_physics == imp_physics_wsm6_mmm .or. &
+          imp_physics == imp_physics_thompson .or. &
           imp_physics == imp_physics_nssl ) then
 
 ! determine convective rain/snow by surface temperature

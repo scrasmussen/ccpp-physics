@@ -309,6 +309,13 @@
   dimensions = ()
   type = integer
   intent = in
+[imp_physics_wsm6_mmm]
+  standard_name = identifier_for_wsm6_mmm_microphysics_scheme
+  long_name = choice of WSM6 MMM microphysics scheme
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = in
 [imp_physics_fer_hires]
   standard_name = identifier_for_fer_hires_microphysics_scheme
   long_name = choice of Ferrier-Aligo microphysics scheme

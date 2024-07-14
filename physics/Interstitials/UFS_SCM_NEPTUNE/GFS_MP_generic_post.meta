@@ -58,6 +58,13 @@
   dimensions = ()
   type = integer
   intent = in
+[imp_physics_wsm6_mmm]
+  standard_name = identifier_for_wsm6_mmm_microphysics_scheme
+  long_name = choice of WSM6 MMM microphysics scheme
+  units = flag
+  dimensions = ()
+  type = integer
+  intent = in
 [ntrac]
   standard_name = number_of_tracers
   long_name = number of tracers

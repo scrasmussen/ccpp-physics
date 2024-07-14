@@ -26,8 +26,10 @@
         ntdu1, ntdu2, ntdu3, ntdu4, ntdu5, ntss1, ntss2,                       &
         ntss3, ntss4, ntss5, ntsu, ntbcb, ntbcl, ntocb, ntocl, ntchm,          &
         imp_physics,imp_physics_nssl, nssl_ccn_on, nssl_invertccn,             &
-        imp_physics_thompson, imp_physics_gfdl, imp_physics_zhao_carr,         &
+        imp_physics_thompson, &
+        imp_physics_gfdl, imp_physics_zhao_carr,         &
         imp_physics_zhao_carr_pdf, imp_physics_mg, imp_physics_wsm6,           &
+        imp_physics_wsm6_mmm,                                                  &
         imp_physics_fer_hires, iovr, iovr_rand, iovr_maxrand, iovr_max,        &
         iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con, idcor_hogan,     &
         idcor_oreopoulos, dcorr_con, julian, yearlen, lndp_var_list, lsswr,    &
@@ -102,6 +104,7 @@
                                            imp_physics_zhao_carr,              &
                                            imp_physics_zhao_carr_pdf,          &
                                            imp_physics_mg, imp_physics_wsm6,   &
+                                           imp_physics_wsm6_mmm,               &
                                            imp_physics_nssl,                   &
                                            imp_physics_fer_hires,              &
                                            yearlen, icloud, iaermdl, iaerflg
@@ -976,6 +979,7 @@
      &       ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt,              &
      &       imp_physics, imp_physics_nssl, imp_physics_fer_hires,      &
      &       imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,  &
+     &       imp_physics_wsm6_mmm,                                      &
      &       imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,          &
      &       imp_physics_mg, iovr, iovr_rand, iovr_maxrand, iovr_max,   &
      &       iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con,      &

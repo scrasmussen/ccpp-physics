@@ -19,6 +19,7 @@
                imp_physics, imp_physics_mg,                             &
                imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,        &
                imp_physics_gfdl, imp_physics_thompson, dtidx, ntlnc,    &
+               imp_physics_wsm6_mmm, &
                imp_physics_wsm6, imp_physics_fer_hires, prsi, ntinc,    &
                imp_physics_nssl,                                        &
                prsl, prslk, rhcbot,rhcpbl, rhctop, rhcmax, islmsk,      &
@@ -36,6 +37,7 @@
         ntrnc, ntsnc, ntgl, ntgnc, imp_physics, imp_physics_mg, imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,   &
         imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,imp_physics_fer_hires,  &
         imp_physics_nssl, me, index_of_process_conv_trans
+      integer,              intent(in   )                   :: imp_physics_wsm6_mmm
       integer,              intent(in   ), dimension(:)     :: islmsk, kpbl, kinver
       logical,              intent(in   )                   :: cscnv, satmedmf, trans_trac, do_shoc, ltaerosol, ras, progsigma
       logical,              intent(in   )                   :: first_time_step, restart
@@ -210,7 +212,10 @@
         enddo
           save_qi(:,:) = clw(:,:,1)
           save_qc(:,:) = clw(:,:,2)
-      elseif (imp_physics == imp_physics_wsm6 .or. imp_physics == imp_physics_mg .or. imp_physics == imp_physics_fer_hires) then
+      else if (imp_physics == imp_physics_wsm6 .or. &
+            imp_physics == imp_physics_wsm6_mmm .or. &
+            imp_physics == imp_physics_mg .or. &
+            imp_physics == imp_physics_fer_hires) then
         do k=1,levs
           do i=1,im
             clw(i,k,1) = gq0(i,k,ntiw)                    ! ice

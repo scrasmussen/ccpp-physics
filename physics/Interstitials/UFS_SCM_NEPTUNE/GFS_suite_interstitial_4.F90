@@ -9,7 +9,8 @@
 !! \htmlinclude GFS_suite_interstitial_4_run.html
 !!
     subroutine GFS_suite_interstitial_4_run (im, levs, ltaerosol, tracers_total, ntrac, ntcw, ntiw, ntclamt, &
-      ntrw, ntsw, ntrnc, ntsnc, ntgl, ntgnc, ntlnc, ntinc, ntccn, nn, imp_physics, imp_physics_gfdl, imp_physics_thompson,  &
+      ntrw, ntsw, ntrnc, ntsnc, ntgl, ntgnc, ntlnc, ntinc, ntccn, nn, &
+      imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6_mmm, &
       imp_physics_nssl, nssl_invertccn, nssl_ccn_on,                                                  &
       imp_physics_zhao_carr, imp_physics_zhao_carr_pdf, convert_dry_rho, dtf, save_qc, save_qi, con_pi, dtidx, dtend,&
       index_of_process_conv_trans, gq0, clw, prsl, save_tcp, con_rd, con_eps, nssl_cccn, nwfa, spechum, ldiag3d,     &
@@ -26,7 +27,7 @@
       integer,              intent(in   )                   :: im, levs, tracers_total, ntrac, ntcw, ntiw, ntclamt, ntrw, &
         ntsw, ntrnc, ntsnc, ntgl, ntgnc, ntlnc, ntinc, ntccn, nn, imp_physics, imp_physics_gfdl, imp_physics_thompson,    &
         imp_physics_zhao_carr, imp_physics_zhao_carr_pdf, imp_physics_nssl
-
+      integer, intent(in) :: imp_physics_wsm6_mmm
       logical,                                  intent(in) :: ltaerosol, convert_dry_rho
       logical,                                  intent(in) :: nssl_ccn_on, nssl_invertccn
 
@@ -210,7 +211,8 @@
               enddo
           endif
 
-          if (imp_physics == imp_physics_thompson .and. (ntlnc>0 .or. ntinc>0)) then
+          if ((imp_physics == imp_physics_thompson .or. imp_physics == imp_physics_wsm6_mmm) &
+               .and. (ntlnc>0 .or. ntinc>0)) then
             if_convert_dry_rho: if (convert_dry_rho) then
               do k=1,levs
                 do i=1,im
