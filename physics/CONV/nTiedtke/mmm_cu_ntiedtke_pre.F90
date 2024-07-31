@@ -25,8 +25,7 @@ module mmm_cu_ntiedtke_pre
 !! \htmlinclude mmm_cu_ntiedtke_init.html
 !!
      subroutine mmm_cu_ntiedtke_pre_init(con_cp, con_rd, con_rv, con_hvap, &
-          con_xls, con_hfus, con_g)
-       use foo:, only
+          con_xls, con_hfus, con_g, errmsg, errflg)
 
          implicit none
          !input arguments:
@@ -39,7 +38,7 @@ module mmm_cu_ntiedtke_pre
          real(kind=kind_phys), intent(in) :: con_g    !< gravitational acceleration
 
          !--- output arguments:
-         character(len=*), intent(out): : errmsg
+         character(len=*), intent(out) :: errmsg
          integer, intent(out) :: errflg
 
          ! Initialize the CCPP error handling variables
