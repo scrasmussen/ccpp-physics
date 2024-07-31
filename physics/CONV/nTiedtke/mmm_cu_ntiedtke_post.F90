@@ -4,15 +4,15 @@
 
 !>\defgroup TODO: ADD THIS LINE
 !! This module runs the nTietke scheme
-module scm_cu_ntiedtke_post
+module mmm_cu_ntiedtke_post
 
       use ccpp_kinds, only : kind_phys
 
-      use cu_ntiedtke, only : cu_ntiedtke_finalize
+      use mmm_cu_ntiedtke, only : mmm_cu_ntiedtke_finalize
 
       implicit none
 
-      public :: scm_cu_ntiedtke_post_finalize
+      public :: mmm_cu_ntiedtke_post_finalize
 
       private
 
@@ -20,10 +20,10 @@ module scm_cu_ntiedtke_post
 
    contains
 
-!> \section arg_table_scm_cu_ntiedtke_finalize Argument Table
-!! \htmlinclude scm_cu_ntiedtke_finalize.html
+!> \section arg_table_mmm_cu_ntiedtke_finalize Argument Table
+!! \htmlinclude mmm_cu_ntiedtke_finalize.html
 !!
-      subroutine scm_cu_ntiedtke_post_finalize(errmsg, errflg)
+      subroutine mmm_cu_ntiedtke_post_finalize(errmsg, errflg)
 
          implicit none
 
@@ -38,10 +38,10 @@ module scm_cu_ntiedtke_post
 
          if (.not. is_initialized) return
 
-         call cu_ntiedtke_finalize(errmsg, errflg)
+         call mmm_cu_ntiedtke_finalize(errmsg, errflg)
 
          is_initialized = .false.
 
-      end subroutine scm_cu_ntiedtke_post_finalize
+      end subroutine mmm_cu_ntiedtke_post_finalize
 
-end module scm_cu_ntiedtke_post
+end module mmm_cu_ntiedtke_post

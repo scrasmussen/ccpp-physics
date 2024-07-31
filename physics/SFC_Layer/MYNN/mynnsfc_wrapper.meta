@@ -747,6 +747,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [wspd]
   standard_name = wind_speed_at_lowest_model_layer
   long_name = wind speed at lowest model level
@@ -796,6 +797,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [flqc]
   standard_name = surface_exchange_coefficient_for_moisture
   long_name = surface exchange coefficient for moisture
@@ -804,6 +806,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [u10]
   standard_name = x_wind_at_10m
   long_name = 10 meter u wind speed
