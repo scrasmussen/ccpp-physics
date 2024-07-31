@@ -814,6 +814,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [flhc1]
   standard_name = surface_exchange_coefficient_for_heat
   long_name = surface exchange coefficient for heat
@@ -822,6 +823,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [flqc1]
   standard_name = surface_exchange_coefficient_for_moisture
   long_name = surface exchange coefficient for moisture
@@ -830,6 +832,7 @@
   type = real
   kind = kind_phys
   intent = inout
+  optional = T
 [do_mynnsfclay]
   standard_name = flag_for_mellor_yamada_nakanishi_niino_surface_layer_scheme
   long_name = flag to activate MYNN surface layer
@@ -1082,7 +1085,7 @@
   optional = True
 [xlaixy]
   standard_name = leaf_area_index
-  long_name = leaf area index 
+  long_name = leaf area index
   units = none
   dimensions = (horizontal_loop_extent)
   type = real
@@ -1091,7 +1094,7 @@
   optional = True
 [xsaixy]
   standard_name = stem_area_index
-  long_name = stem area index 
+  long_name = stem area index
   units = none
   dimensions = (horizontal_loop_extent)
   type = real

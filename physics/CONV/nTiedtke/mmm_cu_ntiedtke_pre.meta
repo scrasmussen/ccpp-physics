@@ -1,11 +1,11 @@
 [ccpp-table-properties]
-  name = scm_cu_ntiedtke_pre
+  name = mmm_cu_ntiedtke_pre
   type = scheme
-  dependencies = ../../hooks/mmm_kinds.F90, ../../mmm_physics/cu_ntiedtke.F90
+  dependencies = ../../hooks/mmm_kinds.F90,../../mmm_physics/mmm_cu_ntiedtke.F90
 
 ########################################################################
 [ccpp-arg-table]
-  name = scm_cu_ntiedtke_pre_run
+  name = mmm_cu_ntiedtke_pre_run
   type = scheme
 [con_cp]
   standard_name = specific_heat_of_dry_air_at_constant_pressure

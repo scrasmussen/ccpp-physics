@@ -1,11 +1,11 @@
 [ccpp-table-properties]
-  name = scm_cu_ntiedtke_post
+  name = mmm_cu_ntiedtke_post
   type = scheme
-  dependencies = ../../hooks/mmm_kinds.F90, ../../mmm_physics/cu_ntiedtke.F90
+  dependencies = ../../hooks/mmm_kinds.F90,../../mmm_physics/mmm_cu_ntiedtke.F90
 
 ########################################################################
 [ccpp-arg-table]
-  name = cu_ntietdke_post
+  name = mmm_cu_ntietdke_post
   type = scheme
 [errmsg]
   standard_name = ccpp_error_message

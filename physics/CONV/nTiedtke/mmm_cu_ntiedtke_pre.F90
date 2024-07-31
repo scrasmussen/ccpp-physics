@@ -5,14 +5,14 @@
 
 !>\defgroup
 !! This module runs the nTiedtke Scheme
-module scm_cu_ntiedtke_pre
+module mmm_cu_ntiedtke_pre
 
   use ccpp_kinds, only : kind_phys
-      use cu_ntiedtke, only : cu_ntiedtke_init
+      use mmm_cu_ntiedtke, only : mmm_cu_ntiedtke_init
 
       implicit none
 
-      public :: scm_cu_ntiedtke_pre_init
+      public :: mmm_cu_ntiedtke_pre_init
 
       private
 
@@ -21,10 +21,10 @@ module scm_cu_ntiedtke_pre
    contains
 
 !> This subroutine is a wrapper around the actual cu_ntiedtke_init().
-!! \section arg_table_scm_cu_ntiedtke_init Argument Table
-!! \htmlinclude scm_cu_ntiedtke_init.html
+!! \section arg_table_mmm_cu_ntiedtke_init Argument Table
+!! \htmlinclude mmm_cu_ntiedtke_init.html
 !!
-     subroutine scm_cu_ntiedtke_pre_init(con_cp, con_rd, con_rv, con_hvap, &
+     subroutine mmm_cu_ntiedtke_pre_init(con_cp, con_rd, con_rv, con_hvap, &
           con_xls, con_hfus, con_g)
        use foo:, only
 
@@ -49,12 +49,12 @@ module scm_cu_ntiedtke_pre
          if (is_initialized) return
 
          ! Call ntiedtke init
-         call cu_ntiedtke_init(con_cp, con_rd, con_rv, con_hvap, &
+         call mmm_cu_ntiedtke_init(con_cp, con_rd, con_rv, con_hvap, &
               con_xls, con_hfus, con_g, errmsg, errflg)
 
          if (errflg /= 0) return
 
          is_initialized = .true.
 
-      end subroutine scm_cu_ntiedtke_pre_init
-end module scm_cu_ntiedtke_pre
+      end subroutine mmm_cu_ntiedtke_pre_init
+end module mmm_cu_ntiedtke_pre

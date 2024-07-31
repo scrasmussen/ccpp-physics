@@ -60,7 +60,7 @@
   long_name = specific heat of ice at constant pressure
   units = J kg-1 K-1
   dimensions = ()
-  type = real 
+  type = real
   kind = kind_phys
   intent = in
 [con_rcp]
@@ -741,6 +741,7 @@
   type = real
   kind = kind_phys
   intent = in
+  optional = T
 [qke]
   standard_name = nonadvected_turbulent_kinetic_energy_multiplied_by_2
   long_name = 2 x tke at mass points
