@@ -1,9 +1,9 @@
 !>\file wsm6.F90
-!! This file runs the nTietke scheme
+!! This file runs the nTiedtke scheme
 
 
 !>\defgroup TODO: ADD THIS LINE
-!! This module runs the nTietke scheme
+!! This module runs the nTiedtke scheme
 module mmm_cu_ntiedtke_post
 
       use ccpp_kinds, only : kind_phys
