@@ -28,6 +28,7 @@
 !            ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt,             !
 !            imp_physics, imp_physics_nssl, imp_physics_fer_hires,     !
 !            imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6, !
+!            imp_physics_wsm6_mmm,                                     !
 !            imp_physics_zhao_carr, imp_physics_zhao_carr_pdf,         !
 !            imp_physics_mg, iovr, iovr_rand, iovr_maxrand, iovr_max,  !
 !            iovr_dcorr, iovr_exp, iovr_exprand, idcor, idcor_con,     !
@@ -438,6 +439,7 @@
 !   imp_physics_gfdl          : GFDL microphysics scheme                !
 !   imp_physics_thompson      : Thompson microphysics scheme            !
 !   imp_physics_wsm6          : WSMG     microphysics scheme            !
+!   imp_physics_wsm6_mmm      : MMM WSMG microphysics scheme            !
 !   imp_physics_zhao_carr     : Zhao-Carr microphysics scheme           !
 !   imp_physics_zhao_carr_pdf : Zhao-Carr microphysics scheme with PDF clouds
 !   imp_physics_mg  :  Morrison-Gettelman microphysics scheme           !
@@ -821,21 +823,42 @@
           !!\n                     =6:  WSM6 microphysics
         elseif(imp_physics == imp_physics_wsm6_mmm) then                              ! Thompson MP
 
-            ! MYNN PBL or GF convective are not used
-             call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,      & !  ---  outputs ! inout !  --- inputs
-     &            rhly,tracer1,xlat,xlon,slmsk,dz,delp,                 &
-     &            ntrac-1, ntcw-1,ntiw-1,ntrw-1,                        &
-     &            ntsw-1,ntgl-1,con_ttp,                                &
-     &            IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,           &
-     &            cldcov(:,1:NLAY), cnvw, effrl_inout,                  &
-     &            effri_inout, effrs_inout,                             &
-     &            lwp_ex, iwp_ex, lwp_fc, iwp_fc,                       &
-     &            dzlay,                                                &
-     &            cldtot, cldcnv, lcnorm,                               &
-     &            cld_frac, cld_lwp, cld_reliq, cld_iwp,                &
-     &            cld_reice, cld_rwp, cld_rerain,cld_swp,               &
-     &            cld_resnow)
+          if(do_mynnedmf .or. imfdeepcnv == imfdeepcnv_gf .or.          &
+     &          imfdeepcnv == imfdeepcnv_c3) then ! MYNN PBL or GF or unified conv
+              !-- MYNN PBL or convective GF
+              !-- use cloud fractions with SGS clouds
+              do k=1,NLAY
+                do i=1,IX
+                  cld_frac(i,k)  = clouds1(i,k)
+                enddo
+              enddo
 
+                ! --- use clduni with the NSSL microphysics.
+                ! --- make sure that effr_in=.true. in the input.nml!
+                call progclduni (plyr, plvl, tlyr, tvly, ccnd, ncndl,   & !  ---  inputs
+     &                   xlat, xlon, slmsk, dz, delp, IX, NLAY, NLP1,   &
+     &                   cld_frac,                                      &
+     &                   effrl, effri, effrr, effrs, effr_in ,          &
+     &                   dzlay,                                         &
+     &                   cldtot, cldcnv, lcrick, lcnorm, con_ttp,       &  ! inout
+     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         &
+     &                   cld_resnow)
+          else
+            ! MYNN PBL or GF convective are not used
+              call progcld_thompson_wsm6 (plyr,plvl,tlyr,qlyr,qstl,     & !  --- inputs
+     &                   rhly,tracer1,xlat,xlon,slmsk,dz,delp,          &
+     &                   ntrac-1, ntcw-1,ntiw-1,ntrw-1,                 &
+     &                   ntsw-1,ntgl-1,con_ttp,                         &
+     &                   IX, NLAY, NLP1, uni_cld, lmfshal, lmfdeep2,    &
+     &                   cldcov(:,1:NLAY), cnvw, effrl, effri, effrs,   &
+     &                   lwp_ex, iwp_ex, lwp_fc, iwp_fc,                &
+     &                   dzlay,                                         &
+     &                   cldtot, cldcnv, lcnorm,                        &  ! inout
+     &                   cld_frac, cld_lwp, cld_reliq, cld_iwp,         & !  ---  outputs
+     &                   cld_reice,cld_rwp, cld_rerain,cld_swp,         & 
+     &                   cld_resnow)
+          endif ! MYNN PBL or GF
 
         endif                            ! end if_imp_physics
 

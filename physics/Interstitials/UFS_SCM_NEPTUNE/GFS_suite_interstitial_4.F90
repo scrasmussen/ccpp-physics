@@ -211,7 +211,7 @@
               enddo
           endif
 
-          if ((imp_physics == imp_physics_thompson .or. imp_physics == imp_physics_wsm6_mmm) &
+          if ((imp_physics == imp_physics_thompson) &
                .and. (ntlnc>0 .or. ntinc>0)) then
             if_convert_dry_rho: if (convert_dry_rho) then
               do k=1,levs
