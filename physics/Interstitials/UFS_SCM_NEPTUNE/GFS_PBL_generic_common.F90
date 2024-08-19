@@ -11,7 +11,7 @@
 
       contains
 
-      subroutine set_aerosol_tracer_index(imp_physics, imp_physics_wsm6,          &
+      subroutine set_aerosol_tracer_index(imp_physics, imp_physics_wsm6,imp_physics_wsm6_mmm, &
                                           imp_physics_thompson, ltaerosol,mraerosol,   &
                                           imp_physics_mg, ntgl, imp_physics_gfdl, &
                                           imp_physics_zhao_carr, imp_physics_nssl,&
@@ -19,7 +19,7 @@
                                           errmsg, errflg)
       implicit none
       !
-      integer, intent(in )          :: imp_physics, imp_physics_wsm6,          &
+      integer, intent(in )          :: imp_physics, imp_physics_wsm6, imp_physics_wsm6_mmm,  &
                                        imp_physics_thompson,                   &
                                        imp_physics_mg, ntgl, imp_physics_gfdl, &
                                        imp_physics_zhao_carr,imp_physics_nssl
@@ -31,9 +31,9 @@
       errflg = 0
 
 ! Set Interstitial%kk = last index in diffused tracer array before chemistry-aerosol tracers
-      if (imp_physics == imp_physics_wsm6) then
+      if (imp_physics == imp_physics_wsm6 .or. imp_physics == imp_physics_wsm6_mmm) then
 ! WSM6
-        kk = 4
+        kk = 7
       elseif (imp_physics == imp_physics_thompson) then
 ! Thompson
         if(ltaerosol) then

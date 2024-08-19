@@ -13,7 +13,7 @@
         ntqv, ntcw, ntiw, ntrw, ntsw, ntlnc, ntinc, ntrnc, ntsnc, ntgnc,                 &
         ntwa, ntia, ntgl, ntoz, ntke, ntkev, nqrimef, trans_aero, ntchs, ntchm,          &
         ntccn, nthl, nthnc, ntgv, nthv, ntrz, ntgz, nthz,                                &
-        imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6,           &
+        imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6, imp_physics_wsm6_mmm, &
         imp_physics_zhao_carr, imp_physics_mg, imp_physics_fer_hires, imp_physics_nssl,  &
         ltaerosol, mraerosol, nssl_ccn_on, nssl_hail_on, nssl_3moment,                   &
         hybedmf, do_shoc, satmedmf, qgrs, vdftra, save_u, save_v, save_t, save_q,        &
@@ -31,7 +31,7 @@
       integer, intent(in) :: ntwa, ntia, ntgl, ntoz, ntke, ntkev, nqrimef,ntchs, ntchm
       integer, intent(in) :: ntccn, nthl, nthnc, ntgv, nthv, ntrz, ntgz, nthz
       logical, intent(in) :: trans_aero, ldiag3d, qdiag3d, lssav
-      integer, intent(in) :: imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6
+      integer, intent(in) :: imp_physics, imp_physics_gfdl, imp_physics_thompson, imp_physics_wsm6, imp_physics_wsm6_mmm
       integer, intent(in) :: imp_physics_zhao_carr, imp_physics_mg, imp_physics_fer_hires
       logical, intent(in) :: ltaerosol, hybedmf, do_shoc, satmedmf, flag_for_pbl_generic_tend, mraerosol
       integer, intent(in) :: imp_physics_nssl
@@ -62,17 +62,20 @@
         vdftra = qgrs
         rtg_ozone_index = ntoz
       else
-        if (imp_physics == imp_physics_wsm6) then
+        if (imp_physics == imp_physics_wsm6 .or. imp_physics == imp_physics_wsm6_mmm) then
   ! WSM6
           do k=1,levs
             do i=1,im
-              vdftra(i,k,1) = qgrs(i,k,ntqv)
-              vdftra(i,k,2) = qgrs(i,k,ntcw)
-              vdftra(i,k,3) = qgrs(i,k,ntiw)
-              vdftra(i,k,4) = qgrs(i,k,ntoz)
+              vdftra(i,k,1)  = qgrs(i,k,ntqv)
+              vdftra(i,k,2)  = qgrs(i,k,ntcw)
+              vdftra(i,k,3)  = qgrs(i,k,ntiw)
+              vdftra(i,k,4)  = qgrs(i,k,ntrw)
+              vdftra(i,k,5)  = qgrs(i,k,ntsw)
+              vdftra(i,k,6)  = qgrs(i,k,ntgl)
+              vdftra(i,k,7)  = qgrs(i,k,ntoz)
             enddo
           enddo
-          rtg_ozone_index = 4
+          rtg_ozone_index = 7
 
   ! Ferrier-Aligo
         elseif (imp_physics == imp_physics_fer_hires) then
@@ -272,7 +275,7 @@
         endif
 !
         if (trans_aero) then
-          call set_aerosol_tracer_index(imp_physics, imp_physics_wsm6,          &
+          call set_aerosol_tracer_index(imp_physics, imp_physics_wsm6, imp_physics_wsm6_mmm, &
                                         imp_physics_thompson, ltaerosol,mraerosol, &
                                         imp_physics_mg, ntgl, imp_physics_gfdl, &
                                         imp_physics_zhao_carr, imp_physics_nssl,&
