@@ -1,0 +1,234 @@
+[ccpp-table-properties]
+  name = gfs_mmm_mp_wsm6_post
+  type = scheme
+  dependencies = ../../hooks/machine.F
+
+########################################################################
+[ccpp-arg-table]
+  name = gfs_mmm_mp_wsm6_post_run
+  type = scheme
+[nCol]
+  standard_name = horizontal_loop_extent
+  long_name = horizontal loop extent
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[nLev]
+  standard_name = vertical_layer_dimension
+  long_name = number of vertical levels
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[re_qc]
+  standard_name = effective_radius_of_stratiform_cloud_liquid_water_particle_in_meter
+  long_name = eff. radius of cloud liquid water particle in meter
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = in
+[re_qi]
+  standard_name = effective_radius_of_stratiform_cloud_ice_particle_in_meter
+  long_name = eff. radius of cloud ice water particle in meter
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = in
+[re_qs]
+  standard_name = effective_radius_of_stratiform_cloud_snow_particle_in_meter
+  long_name = effective radius of cloud snow particle in meter
+  units = m
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = in
+[re_qc_um]
+  standard_name = effective_radius_of_stratiform_cloud_liquid_water_particle
+  long_name = eff. radius of cloud liquid water particle in micrometer
+  units = um
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = out
+[re_qi_um]
+  standard_name = effective_radius_of_stratiform_cloud_ice_particle
+  long_name = eff. radius of cloud ice water particle in micrometer
+  units = um
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = out
+[re_qs_um]
+  standard_name = effective_radius_of_stratiform_cloud_snow_particle
+  long_name = effective radius of cloud snow particle in micrometer
+  units = um
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = out
+[convert_dry_rho]
+  standard_name = flag_for_converting_hydrometeors_from_moist_to_dry_air
+  long_name = flag for converting hydrometeors from moist to dry air
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[qv]
+  standard_name = water_vapor_mixing_ratio
+  long_name = water vapor mixing ratio
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real | kind = kind_phys
+  intent = in
+[spechum]
+  standard_name = specific_humidity_of_new_state
+  long_name = water vapor specific humidity
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qc]
+  standard_name = cloud_liquid_water_mixing_ratio_of_new_state
+  long_name = cloud water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qr]
+  standard_name = rain_mixing_ratio_of_new_state
+  long_name = rain water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qi]
+  standard_name = cloud_ice_mixing_ratio_of_new_state
+  long_name = ice water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qs]
+  standard_name = snow_mixing_ratio_of_new_state
+  long_name = snow water mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[qg]
+  standard_name = graupel_mixing_ratio_of_new_state
+  long_name = graupel mixing ratio wrt dry+vapor (no condensates)
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent,vertical_layer_dimension)
+  type = real
+  kind = kind_phys
+  intent = inout
+[rainmp_mm]
+  standard_name = lwe_thickness_of_explicit_rain_amount_in_mm
+  long_name = explicit rain on physics timestep
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[snowmp_mm]
+  standard_name = lwe_thickness_of_snow_amount_in_mm
+  long_name = explicit snow fall on physics timestep
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[graupelmp_mm]
+  standard_name = lwe_thickness_of_graupel_amount_in_mm
+  long_name = explicit graupel fall on physics timestep
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[rainmp]
+  standard_name = lwe_thickness_of_explicit_rain_amount
+  long_name = explicit rain on physics timestep
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[snowmp]
+  standard_name = lwe_thickness_of_snow_amount
+  long_name = explicit snow fall on physics timestep
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[graupelmp]
+  standard_name = lwe_thickness_of_graupel_amount
+  long_name = explicit graupel fall on physics timestep
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[rain_nonphy_mm]
+  standard_name = lwe_thickness_of_rain_amount_on_dynamics_timestep_in_mm
+  long_name = total rain at this time step
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[snow_nonphy_mm]
+  standard_name = lwe_thickness_of_snow_amount_on_dynamics_timestep_in_mm
+  long_name = snow fall at this time step
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[graupel_nonphy_mm]
+  standard_name = lwe_thickness_of_graupel_amount_on_dynamics_timestep_in_mm
+  long_name = graupel fall at this time step
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = in
+[rain_nonphy]
+  standard_name = lwe_thickness_of_precipitation_amount_on_dynamics_timestep
+  long_name = total rain at this time step
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[snow_nonphy]
+  standard_name = lwe_thickness_of_snow_amount_on_dynamics_timestep
+  long_name = snow fall at this time step
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[graupel_nonphy]
+  standard_name = lwe_thickness_of_graupel_amount_on_dynamics_timestep
+  long_name = graupel fall at this time step
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real | kind = kind_phys
+  intent = out
+[prcpmp]
+  standard_name = lwe_thickness_of_explicit_precipitation_amount
+  long_name = explicit precipitation (rain, ice, snow, graupel, ...) on physics timestep
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = out
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out

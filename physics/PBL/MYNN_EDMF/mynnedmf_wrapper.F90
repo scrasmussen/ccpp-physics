@@ -155,7 +155,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &  icloud_bl, do_mynnsfclay,                          &
      &  imp_physics, imp_physics_gfdl,                     &
      &  imp_physics_thompson, imp_physics_wsm6,            &
-     &  imp_physics_fa,                                    &
+     &  imp_physics_wsm6_mmm, imp_physics_fa,              &
      &  chem3d, frp, mix_chem, rrfs_sd, enh_mix,           &
      &  nchem, ndvel, vdep, smoke_dbg,                     &
      &  imp_physics_nssl, nssl_ccn_on,                     &
@@ -203,7 +203,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &       bl_mynn_cloudmix,                              &
      &       bl_mynn_mixqt,                                 &
      &       bl_mynn_output,                                &
-     &       imp_physics, imp_physics_wsm6,                 &
+     &       imp_physics,imp_physics_wsm6,imp_physics_wsm6_mmm, &
      &       imp_physics_thompson, imp_physics_gfdl,        &
      &       imp_physics_nssl, imp_physics_fa,              &
      &       spp_pbl,                                       &
@@ -380,6 +380,30 @@ SUBROUTINE mynnedmf_wrapper_run(        &
               sqc(i,k)   = qgrs_liquid_cloud(i,k)
               sqi(i,k)   = qgrs_ice(i,k)
               sqs(i,k)   = 0.
+              ozone(i,k) = qgrs_ozone(i,k)
+              qnc(i,k)   = 0.
+              qni(i,k)   = 0.
+              qnwfa(i,k) = 0.
+              qnifa(i,k) = 0.
+              qnbca(i,k) = 0.
+            enddo
+          enddo
+        elseif ( imp_physics == imp_physics_wsm6_mmm ) then
+  ! MMM WSM6
+         FLAG_QI = .true.
+         FLAG_QNI= .false.
+         FLAG_QC = .true.
+         FLAG_QNC= .false.
+         FLAG_QS = .true.
+         FLAG_QNWFA= .false.
+         FLAG_QNIFA= .false.
+         FLAG_QNBCA= .false.
+         do k=1,levs
+            do i=1,im
+              sqv(i,k)   = qgrs_water_vapor(i,k)
+              sqc(i,k)   = qgrs_liquid_cloud(i,k)
+              sqi(i,k)   = qgrs_ice(i,k)
+              sqs(i,k)   = qgrs_snow(i,k)
               ozone(i,k) = qgrs_ozone(i,k)
               qnc(i,k)   = 0.
               qni(i,k)   = 0.
@@ -802,7 +826,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
         !enddo
 
         !DO moist/scalar/tracer tendencies:
-        if (imp_physics == imp_physics_wsm6 .or. imp_physics == imp_physics_fa) then
+        if (imp_physics == imp_physics_wsm6 .or. imp_physics == imp_physics_wsm6_mmm .or. imp_physics == imp_physics_fa) then
            ! WSM6
            do k=1,levs
              do i=1,im

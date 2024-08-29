@@ -721,7 +721,7 @@
               ccnd(i,k,4) = tracer1(i,k,ntsw)                     ! snow water
             enddo
           enddo
-        elseif (ncnd == 5 .or. ncnd == 6) then       ! GFDL MP, Thompson, MG3, NSSL
+        elseif (ncnd == 5 .or. ncnd == 6) then       ! GFDL MP, Thompson, MG3, NSSL, MMM WSM6
           do k=1,LMK
             do i=1,IM
               ccnd(i,k,1) = tracer1(i,k,ntcw)                     ! liquid water
@@ -873,6 +873,22 @@
                effrl(i,k1) = effrl_inout(i,k)! re_cloud (i,k)
                effri(i,k1) = effri_inout(i,k)! re_ice (i,k)
                effrr(i,k1) = effrr_in(i,k)
+               effrs(i,k1) = effrs_inout(i,k) ! re_snow(i,k)
+             enddo
+           enddo
+          else
+           ! not used yet -- effr_in should always be true for now
+          endif
+
+        elseif (imp_physics == imp_physics_wsm6_mmm ) then                          ! MMM WSM6 MP
+          cldcov = 0.0
+          if(effr_in) then
+           do k=1,lm
+             k1 = k + kd
+             do i=1,im
+               effrl(i,k1) = effrl_inout(i,k)! re_cloud (i,k)
+               effri(i,k1) = effri_inout(i,k)! re_ice (i,k)
+               effrr(i,k1) = 1000. ! Neither G or Gp needs it, pass in a placeholder with reasonable value 
                effrs(i,k1) = effrs_inout(i,k) ! re_snow(i,k)
              enddo
            enddo
