@@ -1,0 +1,9 @@
+# prereqs
+physics/hooks/machine.F
+physics/hooks/physcons.F90
+physics/tools/funcphys.f90
+# saSAS modules
+physics/CONV/progsigma_calc.f90
+physics/CONV/SAMF/samfaerosols.F
+physics/CONV/SAMF/samfdeepcnv.f
+physics/CONV/SAMF/samfshalcnv.f
