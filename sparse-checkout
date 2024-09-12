@@ -1,3 +1,4 @@
+sparse-checkout
 # prereqs
 physics/hooks/machine.F
 physics/hooks/physcons.F90
