@@ -16,13 +16,13 @@
 !! used in the closure computations in the samfdeepcnv.f scheme
 !! This subroutine computes a prognostic updraft area fracftion
 !! used in the closure computations in the samfshalcnv. scheme
-!!\section gen_progsigma progsigma_calc General Algorithm 
+!!\section gen_progsigma progsigma_calc General Algorithm
       subroutine progsigma_calc (im,km,flag_init,flag_restart,flag_shallow,&
            flag_mid,del,tmf,qmicro,dbyo1,zdqca,omega_u,zeta,hvap,          &
            delt,qadv,kbcon1,ktcon,cnvflg,betascu,betamcu,betadcu,          &
            sigmind,sigminm,sigmins,sigmain,sigmaout,sigmab)
-!                                                           
-!                                                                                                                                             
+!
+!
       use machine,  only : kind_phys
       use funcphys, only : fpvs
 
@@ -47,8 +47,8 @@
       integer              :: i,k,km1
       real(kind=kind_phys) :: termA(im),termB(im),termC(im),termD(im)
       real(kind=kind_phys) :: mcons(im),fdqa(im),form(im,km),              &
-           dp(im,km),inbu(im,km)                         
-                          
+           dp(im,km),inbu(im,km)
+
 
       real(kind=kind_phys) :: gcvalmx,epsilon,ZZ,cvg,mcon,buy2,   &
                           fdqb,dtdyn,dxlim,rmulacvg,tem,     &
@@ -69,7 +69,7 @@
             dp(i,k)=0.
          enddo
       enddo
-     
+
      !Initialization 1D
       do i=1,im
          sigmab(i)=0.
@@ -99,18 +99,18 @@
              enddo
           endif
        enddo
-     
+
       do i=1,im
          if(cnvflg(i))then
             if(sigmab(i) < 1.E-5)then !after advection
-               sigmab(i)=0.                                  
+               sigmab(i)=0.
             endif
          endif
       enddo
-          
-      !compute termD "The vertical integral of the latent heat convergence is limited to the                                        
-      !buoyant layers with positive moisture convergence (accumulated from the surface).                                                       
-      !Lowest level:                                                                                                               
+
+      !compute termD "The vertical integral of the latent heat convergence is limited to the
+      !buoyant layers with positive moisture convergence (accumulated from the surface).
+      !Lowest level:
        do i = 1,im
           dp1 = 1000. * del(i,1)
           mcons(i)=(hvap*(qadv(i,1)+tmf(i,1)+qmicro(i,1))*dp1)
@@ -142,7 +142,7 @@
           enddo
        enddo
 
-       !termB                                                                                                             
+       !termB
        do k = 2,km1
           do i = 1,im
              if(cnvflg(i))then
@@ -177,13 +177,13 @@
             if(cnvflg(i))then
                DEN=MIN(termC(i)+termB(i),1.E8)
                cvg=termD(i)*delt
-               ZZ=MAX(0.0,SIGN(1.0,termA(i)))            &
-                    *MAX(0.0,SIGN(1.0,termB(i)))         &
-                    *MAX(0.0,SIGN(1.0,termC(i)-epsilon))
+               ZZ=MAX(0.0,SIGN(1.0_kind_phys,termA(i)))            &
+                    *MAX(0.0,SIGN(1.0_kind_phys,termB(i)))         &
+                    *MAX(0.0,SIGN(1.0_kind_phys,termC(i)-epsilon))
                cvg=MAX(0.0,cvg)
                sigmab(i)=(ZZ*(termA(i)+cvg))/(DEN+(1.0-ZZ))
                if(sigmab(i)>0.)then
-                  sigmab(i)=MIN(sigmab(i),0.95)  
+                  sigmab(i)=MIN(sigmab(i),0.95)
                   sigmab(i)=MAX(sigmab(i),0.01)
                endif
             endif!cnvflg
@@ -198,7 +198,7 @@
          enddo
       enddo
 
-      !Reduce area fraction before coupling back to mass-flux computation. 
+      !Reduce area fraction before coupling back to mass-flux computation.
       if(flag_shallow)then
          do i= 1, im
             if(cnvflg(i)) then
