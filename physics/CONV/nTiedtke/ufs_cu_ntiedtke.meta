@@ -1,11 +1,11 @@
 [ccpp-table-properties]
-  name = cu_ntiedtke
+  name = ufs_cu_ntiedtke
   type = scheme
   dependencies = ../../hooks/machine.F,../../hooks/physcons.F90
 
 ########################################################################
 [ccpp-arg-table]
-  name = cu_ntiedtke_init
+  name = ufs_cu_ntiedtke_init
   type = scheme
 [imfshalcnv]
   standard_name = control_for_shallow_convection_scheme
@@ -67,7 +67,7 @@
 
 ########################################################################
 [ccpp-arg-table]
-  name = cu_ntiedtke_run
+  name = ufs_cu_ntiedtke_run
   type = scheme
 [pu]
   standard_name = x_wind_of_new_state

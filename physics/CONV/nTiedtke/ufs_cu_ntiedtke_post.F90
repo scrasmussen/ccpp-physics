@@ -1,20 +1,20 @@
-!> \file cu_ntiedtke_post.F90
+!> \file ufs_cu_ntiedtke_post.F90
 !!  Contains code related to New Tiedtke convective scheme
 
-module cu_ntiedtke_post
+module ufs_cu_ntiedtke_post
 
    implicit none
 
    private
 
-   public :: cu_ntiedtke_post_run
+   public :: ufs_cu_ntiedtke_post_run
 
    contains
 
-!> \section arg_table_cu_ntiedtke_post_run Argument Table
-!! \htmlinclude cu_ntiedtke_post_run.html
+!> \section arg_table_ufs_cu_ntiedtke_post_run Argument Table
+!! \htmlinclude ufs_cu_ntiedtke_post_run.html
 !!
-   subroutine cu_ntiedtke_post_run (t, q, prevst, prevsq, errmsg, errflg)
+   subroutine ufs_cu_ntiedtke_post_run (t, q, prevst, prevsq, errmsg, errflg)
 
       use machine, only: kind_phys
 
@@ -35,6 +35,6 @@ module cu_ntiedtke_post
       prevst(:,:) = t(:,:)
       prevsq(:,:) = q(:,:)
 
-   end subroutine cu_ntiedtke_post_run
+   end subroutine ufs_cu_ntiedtke_post_run
 
-end module cu_ntiedtke_post
+end module ufs_cu_ntiedtke_post

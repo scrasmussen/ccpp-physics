@@ -1,11 +1,11 @@
 [ccpp-table-properties]
-  name = cu_ntiedtke_post
+  name = ufs_cu_ntiedtke_post
   type = scheme
   dependencies = ../../hooks/machine.F
 
 ########################################################################
 [ccpp-arg-table]
-  name = cu_ntiedtke_post_run
+  name = ufs_cu_ntiedtke_post_run
   type = scheme
 [t]
   standard_name = air_temperature_of_new_state

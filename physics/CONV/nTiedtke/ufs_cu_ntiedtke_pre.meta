@@ -1,11 +1,11 @@
 [ccpp-table-properties]
-  name = cu_ntiedtke_pre
+  name = ufs_cu_ntiedtke_pre
   type = scheme
   dependencies = ../../hooks/machine.F
 
 ########################################################################
 [ccpp-arg-table]
-  name = cu_ntiedtke_pre_run
+  name = ufs_cu_ntiedtke_pre_run
   type = scheme
 [flag_init]
   standard_name = flag_for_first_timestep
