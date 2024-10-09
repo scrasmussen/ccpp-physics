@@ -1,4 +1,4 @@
-!> \file cu_ntiedtke.F90
+!> \file ufs_cu_ntiedtke.F90
 !! This file contains the CCPP-compliant new Tiedtke scheme which parameterize
 !! Shallow, deep, and mid-level convections in the model
 !! Please refer to Tiedtke (1989), Bechtold et al. (2004,2008, 2014),
@@ -6,7 +6,7 @@
 !!
 !###########################################################
 
-module cu_ntiedtke
+module ufs_cu_ntiedtke
 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      use machine , only : kind_phys
@@ -103,10 +103,10 @@ module cu_ntiedtke
 contains
 !> \brief Brief description of the subroutine
 !!
-!! \section arg_table_cu_ntiedtke_init Argument Table
-!! \htmlinclude cu_ntiedtke_init.html
+!! \section arg_table_ufs_cu_ntiedtke_init Argument Table
+!! \htmlinclude ufs_cu_ntiedtke_init.html
 !!
-      subroutine cu_ntiedtke_init(imfshalcnv, imfshalcnv_ntiedtke, imfdeepcnv,  &
+      subroutine ufs_cu_ntiedtke_init(imfshalcnv, imfshalcnv_ntiedtke, imfdeepcnv,  &
                           imfdeepcnv_ntiedtke,mpirank, mpiroot, errmsg, errflg)
 
          implicit none
@@ -145,19 +145,19 @@ contains
            return
          end if
          
-      end subroutine cu_ntiedtke_init
+      end subroutine ufs_cu_ntiedtke_init
 
 ! Tiedtke cumulus scheme from WRF with small modifications
 ! This scheme includes both deep and shallow convections
 !===================
 !
-!> \section arg_table_cu_ntiedtke_run Argument Table
-!! \htmlinclude cu_ntiedtke_run.html
+!> \section arg_table_ufs_cu_ntiedtke_run Argument Table
+!! \htmlinclude ufs_cu_ntiedtke_run.html
 !!
 !-----------------------------------------------------------------------
 !          level 1 subroutine 'tiecnvn'
 !-----------------------------------------------------------------
-      subroutine cu_ntiedtke_run(pu,pv,pt,pqv,tdi,qvdi,pqvf,ptf,clw,poz,pzz,prsl,prsi,pomg, &
+      subroutine ufs_cu_ntiedtke_run(pu,pv,pt,pqv,tdi,qvdi,pqvf,ptf,clw,poz,pzz,prsl,prsi,pomg, &
                                  evap,hfx,zprecc,lmask,lq,km,dt,dx,kbot,ktop,kcnv, &
                                  ktrac,ud_mf,dd_mf,dt_mf,cnvw,cnvc,errmsg,errflg)
 !-----------------------------------------------------------------
@@ -384,7 +384,7 @@ contains
       deallocate(ptenc)
 !
       return
-      end subroutine cu_ntiedtke_run
+      end subroutine ufs_cu_ntiedtke_run
 
 !#############################################################
 !
@@ -3830,5 +3830,5 @@ contains
         foedelta = max(0.,sign(1.,tt-tmelt))
       end function foedelta
 
-end module cu_ntiedtke
+end module ufs_cu_ntiedtke
                                                                                          

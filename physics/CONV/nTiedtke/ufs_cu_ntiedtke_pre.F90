@@ -1,20 +1,20 @@
-!> \file cu_ntiedtke_pre.F90
+!> \file ufs_cu_ntiedtke_pre.F90
 !!  Contains code related to New Tiedtke convective scheme
 
-module cu_ntiedtke_pre
+module ufs_cu_ntiedtke_pre
 
    implicit none
 
    private
 
-   public ::  cu_ntiedtke_pre_run
+   public ::  ufs_cu_ntiedtke_pre_run
 
    contains
 
-!> \section arg_table_cu_ntiedtke_pre_run Argument Table
-!! \htmlinclude cu_ntiedtke_pre_run.html
+!> \section arg_table_ufs_cu_ntiedtke_pre_run Argument Table
+!! \htmlinclude ufs_cu_ntiedtke_pre_run.html
 !!
-   subroutine cu_ntiedtke_pre_run (flag_init, flag_restart, kdt, fhour, dtp, t, q, prevst, prevsq, &
+   subroutine ufs_cu_ntiedtke_pre_run (flag_init, flag_restart, kdt, fhour, dtp, t, q, prevst, prevsq, &
                                    forcet, forceq, errmsg, errflg)
 
       use machine, only: kind_phys
@@ -59,6 +59,6 @@ module cu_ntiedtke_pre
         endif
       endif
 
-   end subroutine cu_ntiedtke_pre_run
+   end subroutine ufs_cu_ntiedtke_pre_run
 
-end module cu_ntiedtke_pre
+end module ufs_cu_ntiedtke_pre
