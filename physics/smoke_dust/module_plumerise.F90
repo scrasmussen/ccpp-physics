@@ -147,14 +147,14 @@ check_pl:  IF (do_plumerise) THEN    ! if the namelist option is set for plumeri
                dz_plume= z_at_w(i,kp2,j) - z_at_w(i,kp1,j)
 
 ! SRB: Adding condition for overwriting plumerise levels               
-               uspdavg=SUM(uspd(kts:kpbl_thetav(i,j)))/kpbl_thetav(i,j) !Average wind speed within the boundary layer
+               uspdavg=SUM(uspd(kts:nint(kpbl_thetav(i,j))))/kpbl_thetav(i,j) !Average wind speed within the boundary layer
 
 ! SRB: Adding output
                uspdavg2(i,j) = uspdavg
-               hpbl_thetav2(i,j) = z_lev(kpbl_thetav(i,j))
+               hpbl_thetav2(i,j) = z_lev(nint(kpbl_thetav(i,j)))
                 
                IF ((frp_inst(i,j) .gt. frp_threshold) .AND. (frp_inst(i,j) .le. frp_threshold500) .AND. & 
-                  (z_lev(kpbl_thetav(i,j)) .gt. zpbl_threshold) .AND. (wind_eff_opt .eq. 1)) THEN
+                  (z_lev(nint(kpbl_thetav(i,j))) .gt. zpbl_threshold) .AND. (wind_eff_opt .eq. 1)) THEN
                   kp1=1
                   IF (uspdavg .ge. uspd_threshold) THEN ! Too windy 
                      kp2=kpbl_thetav(i,j)/3 
