@@ -16,19 +16,19 @@
      &,                     kind_qdt_prec = 16                          &
 # endif
      &,                     kind_integer = 4                            &
-     &,                     kind_logical = 4
+     &,                     kind_logical = 4                            &
      &,                     kind_io4  = kind_sngl_prec                  &
      &,                     kind_ior = kind_dbl_prec                    &
      &,                     kind_grid = kind_dbl_prec
 
 ! Physics single precision flag
 #ifndef SINGLE_PREC
-      integer, parameter :: kind_phys = kind_dbl_prec
+      integer, parameter :: kind_phys = kind_dbl_prec  abcde
 #else
-      integer, parameter :: kind_phys = kind_sngl_prec
+      integer, parameter :: kind_phys = kind_sngl_prec  zyxwu
 #endif
 
-      integer, parameter :: kind_io8 = kind_phys                        &! Note kind_io8 is not always 8 bytes
+      integer, parameter :: kind_io8 = kind_phys                        ! Note kind_io8 is not always 8 bytes
 
 ! Dynamics single precision flag
 #ifdef OVERLOAD_R4
