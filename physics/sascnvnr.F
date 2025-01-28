@@ -11,21 +11,21 @@
 
 !> \file sascnvn.F
 !!  Contains the entire SAS deep convection scheme.
-      module sascnvn
+      module sascnvnr
 
       implicit none
 
       private
 
-      public :: sascnvn_init, sascnvn_run, sascnvn_finalize
+      public :: sascnvnr_init, sascnvnr_run, sascnvnr_finalize
 
       contains
 
 !!
-!! \section arg_table_sascnvn_init Argument Table
-!! \htmlinclude sascnvn_init.html
+!! \section arg_table_sascnvnr_init Argument Table
+!! \htmlinclude sascnvnr_init.html
 !!
-      subroutine sascnvn_init(imfdeepcnv,imfdeepcnv_sas,errmsg,errflg)
+      subroutine sascnvnr_init(imfdeepcnv,imfdeepcnv_sas,errmsg,errflg)
 !
       integer,          intent(in)  :: imfdeepcnv, imfdeepcnv_sas
       character(len=*), intent(out) :: errmsg
@@ -36,16 +36,16 @@
       errflg = 0
 !
       if (imfdeepcnv/=imfdeepcnv_sas) then
-        write(errmsg,'(*(a))') 'Logic error: sascnvn incompatible with',&
+        write(errmsg,'(*(a))') 'Logic error: sascnvnr incompatible with',&
      &                  ' value of imfdeepcnv'
         errflg = 1
         return
       endif
 !
-      end subroutine sascnvn_init
+      end subroutine sascnvnr_init
 
-      subroutine sascnvn_finalize()
-      end subroutine sascnvn_finalize
+      subroutine sascnvnr_finalize()
+      end subroutine sascnvnr_finalize
 
 !>  \brief This subroutine contains the entirety of the SAS deep convection scheme.
 !!
@@ -88,11 +88,11 @@
 !!  -# For the "feedback control", calculate updated values of the state variables by multiplying the cloud base mass flux and the tendencies calculated per unit cloud base mass flux from the static control.
 !!  \section detailed Detailed Algorithm
 !!
-!! \section arg_table_sascnvn_run Argument Table
-!! \htmlinclude sascnvn_run.html
+!! \section arg_table_sascnvnr_run Argument Table
+!! \htmlinclude sascnvnr_run.html
 !!
 !!  @{
-      subroutine sascnvn_run(
+      subroutine sascnvnr_run(
      &     grav,cp,hvap,rv,fv,t0c,rgas,cvap,cliq,eps,epsm1,             &
      &     im,km,jcap,delt,delp,prslp,psp,phil,qlc,qli,                 &
      &     q1,t1,u1,v1,cldwrk,rn,kbot,ktop,kcnv,islimsk,                &
@@ -103,6 +103,7 @@
      &     errmsg,errflg)
 !
       use machine , only : kind_phys
+      use shr_kind_mod, only: r8 => shr_kind_r8
       use funcphys , only : fpvs
 !      use physcons, grav => con_g, cp => con_cp, hvap => con_hvap       &
 !     &,             rv => con_rv, fv => con_fvirt, t0c => con_t0c       &
@@ -112,14 +113,38 @@
 !
 ! Interface variables
 !
-      real(kind=kind_phys), intent(in) :: grav, cp, hvap, rv, fv, t0c,  &
-     &                                    rgas, cvap, cliq, eps, epsm1
+     !  real(kind=kind_phys), intent(in) :: grav, cp, hvap, rv, fv, t0c,  &
+     ! &                                    rgas, cvap, cliq, eps, epsm1
+      real(kind=kind_phys), intent(in) :: hvap, t0c,  &
+     &                                    rgas, cvap, eps, epsm1
+      real(kind=shr_kind_r8), intent(in) :: grav, cp, hvap, rv, cvap, cliq, fv
+
+
       integer,              intent(in) :: im, km, jcap, ncloud,         &
      &                                    mp_phys, mp_phys_mg
-      integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
+     !  integer,              intent(in) :: im, km, jcap, ncloud,
+      character(len=16),    intent(in) :: mp_phys, mp_phys_mg
+
+
+      ! integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
+      integer,              intent(inout) :: akcnv(:)
+      real(kind=r8),        intent(inout) :: kbot(:), ktop(:)
       integer,              intent(in) :: islimsk(:)
-      real(kind=kind_phys), intent(in) :: delt, clam, c0, c1, pgcon
+      ! real(kind=kind_phys), intent(in) :: delt, clam, c0, c1, pgcon
+      real(kind=kind_phys), intent(in) :: clam, c0, c1, pgcon
+      real(kind=r8), intent(in) :: delt!, clam, c0, c1, pgcon
+
       real(kind=kind_phys), intent(in) :: betal, betas, evfact, evfactl
+     !  real(kind=kind_phys), intent(in) :: psp(:),     delp(:,:),        &
+     ! &                                    prslp(:,:), dot(:,:),         &
+     ! &                                    phil(:,:)
+      real(kind=kind_phys), intent(in) :: delp(:,:),        &
+     &                                    dot(:,:),         &
+     &                                    phil(:,:)
+      real(kind=r8), intent(in) :: psp(:), prslp(:,:) !,     delp(:,:),        &
+     ! &                                    prslp(:,:), dot(:,:),         &
+     ! &                                    phil(:,:)
+
       real(kind=kind_phys), intent(in) :: psp(:),     delp(:,:),        &
      &                                    prslp(:,:), dot(:,:),         &
      &                                    phil(:,:)
@@ -2126,9 +2151,9 @@
       return
 !> @}
 !! @}
-      end subroutine sascnvn_run
+      end subroutine sascnvnr_run
 
-      end module sascnvn
+      end module sascnvnr
 !  \section original Original Documentation
 !  Penetrative convection is simulated following Pan and Wu (1994), which is based on Arakawa and Schubert(1974) as simplified by Grell (1993) and with a saturated downdraft. Convection occurs when the cloud work function (CWF) exceeds a certain threshold. Mass flux of the cloud is determined using a quasi-equilibrium assumption based on this threshold CWF. The CWF is a function of temperature and moisture in each air column of the model gridpoint. The temperature and moisture profiles are adjusted towards the equilibrium CWF within a specified time scale using the deduced mass flux. A major simplification of the original Arakawa-Shubert scheme is to consider only the deepest cloud and not the spectrum of clouds. The cloud model incorporates a downdraft mechanism as well as the evaporation of precipitation. Entrainment of the updraft and detrainment of the downdraft in the sub-cloud layers are included. Downdraft strength is based on the vertical wind shear through the cloud. The critical CWF is a function of the cloud base vertical motion. As the large-scale rising motion becomes strong, the CWF [similar to convective available potential energy (CAPE)] is allowed to approach zero (therefore approaching neutral stability).
 !
