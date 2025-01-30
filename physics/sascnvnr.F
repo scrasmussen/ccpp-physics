@@ -116,12 +116,15 @@
 !
       real(kind=kind_phys), intent(in) :: grav, cp, hvap, rv, fv, t0c,  &
      &                                    rgas, cvap, cliq, eps, epsm1
-      integer,              intent(in) :: im, km, jcap, ncloud,         &
-     &                                    mp_phys
+!      integer,              intent(in) :: im, km, jcap, ncloud,         &
+!     &                                    mp_phys
+      integer,              intent(in) :: im, km, jcap, ncloud
 ! &                                    mp_phys, mp_phys_mg
-      character(len=16) :: mp_phys_mg
-      integer           :: mp_phys_mg_i
-      integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
+      character(len=16),    intent(in) :: mp_phys_mg, mp_phys
+      ! integer           :: mp_phys_mg_i
+      ! integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
+      real(kind=kind_phys), intent(inout) :: kbot(:), ktop(:)
+      integer,              intent(inout) :: kcnv(:)
       integer,              intent(in) :: islimsk(:)
       real(kind=kind_phys), intent(in) :: delt, clam, c0, c1, pgcon
       real(kind=kind_phys), intent(in) :: betal, betas, evfact, evfactl
@@ -309,15 +312,15 @@
       enddo
 !>  - Initialize updraft, downdraft, detrainment mass fluxes to zero.
 ! hchuang code change
-      print *, "mp_phys_mg = ", trim(mp_phys_mg)
-      error stop "debugging mp_phys_mg"
-      mp_phys_mg_i = mp_phys
+      ! print *, "mp_phys_mg = ", trim(mp_phys_mg)
+      ! error stop "debugging mp_phys_mg"
+      ! mp_phys_mg_i = mp_phys
       do k = 1, km
         do i = 1, im
           ud_mf(i,k) = 0.
           dd_mf(i,k) = 0.
           dt_mf(i,k) = 0.
-          if(mp_phys == mp_phys_mg_i) then
+          if(mp_phys == mp_phys_mg) then
               qlcn(i,k)      = 0.0
               qicn(i,k)      = 0.0
               w_upi(i,k)     = 0.0
@@ -2114,7 +2117,7 @@
         enddo
       enddo
 
-      if(mp_phys == mp_phys_mg_i) then
+      if(mp_phys == mp_phys_mg) then
         do k=1,km
           do i=1,im
             qlcn(i,k)      = qlc(i,k)
