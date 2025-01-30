@@ -7,20 +7,20 @@
 [ccpp-arg-table]
   name = sascnvnr_init
   type = scheme
-[imfdeepcnv]
-  standard_name = control_for_deep_convection_scheme
-  long_name = flag for mass-flux deep convection scheme
-  units = flag
-  dimensions = ()
-  type = integer
-  intent = in
-[imfdeepcnv_sas]
-  standard_name = identifier_for_simplified_arakawa_schubert_deep_convection
-  long_name = flag for SAS deep convection scheme
-  units = flag
-  dimensions = ()
-  type = integer
-  intent = in
+# [imfdeepcnv]
+#   standard_name = control_for_deep_convection_scheme
+#   long_name = flag for mass-flux deep convection scheme
+#   units = flag
+#   dimensions = ()
+#   type = integer
+#   intent = in
+# [imfdeepcnv_sas]
+#   standard_name = identifier_for_simplified_arakawa_schubert_deep_convection
+#   long_name = flag for SAS deep convection scheme
+#   units = flag
+#   dimensions = ()
+#   type = integer
+#   intent = in
 [errmsg]
   standard_name = ccpp_error_message
   long_name = error message for error handling in CCPP
@@ -87,7 +87,7 @@
   units = K
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [rgas]
   standard_name = gas_constant_of_dry_air
@@ -95,7 +95,7 @@
   units = J kg-1 K-1
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [cvap]
   standard_name = specific_heat_of_water_vapor_at_constant_pressure
@@ -119,7 +119,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [epsm1]
   standard_name = ratio_of_dry_air_to_water_vapor_gas_constants_minus_one
@@ -127,7 +127,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [im]
   standard_name = horizontal_loop_extent
@@ -164,7 +164,7 @@
   units = Pa
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [prslp]
   standard_name = air_pressure
@@ -188,7 +188,7 @@
   units = m2 s-2
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [qlc]
   standard_name = cloud_condensed_water_mixing_ratio_convective_transport_tracer
@@ -196,7 +196,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [qli]
   standard_name = ice_water_mixing_ratio_convective_transport_tracer
@@ -204,7 +204,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [q1]
   standard_name = specific_humidity_of_new_state
@@ -212,7 +212,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [t1]
   standard_name = air_temperature_of_new_state
@@ -220,7 +220,7 @@
   units = K
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [u1]
   standard_name = x_wind_of_new_state
@@ -228,7 +228,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [v1]
   standard_name = y_wind_of_new_state
@@ -236,7 +236,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cldwrk]
   standard_name = cloud_work_function
@@ -244,7 +244,7 @@
   units = m2 s-2
   dimensions = (horizontal_loop_extent)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = out
 [rn]
   standard_name = lwe_thickness_of_deep_convective_precipitation_amount
@@ -252,7 +252,7 @@
   units = m
   dimensions = (horizontal_loop_extent)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = out
 [kbot]
   standard_name = vertical_index_at_cloud_base
@@ -290,7 +290,7 @@
   units = Pa s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [ncloud]
   standard_name = number_of_condensate_species
@@ -305,7 +305,7 @@
   units = kg m-2
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = out
 [dd_mf]
   standard_name = instantaneous_atmosphere_downdraft_convective_mass_flux
@@ -313,7 +313,7 @@
   units = kg m-2
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = out
 [dt_mf]
   standard_name = instantaneous_atmosphere_detrainment_convective_mass_flux
@@ -321,7 +321,7 @@
   units = kg m-2
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = out
 [cnvw]
   standard_name = convective_cloud_water_mixing_ratio
@@ -329,7 +329,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnvc]
   standard_name = convective_cloud_cover
@@ -337,7 +337,7 @@
   units = frac
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [qlcn]
   standard_name = mass_fraction_of_convective_cloud_liquid_water
@@ -345,7 +345,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [qicn]
   standard_name = mass_fraction_of_convective_cloud_ice
@@ -353,7 +353,7 @@
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [w_upi]
   standard_name = vertical_velocity_for_updraft
@@ -361,7 +361,7 @@
   units = m s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cf_upi]
   standard_name = convective_cloud_fraction_for_microphysics
@@ -369,7 +369,7 @@
   units = frac
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnv_mfd]
   standard_name = detrained_mass_flux
@@ -377,7 +377,7 @@
   units = kg m-2 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnv_dqldt]
   standard_name = tendency_of_cloud_water_due_to_convective_microphysics
@@ -385,7 +385,7 @@
   units = kg m-2 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [clcn]
   standard_name = convective_cloud_volume_fraction
@@ -393,7 +393,7 @@
   units = frac
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnv_fice]
   standard_name = ice_fraction_in_convective_tower
@@ -401,7 +401,7 @@
   units = frac
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnv_ndrop]
   standard_name = number_concentration_of_cloud_liquid_water_particles_for_detrainment
@@ -409,7 +409,7 @@
   units = m-3
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [cnv_nice]
   standard_name = number_concentration_of_ice_crystals_for_detrainment
@@ -417,7 +417,7 @@
   units = m-3
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = inout
 [mp_phys]
   standard_name = control_for_microphysics_scheme
@@ -441,7 +441,7 @@
   units = none
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [c0]
   standard_name = rain_conversion_parameter_for_deep_convection
@@ -449,7 +449,7 @@
   units = m-1
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [c1]
   standard_name = detrainment_conversion_parameter_for_deep_convection
@@ -457,7 +457,7 @@
   units = m-1
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [betal]
   standard_name = downdraft_fraction_reaching_surface_over_land_for_deep_convection
@@ -465,7 +465,7 @@
   units = frac
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [betas]
   standard_name = downdraft_fraction_reaching_surface_over_water_for_deep_convection
@@ -473,7 +473,7 @@
   units = frac
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [evfact]
   standard_name = rain_evaporation_coefficient_over_ocean_for_deep_convection
@@ -481,7 +481,7 @@
   units = frac
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [evfactl]
   standard_name = rain_evaporation_coefficient_over_land_for_deep_convection
@@ -489,7 +489,7 @@
   units = frac
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [pgcon]
   standard_name = momentum_transport_reduction_factor_due_to_pressure_gradient_force_for_deep_convection
@@ -497,7 +497,7 @@
   units = frac
   dimensions = ()
   type = real
-  kind = kind_phys
+  kind = shr_kind_r8
   intent = in
 [errmsg]
   standard_name = ccpp_error_message
