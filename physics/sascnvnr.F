@@ -9,7 +9,7 @@
 !!  \section intraphysics Intraphysics Communication
 !!  This space is reserved for a description of how this scheme uses information from other scheme types and/or how information calculated in this scheme is used in other scheme types.
 
-!> \file sascnvn.F
+!> \file sascnvnr.F
 !!  Contains the entire SAS deep convection scheme.
       module sascnvnr
 
@@ -25,22 +25,23 @@
 !! \section arg_table_sascnvnr_init Argument Table
 !! \htmlinclude sascnvnr_init.html
 !!
-      subroutine sascnvnr_init(imfdeepcnv,imfdeepcnv_sas,errmsg,errflg)
+!     subroutine sascnvnr_init(imfdeepcnv,imfdeepcnv_sas,errmsg,errflg)
+      subroutine sascnvnr_init(errmsg,errflg)
 !
-      integer,          intent(in)  :: imfdeepcnv, imfdeepcnv_sas
+      ! integer,          intent(in)  :: imfdeepcnv, imfdeepcnv_sas
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
 !
 !     initialize CCPP error handling variables
-      errmsg = ''
+      errmsg = ""
       errflg = 0
 !
-      if (imfdeepcnv/=imfdeepcnv_sas) then
-        write(errmsg,'(*(a))') 'Logic error: sascnvnr incompatible with',&
-     &                  ' value of imfdeepcnv'
-        errflg = 1
-        return
-      endif
+!      if (imfdeepcnv/=imfdeepcnv_sas) then
+!        write(errmsg,'(*(a))') "Logic error: sascnvnr incompatible with",&
+!     &                  " value of imfdeepcnv"
+!        errflg = 1
+!        return
+!      endif
 !
       end subroutine sascnvnr_init
 
@@ -102,8 +103,8 @@
      &     mp_phys_mg,clam,c0,c1,betal,betas,evfact,evfactl,pgcon,      &
      &     errmsg,errflg)
 !
-      use machine , only : kind_phys
-      use shr_kind_mod, only: r8 => shr_kind_r8
+      ! use machine , only : kind_phys
+      use shr_kind_mod, only: kind_phys => shr_kind_r8
       use funcphys , only : fpvs
 !      use physcons, grav => con_g, cp => con_cp, hvap => con_hvap       &
 !     &,             rv => con_rv, fv => con_fvirt, t0c => con_t0c       &
@@ -113,38 +114,17 @@
 !
 ! Interface variables
 !
-     !  real(kind=kind_phys), intent(in) :: grav, cp, hvap, rv, fv, t0c,  &
-     ! &                                    rgas, cvap, cliq, eps, epsm1
-      real(kind=kind_phys), intent(in) :: hvap, t0c,  &
-     &                                    rgas, cvap, eps, epsm1
-      real(kind=shr_kind_r8), intent(in) :: grav, cp, hvap, rv, cvap, cliq, fv
-
-
+      real(kind=kind_phys), intent(in) :: grav, cp, hvap, rv, fv, t0c,  &
+     &                                    rgas, cvap, cliq, eps, epsm1
       integer,              intent(in) :: im, km, jcap, ncloud,         &
-     &                                    mp_phys, mp_phys_mg
-     !  integer,              intent(in) :: im, km, jcap, ncloud,
-      character(len=16),    intent(in) :: mp_phys, mp_phys_mg
-
-
-      ! integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
-      integer,              intent(inout) :: akcnv(:)
-      real(kind=r8),        intent(inout) :: kbot(:), ktop(:)
+     &                                    mp_phys
+! &                                    mp_phys, mp_phys_mg
+      character(len=16) :: mp_phys_mg
+      integer           :: mp_phys_mg_i
+      integer,              intent(inout) :: kbot(:), ktop(:), kcnv(:)
       integer,              intent(in) :: islimsk(:)
-      ! real(kind=kind_phys), intent(in) :: delt, clam, c0, c1, pgcon
-      real(kind=kind_phys), intent(in) :: clam, c0, c1, pgcon
-      real(kind=r8), intent(in) :: delt!, clam, c0, c1, pgcon
-
+      real(kind=kind_phys), intent(in) :: delt, clam, c0, c1, pgcon
       real(kind=kind_phys), intent(in) :: betal, betas, evfact, evfactl
-     !  real(kind=kind_phys), intent(in) :: psp(:),     delp(:,:),        &
-     ! &                                    prslp(:,:), dot(:,:),         &
-     ! &                                    phil(:,:)
-      real(kind=kind_phys), intent(in) :: delp(:,:),        &
-     &                                    dot(:,:),         &
-     &                                    phil(:,:)
-      real(kind=r8), intent(in) :: psp(:), prslp(:,:) !,     delp(:,:),        &
-     ! &                                    prslp(:,:), dot(:,:),         &
-     ! &                                    phil(:,:)
-
       real(kind=kind_phys), intent(in) :: psp(:),     delp(:,:),        &
      &                                    prslp(:,:), dot(:,:),         &
      &                                    phil(:,:)
@@ -329,12 +309,15 @@
       enddo
 !>  - Initialize updraft, downdraft, detrainment mass fluxes to zero.
 ! hchuang code change
+      print *, "mp_phys_mg = ", trim(mp_phys_mg)
+      error stop "debugging mp_phys_mg"
+      mp_phys_mg_i = mp_phys
       do k = 1, km
         do i = 1, im
           ud_mf(i,k) = 0.
           dd_mf(i,k) = 0.
           dt_mf(i,k) = 0.
-          if(mp_phys == mp_phys_mg) then
+          if(mp_phys == mp_phys_mg_i) then
               qlcn(i,k)      = 0.0
               qicn(i,k)      = 0.0
               w_upi(i,k)     = 0.0
@@ -2131,7 +2114,7 @@
         enddo
       enddo
 
-      if(mp_phys == mp_phys_mg) then
+      if(mp_phys == mp_phys_mg_i) then
         do k=1,km
           do i=1,im
             qlcn(i,k)      = qlc(i,k)
