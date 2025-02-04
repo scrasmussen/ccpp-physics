@@ -106,6 +106,8 @@
       ! use machine , only : kind_phys
       use shr_kind_mod, only: kind_phys => shr_kind_r8
       use funcphys , only : fpvs
+      use mpi, only: MPI_Comm_rank, MPI_COMM_WORLD
+
 !      use physcons, grav => con_g, cp => con_cp, hvap => con_hvap       &
 !     &,             rv => con_rv, fv => con_fvirt, t0c => con_t0c       &
 !     &,             cvap => con_cvap, cliq => con_cliq                  &
@@ -247,6 +249,38 @@
       parameter (tf=233.16, tcr=263.16, tcrf=1.0/(tcr-tf))
 !
 !-----------------------------------------------------------------------
+      logical :: debug_variables
+      integer :: rank, ierr
+      debug_variables = .false.
+      if (debug_variables .eqv. .true.) then
+         call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+         if (rank == 0) then
+            print *, "--- DEBUG: input var report ---"
+            print *, "qli(:,:) =", qli(1,1)
+            print *, "qlc(:,:) =", qlc(1,1)
+            print *, "islimsk(:) = ", islimsk(1)
+            print *, "dot(:,:) = ", dot(1,1)
+            print *, "pgcon = ", pgcon
+            print *, "ncloud = ", ncloud
+            print *, "jcap =", jcap
+            print *, "c0 = ", c0
+            print *, "c1 = ", c1
+            print *, "evfactl =", evfactl
+            print *, "evfact =", evfact
+            print *, "q1(:,:) =", q1(1,1)
+            print *, "mp_phys_mg =", trim(mp_phys_mg)
+            print *, "t1(:,:) =", t1(1,1)
+            print *, "c1 =", c1
+            print *, "betal =", betal
+            print *, "betas =", betas
+            print *, "clam =", clam
+            print *, "phil(:,:) =", phil(1,1)
+            print *, "u1(:,:) =", u1(1,1)
+            print *, "v1(:,:) =", v1(1,1)
+            print *, "------------------------------------"
+         end if
+      end if
+
 !************************************************************************
 !     replace (derived) constants above with regular variables
       g      = grav
