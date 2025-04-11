@@ -23,18 +23,18 @@ jobs:
     - name: Store hash for HEAD of current ccpp-physics code
       run: echo "GIT_REMOTE_HASH=`git rev-parse HEAD`" >> $GITHUB_ENV
 
-    - name: Checkout latest fv3atm
-      run: git clone https://github.com/NOAA-EMC/fv3atm.git
+    - name: Checkout latest ufsatm
+      run: git clone https://github.com/NOAA-EMC/ufsatm.git
 
     - name: Initialize submodules
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm
+        cd /home/runner/work/ccpp-physics/ccpp-physics/ufsatm
         git submodule update --init --recursive
 
-    - name: Update ccpp-physics hash in fv3atm
+    - name: Update ccpp-physics hash in ufsatm
       if: github.event.pull_request == false
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/ccpp/physics
+        cd /home/runner/work/ccpp-physics/ccpp-physics/ufsatm/ccpp/physics
         git remote add remote_local $GIT_REMOTE_URL
         git fetch remote_local $GIT_REMOTE_BRANCH
         git checkout remote_local/$GIT_REMOTE_BRANCH
@@ -51,6 +51,6 @@ jobs:
 
     - name: Run ccpp_prebuild.py
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/ccpp/
-        mkdir -p /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/bin/ccpp/physics/physics/
+        cd /home/runner/work/ccpp-physics/ccpp-physics/ufsatm/ccpp/
+        mkdir -p /home/runner/work/ccpp-physics/ccpp-physics/ufsatm/bin/ccpp/physics/physics/
         ./framework/scripts/ccpp_prebuild.py --config config/ccpp_prebuild_config.py
