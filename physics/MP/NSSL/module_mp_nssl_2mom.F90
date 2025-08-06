@@ -9766,7 +9766,7 @@ END SUBROUTINE nssl_2mom_driver
      &  ,ssfilt,t00,t77,flag_qndrop  &
      & )
 
-
+   use, intrinsic :: ieee_arithmetic, only: ieee_is_nan
    implicit none
 
 !      real :: cwmasn = 1000.*0.523599*(2.*2.e-6)**3
@@ -10003,7 +10003,7 @@ END SUBROUTINE nssl_2mom_driver
       real :: uu_nu, uu_ac, uu_co
 
       real :: cn_ac, cn_co, cn_nu
-
+      real :: ssat0_mgs, ssf_mgs
 ! -------------------------------------------------------------------------------
       itile = nxi
       jtile = ny
@@ -10745,7 +10745,18 @@ END SUBROUTINE nssl_2mom_driver
          CYCLE
         ENDIF
 
-      IF( ssat0(mgs) .GT. 0. .OR. ssf(mgs) .GT. 0. ) GO TO 620
+
+      ssat0_mgs = ssat0(mgs)
+      ssf_mgs = ssf(mgs)
+
+      if (ieee_is_nan(ssat0_mgs) .or. ieee_is_nan(ssf_mgs)) then
+         print *, "NaN detected!!"
+         print *, "ssat0(", mgs, ") =", ssat0_mgs
+         print *, "ssf(", mgs, ") =", ssf_mgs
+         error stop "NaN Detected"
+      end if
+
+      IF( ssat0_mgs .GT. 0. .OR. ssf_mgs .GT. 0. ) GO TO 620
 !6/4      IF( qvap(mgs) .EQ. qss(mgs) ) GO TO 631
 !
 !.... EVAPORATION. QV IS LESS THAN qss(mgs).
