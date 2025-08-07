@@ -10031,7 +10031,7 @@ END SUBROUTINE nssl_2mom_driver
 !  Ziegler nucleation
 !
 
-!      ssfilt(:,:,:) = 0.0
+     ssfilt(:,:,:) = 0.0
       ssmx = 0
       count = 0
 
