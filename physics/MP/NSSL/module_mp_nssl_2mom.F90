@@ -10031,7 +10031,7 @@ END SUBROUTINE nssl_2mom_driver
 !  Ziegler nucleation
 !
 
-     ssfilt(:,:,:) = 0.0
+!       ssfilt(:,:,:) = 0.0
       ssmx = 0
       count = 0
 
@@ -10052,6 +10052,8 @@ END SUBROUTINE nssl_2mom_driver
 
           IF ( c1 > 0. ) THEN
             ssfilt(ix,jy,kz) = 100.*(an(ix,jy,kz,lv)/c1 - 1.0)  ! from "new" values
+          ELSE
+            ssfilt(ix,jy,kz) = -100.
           ENDIF
 
         ENDDO
