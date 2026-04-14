@@ -6,7 +6,6 @@
       module GFS_radiation_surface
 
       use machine,                   only: kind_phys
-      use mpi_f08
 
       contains
 
@@ -17,16 +16,13 @@
 !> \section arg_table_GFS_radiation_surface_init Argument Table
 !! \htmlinclude GFS_radiation_surface_init.html
 !!
-      subroutine GFS_radiation_surface_init (mpicomm, mpirank, mpiroot, &
-          ialb, iems, semis_file, con_pi, errmsg, errflg)
+      subroutine GFS_radiation_surface_init (me, ialb, iems, semis_file, con_pi, errmsg, errflg)
 
       use module_radiation_surface, only: sfc_init
 
       implicit none
 
-      type(MPI_Comm),                       intent(in)  :: mpicomm
-      integer,                              intent(in)  :: mpirank, mpiroot
-      integer,                              intent(in)  :: ialb, iems
+      integer,                              intent(in)  :: me, ialb, iems
       character(len=26),                    intent(in)  :: semis_file
       real(kind_phys),                      intent(in)  :: con_pi
       character(len=*),                     intent(out) :: errmsg
@@ -36,14 +32,13 @@
       errmsg = ''
       errflg = 0
 
-      if ( mpirank==mpiroot ) then
+      if ( me == 0 ) then
         print *,'In GFS_radiation_surface_init, before calling sfc_init'
         print *,'ialb=',ialb,' iems=',iems
       end if
 
       ! Call surface initialization routine
-      call sfc_init ( mpicomm, mpirank, mpiroot, &
-        ialb, iems, semis_file, con_pi, errmsg, errflg )
+      call sfc_init ( me, ialb, iems, semis_file, con_pi, errmsg, errflg )
 
       end subroutine GFS_radiation_surface_init
 

@@ -4,7 +4,6 @@
 module cires_tauamf_data
 
   use machine, only: kind_phys
-  use mpi_f08
 !...........................................................................................
 ! tabulated GW-sources: GRACILE/Ern et al., 2018 and/or Resolved GWs from C384-Annual run
 !...........................................................................................
@@ -21,20 +20,18 @@ implicit none
 contains
   
 !>
-   subroutine read_tau_amf(mpicomm, mpirank, mpiroot, errmsg, errflg)
+   subroutine read_tau_amf(me, master, errmsg, errflg)
   
-    use netcdf
-    use mpiutil, only: ccpp_bcast
-    type(MPI_Comm), intent(in) :: mpicomm
-    integer, intent(in) :: mpirank, mpiroot
+    use  netcdf
+    integer, intent(in) ::  me, master   
     integer :: ncid,  iernc, vid, dimid, status         
     integer :: k
     
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg    
 !
-    read_and_broadcast_1: if (mpirank==mpiroot) then
-       iernc=NF90_OPEN(trim(ugwp_taufile), nf90_nowrite, ncid)
+      
+      iernc=NF90_OPEN(trim(ugwp_taufile), nf90_nowrite, ncid)
      
        if(iernc.ne.0) then         
           write(errmsg,'(*(a))') "read_tau_amf: cannot open file_limb_tab data-file ",  &
@@ -42,7 +39,8 @@ contains
           print *, 'cannot open ugwp-v1 tau-file=',trim(ugwp_taufile)
           errflg = 1
           return
-       endif
+        else
+
 
        status = nf90_inq_dimid(ncid, "lat", DimID)
 !      if (status /= nf90_noerr) call handle_err(status)
@@ -52,36 +50,28 @@ contains
        status = nf90_inq_dimid(ncid, "days", DimID)
        status = nf90_inquire_dimension(ncid, DimID,  len =ntau_d2t )
        
-       print *, ntau_d1y, ntau_d2t, ' dimd of tau_ngw ugwp-v1 '
-       if (ntau_d2t .le. 0 .or. ntau_d1y .le. 0) then 
-          print *, 'ugwp-v1 tau-file=',    trim(ugwp_taufile)	   
-          print *, '  ugwp-v1: ', 'ntau_d2t=',ntau_d2t, 'ntau_d2t=',ntau_d1y
-          errflg = 1
-          return
-       endif
-    endif read_and_broadcast_1
-
-    call ccpp_bcast(ntau_d1y, mpiroot, mpicomm, errflg)
-    call ccpp_bcast(ntau_d2t, mpiroot, mpicomm, errflg)
-
-    if (.not.allocated(ugwp_taulat))  allocate (ugwp_taulat(ntau_d1y ))
-    if (.not.allocated(days_limb))    allocate (days_limb(ntau_d2t))
-    if (.not.allocated(tau_limb))     allocate (tau_limb(ntau_d1y, ntau_d2t ))   	   
-           
-    read_and_broadcast_2: if (mpirank==mpiroot) then
-      iernc=nf90_inq_varid( ncid, 'DAYS', vid )
-      iernc= nf90_get_var( ncid, vid, days_limb)
-      iernc=nf90_inq_varid( ncid, 'LATS', vid )
-      iernc= nf90_get_var( ncid, vid, ugwp_taulat)
-      iernc=nf90_inq_varid( ncid, 'ABSMF', vid )
-      iernc= nf90_get_var( ncid, vid, tau_limb)
-      iernc=nf90_close(ncid)
-    endif read_and_broadcast_2
-
-    call ccpp_bcast(days_limb,   mpiroot, mpicomm, errflg)
-    call ccpp_bcast(tau_limb,    mpiroot, mpicomm, errflg)
-    call ccpp_bcast(ugwp_taulat, mpiroot, mpicomm, errflg)
-
+           if (me == master)  print *, ntau_d1y, ntau_d2t, ' dimd of tau_ngw ugwp-v1 '
+           if (ntau_d2t .le. 0 .or. ntau_d1y .le. 0) then 
+               print *, 'ugwp-v1 tau-file=',    trim(ugwp_taufile)
+               print *, '  ugwp-v1: ', 'ntau_d2t=',ntau_d2t, 'ntau_d2t=',ntau_d1y
+               stop
+           endif
+	   	   
+        if (.not.allocated(ugwp_taulat))  allocate (ugwp_taulat(ntau_d1y ))
+        if (.not.allocated(days_limb))    allocate (days_limb(ntau_d2t))
+        if (.not.allocated(tau_limb))     allocate (tau_limb(ntau_d1y, ntau_d2t ))
+              
+        iernc=nf90_inq_varid( ncid, 'DAYS', vid )
+        iernc= nf90_get_var( ncid, vid, days_limb)
+        iernc=nf90_inq_varid( ncid, 'LATS', vid )
+        iernc= nf90_get_var( ncid, vid, ugwp_taulat)
+        iernc=nf90_inq_varid( ncid, 'ABSMF', vid )
+        iernc= nf90_get_var( ncid, vid, tau_limb)
+			
+        iernc=nf90_close(ncid)
+	
+        endif
+	
   end  subroutine read_tau_amf  
   
 !>

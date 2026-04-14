@@ -8,7 +8,6 @@ module GFS_rrtmg_setup
 
    use machine, only:  kind_phys
    use module_ozphys, only: ty_ozphys
-   use mpi_f08
    implicit none
 
    public GFS_rrtmg_setup_init, GFS_rrtmg_setup_timestep_init, GFS_rrtmg_setup_finalize
@@ -41,8 +40,7 @@ module GFS_rrtmg_setup
    subroutine GFS_rrtmg_setup_init ( si, levr, ictm, isol, solar_file, ico2, &
         iaer, ntcw, num_p3d, npdf3d, ntoz, iovr, iovr_rand, iovr_maxrand,    &
         iovr_max, iovr_dcorr, iovr_exp, iovr_exprand, icliq_sw, lcrick,      &
-        lcnorm, imp_physics, lnoprec, idate, iflip, do_RRTMGP,               &
-        mpicomm, mpirank, mpiroot, lalw1bd,                                  &
+        lcnorm, imp_physics, lnoprec, idate, iflip, do_RRTMGP, me, lalw1bd,  &
         iaermdl, iaerflg, aeros_file, con_pi, con_t0c, con_c, con_boltz,     &
         con_plnk, con_solr_2008, con_solr_2002, con_g, con_rd, co2usr_file,  &
         co2cyc_file, rad_hr_units, inc_minor_gas, icliq_lw, isubcsw, isubclw,&
@@ -157,13 +155,10 @@ module GFS_rrtmg_setup
       integer, intent(in) :: levr, ictm, isol, ico2, iaer, ntcw, num_p3d, &
            ltp, npdf3d, ntoz, iovr, iovr_rand, iovr_maxrand, iovr_max,    &
            iovr_dcorr, iovr_exp, iovr_exprand, icliq_sw, imp_physics,     &
-           iflip, rad_hr_units, icliq_lw, isubcsw, isubclw, iswmode
+           iflip, me, rad_hr_units, icliq_lw, isubcsw, isubclw, iswmode
       integer, intent(in) :: idate(:)
       logical, intent(in) :: lcrick, lcnorm, lnoprec, do_RRTMGP, lalw1bd, &
            inc_minor_gas, lextop
-      type(MPI_Comm), intent(in) :: mpicomm
-      integer, intent(in) :: mpirank
-      integer, intent(in) :: mpiroot
       character(len=26),intent(in)  :: aeros_file, solar_file, co2usr_file,&
            co2cyc_file
       real(kind_phys),  intent(in)  :: con_pi, con_t0c, con_c, con_boltz,  &
@@ -196,7 +191,7 @@ module GFS_rrtmg_setup
         ipsd0 = 17*idate(1)+43*idate(2)+37*idate(3)+23*idate(4)
       endif
 
-      if ( mpirank == mpiroot ) then
+      if ( me == 0 ) then
          print *,' In rad_initialize (GFS_rrtmg_setup_init), before calling RRTMG initialization'
          print *,' si =',si
          print *,' levr=',levr,' ictm=',ictm,' isol=',isol,' ico2=',ico2,&
@@ -204,7 +199,7 @@ module GFS_rrtmg_setup
          print *,' np3d=',num_p3d,' ntoz=',ntoz,                         &
                  ' iovr=',iovr,' isubcsw=',isubcsw,                      &
                  ' isubclw=',isubclw,' icliq_sw=',icliq_sw,              &
-                 ' iflip=',iflip,'  mpirank=',mpirank
+                 ' iflip=',iflip,'  me=',me
          print *,' lcrick=',lcrick,                                      &
                  ' lcnorm=',lcnorm,' lnoprec=',lnoprec
          print *, 'lextop=',lextop, ' ltp=',ltp
@@ -213,31 +208,29 @@ module GFS_rrtmg_setup
       if (is_initialized) return
 
       ! Call initialization routines
-      call sol_init ( mpicomm, mpirank, mpiroot,                        &
-           isol, solar_file, con_solr_2008,con_solr_2002, con_pi )
-      call aer_init ( levr, mpicomm, mpirank, mpiroot, &
-           iaermdl, iaerflg, lalw1bd, aeros_file,  &
+      call sol_init ( me, isol, solar_file, con_solr_2008,con_solr_2002,&
+           con_pi )
+      call aer_init ( levr, me, iaermdl, iaerflg, lalw1bd, aeros_file,  &
            con_pi, con_t0c, con_c, con_boltz, con_plnk, errflg, errmsg)
       if(errflg/=0) return
 
-      call gas_init ( mpicomm, mpirank, mpiroot,                        &
-           co2usr_file, co2cyc_file, ico2, ictm, con_pi, errflg, errmsg )
+      call gas_init ( me, co2usr_file, co2cyc_file, ico2, ictm, con_pi, errflg, errmsg )
       if(errflg/=0) return
 
-      call cld_init ( si, levr, imp_physics, mpirank, con_g, con_rd, errflg, errmsg)
+      call cld_init ( si, levr, imp_physics, me, con_g, con_rd, errflg, errmsg)
       if(errflg/=0) return
 
-      call rlwinit ( mpirank, rad_hr_units, inc_minor_gas, icliq_lw, isubcsw, &
+      call rlwinit ( me, rad_hr_units, inc_minor_gas, icliq_lw, isubcsw, &
            iovr, iovr_rand, iovr_maxrand, iovr_max, iovr_dcorr,         &
            iovr_exp, iovr_exprand, errflg, errmsg )
       if(errflg/=0) return
 
-      call rswinit ( mpirank, rad_hr_units, inc_minor_gas, icliq_sw, isubclw, &
+      call rswinit ( me, rad_hr_units, inc_minor_gas, icliq_sw, isubclw, &
            iovr, iovr_rand, iovr_maxrand, iovr_max, iovr_dcorr,         &
            iovr_exp, iovr_exprand,iswmode, errflg, errmsg )
       if(errflg/=0) return
 
-      if ( mpirank == mpiroot ) then
+      if ( me == 0 ) then
         print *,'  Radiation sub-cloud initial seed =',ipsd0,           &
      &          ' IC-idate =',idate
         print *,' return from rad_initialize (GFS_rrtmg_setup_init) - after calling RRTMG initialization'
@@ -251,8 +244,7 @@ module GFS_rrtmg_setup
 !! \htmlinclude GFS_rrtmg_setup_timestep_init.html
 !!
    subroutine GFS_rrtmg_setup_timestep_init (idate, jdate, deltsw, deltim, &
-        lsswr, mpicomm, mpirank, mpiroot, &
-        iaermdl, iaerflg, isol, aeros_file, slag, sdec, cdec,   &
+        lsswr, me, iaermdl, iaerflg, isol, aeros_file, slag, sdec, cdec,   &
         solcon, con_pi, co2dat_file, co2gbl_file, ictm, ico2, ntoz, ozphys,&
         errmsg, errflg)
 
@@ -265,9 +257,7 @@ module GFS_rrtmg_setup
       real(kind=kind_phys), intent(in)  :: deltim
       real(kind=kind_phys), intent(in)  :: con_pi
       logical,              intent(in)  :: lsswr
-      type(MPI_Comm),       intent(in)  :: mpicomm
-      integer,              intent(in)  :: mpirank
-      integer,              intent(in)  :: mpiroot
+      integer,              intent(in)  :: me
       integer,              intent(in)  :: iaermdl, iaerflg, isol, ictm, ico2, ntoz
       type(ty_ozphys),      intent(inout) :: ozphys
       character(len=26),    intent(in)  :: aeros_file, co2dat_file, co2gbl_file
@@ -289,8 +279,7 @@ module GFS_rrtmg_setup
       errmsg = ''
       errflg = 0
 
-      call radupdate(idate,jdate,deltsw,deltim,lsswr,&
-           mpicomm,mpirank,mpiroot,iaermdl, iaerflg,isol,aeros_file,&
+      call radupdate(idate,jdate,deltsw,deltim,lsswr,me,iaermdl, iaerflg,isol,aeros_file,&
            slag,sdec,cdec,solcon,con_pi,co2dat_file,co2gbl_file,ictm,ico2,ntoz,ozphys,errflg,errmsg)
 
    end subroutine GFS_rrtmg_setup_timestep_init
@@ -337,8 +326,7 @@ module GFS_rrtmg_setup
 !! \param solcon         solar constant adjusted by sun-earth distance \f$(W/m^2)\f$
 !> \section gen_radupdate General Algorithm
 !-----------------------------------
-      subroutine radupdate( idate,jdate,deltsw,deltim,lsswr,            &
-           mpicomm,mpirank,mpiroot, iaermdl,                            &
+      subroutine radupdate( idate,jdate,deltsw,deltim,lsswr,me, iaermdl,&
            iaerflg, isol, aeros_file, slag,sdec,cdec,solcon, con_pi,    &
            co2dat_file,co2gbl_file, ictm, ico2, ntoz, ozphys, errflg, errmsg)
 !...................................
@@ -383,10 +371,7 @@ module GFS_rrtmg_setup
       implicit none
 
 !  ---  inputs:
-      integer, intent(in) :: idate(:), jdate(:)
-      type(MPI_Comm), intent(in) :: mpicomm
-      integer, intent(in) :: mpirank, mpiroot
-      integer, intent(in) :: iaermdl, iaerflg, isol, ictm, ntoz, ico2
+      integer, intent(in) :: idate(:), jdate(:), me, iaermdl, iaerflg, isol, ictm, ntoz, ico2
       type(ty_ozphys),intent(inout) :: ozphys
       logical, intent(in) :: lsswr
       character(len=26),intent(in) :: aeros_file,co2dat_file,co2gbl_file
@@ -458,8 +443,7 @@ module GFS_rrtmg_setup
 
         call sol_update                                                 &
 !  ---  inputs:
-     &     ( jdate,kyear,deltsw,deltim,lsol_chg,                        &
-     &       mpicomm,mpirank,mpiroot,                                   &
+     &     ( jdate,kyear,deltsw,deltim,lsol_chg, me,                    &
 !  ---  outputs:
      &       slag,sdec,cdec,solcon,con_pi,errmsg,errflg                 &
      &     )
@@ -470,8 +454,7 @@ module GFS_rrtmg_setup
 !> -# Call module_radiation_aerosols::aer_update(), monthly update, no
 !! time interpolation
       if ( lmon_chg ) then
-        call aer_update ( iyear, imon, mpicomm,mpirank,mpiroot, &
-                          iaermdl, aeros_file, errflg, errmsg )
+        call aer_update ( iyear, imon, me, iaermdl, aeros_file, errflg, errmsg )
         if(errflg/=0) return
       endif
 
@@ -484,8 +467,7 @@ module GFS_rrtmg_setup
         lco2_chg = .false.
       endif
 
-      call gas_update ( kyear,kmon,kday,khour,lco2_chg, &
-           mpicomm,mpirank,mpiroot, co2dat_file, &
+      call gas_update ( kyear,kmon,kday,khour,lco2_chg, me, co2dat_file, &
            co2gbl_file, ictm, ico2, errflg, errmsg )
       if(errflg/=0) return
 
