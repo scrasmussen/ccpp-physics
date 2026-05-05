@@ -3131,7 +3131,7 @@
 !> This function computes the cloud-fraction following
 !! Xu-Randall(1996) \cite xu_and_randall_1996
 !!
-      function cld_frac_XuRandall(p_lay, qs_lay, relhum, cld_mr, alpha, & !  ---  inputs 
+      function cld_frac_XuRandall(p_lay, qs_lay, relhum, cld_mr, alpha, &
      &                            lambda, factor, cond_cfrac_onRH)
         implicit none
         ! Inputs
