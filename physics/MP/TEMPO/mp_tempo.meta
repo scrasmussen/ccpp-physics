@@ -228,7 +228,7 @@
   intent = inout
   optional = True
 [nwfa]
-  standard_name = physics_timestep_initial_mass_number_concentration_of_hygroscopic_aerosols
+  standard_name = mass_number_concentration_of_hygroscopic_aerosols
   long_name = number concentration of water-friendly aerosols
   units = kg-1
   dimensions = (horizontal_dimension,vertical_layer_dimension)
@@ -237,7 +237,7 @@
   intent = inout
   optional = True
 [nifa]
-  standard_name = physics_timestep_initial_mass_number_concentration_of_nonhygroscopic_ice_nucleating_aerosols
+  standard_name = mass_number_concentration_of_nonhygroscopic_ice_nucleating_aerosols
   long_name = number concentration of ice-friendly aerosols
   units = kg-1
   dimensions = (horizontal_dimension,vertical_layer_dimension)
@@ -348,7 +348,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = in
+  intent = inout
 [qi]
   standard_name = cloud_ice_mixing_ratio
   long_name = ice water mixing ratio wrt dry+vapor (no condensates)
