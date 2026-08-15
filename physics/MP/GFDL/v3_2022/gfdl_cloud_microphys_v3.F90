@@ -204,9 +204,6 @@ contains
       real(kind_phys),      intent(out  ), dimension(:,:)    :: ten_t, ten_u, ten_v, ten_qv, ten_ql, ten_qr, ten_qi, ten_qs, ten_qg, ten_cldfrc
       real(kind_phys),      intent(out  ), dimension(:,:,:)  :: ten_q
 
-      real(kind_phys),      intent(out  ), dimension(:,:)    :: ten_t, ten_u, ten_v, ten_qv, ten_ql, ten_qr, ten_qi, ten_qs, ten_qg, ten_cldfrc
-      real(kind_phys),      intent(out  ), dimension(:,:,:)  :: ten_q
-
       real(kind_phys),      intent(in) :: dtp ! physics time step
       logical, intent (in) :: hydrostatic, fast_mp_consv
 
