@@ -1,9 +1,12 @@
-name: CI test to run SCM ccpp_prebuild step
+# to test locally run the following from the command line
+# act push -W .github/workflows/ci_scm_ccpp_capgen.yml -j ccpp-capgen-SCM
+
+name: CI test to run SCM capgen step
 
 on: [push, pull_request]
 
 jobs:
-  ccpp-prebuild-SCM:
+  ccpp-capgen-SCM:
     if: github.repository == 'NCAR/ccpp-physics' || github.repository == 'ufs-community/ccpp-physics'
 
     # The type of runner that the job will run on
@@ -14,49 +17,68 @@ jobs:
     - name: Checkout current ccpp-physics code
       uses: actions/checkout@v6
 
-    - name: Store remote-URL for current ccpp-physics code
-      run: echo "GIT_REMOTE_URL=`git remote get-url origin`" >> $GITHUB_ENV
-
-    - name: Store branch name for current ccpp-physics code
-      run: echo "GIT_REMOTE_BRANCH=`git rev-parse --abbrev-ref HEAD`" >> $GITHUB_ENV
-
-    - name: Store hash for HEAD of current ccpp-physics code
-      run: echo	"GIT_REMOTE_HASH=`git rev-parse HEAD`" >> $GITHUB_ENV
-
     - name: Checkout latest ccpp-scm code
-      run: git clone https://github.com/NCAR/ccpp-scm.git
+      run: git clone --depth 1 https://github.com/NCAR/ccpp-scm.git
 
     - name: Initialize submodules
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/ccpp-scm
-        git submodule update --init --recursive
+        git config --global --add safe.directory "$GITHUB_WORKSPACE/ccpp-scm"
+        git -C "$GITHUB_WORKSPACE/ccpp-scm" submodule update --init --recursive
 
-    - name: Update ccpp-physics hash in ccpp-scm
-      if: github.event.pull_request == false
+    - name: Use current ccpp-physics code in ccpp-scm
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/ccpp-scm/ccpp/physics
-        echo $GIT_REMOTE_URL
-        echo $GIT_REMOTE_BRANCH
-        echo ${{github.repository}}
-        echo ${{ github.event.pull_request.head.sha }}
-        echo $GITHUB_SHA
-        git remote add remote_local $GIT_REMOTE_URL
-        git fetch remote_local $GIT_REMOTE_BRANCH
-        git checkout remote_local/$GIT_REMOTE_BRANCH
+        physics_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)"
+        echo "Physics SHA: $physics_sha"
+        git -C "$GITHUB_WORKSPACE/ccpp-scm/ccpp/physics" fetch --update-shallow "$GITHUB_WORKSPACE" "$physics_sha"
+        git -C "$GITHUB_WORKSPACE/ccpp-scm/ccpp/physics" checkout --detach "$physics_sha"
+        git -C "$GITHUB_WORKSPACE/ccpp-scm/ccpp/physics" submodule update --init --recursive
+        test "$(git -C "$GITHUB_WORKSPACE/ccpp-scm/ccpp/physics" rev-parse HEAD)" = "$physics_sha"
 
     - name: Set up Python 3.10.13
       uses: actions/setup-python@v6
       with:
         python-version: 3.10.13
 
-    - name: Add conda to system path
+    - name: Install capgen dependencies
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+        sudo apt-get update
+        sudo apt-get install --yes libxml2-utils
 
-    - name: Run ccpp_prebuild.py
+    - name: Run ccpp_capgen.py
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/ccpp-scm/
-        git status
-        mkdir -p /home/runner/work/ccpp-physics/ccpp-physics/ccpp-scm/scm/bin/ccpp/physics/physics/
-        ./ccpp/framework/scripts/ccpp_prebuild.py --config ccpp/config/ccpp_prebuild_config.py
+        cd "$GITHUB_WORKSPACE/ccpp-scm"
+
+        scheme_files="$(
+          sed -n '/^set(SCHEME_METADATA_FILES$/,/^)/p' ccpp/CMakeLists.txt |
+            sed -n 's|.*${SCHEME_FILES_DIR}/\([^" ]*\.meta\)".*|\1|p' |
+            sed "s|^|$GITHUB_WORKSPACE/ccpp-scm/ccpp/physics/physics/|" |
+            paste -sd, -
+        )"
+        host_files="$(
+          sed -n '/^set(HOST_METADATA_FILES$/,/^)/p' ccpp/CMakeLists.txt |
+            sed -n 's|.*${HOST_FILES_DIR}/\([^" ]*\.meta\)".*|\1|p' |
+            sed "s|^|$GITHUB_WORKSPACE/ccpp-scm/scm/src/|" |
+            paste -sd, -
+        )"
+        suite_files="$(
+          find "$GITHUB_WORKSPACE/ccpp-scm/ccpp/suites" -maxdepth 1 -type f -name '*.xml' |
+            sort |
+            paste -sd, -
+        )"
+
+        test -n "$scheme_files"
+        test -n "$host_files"
+        test -n "$suite_files"
+
+        "$GITHUB_WORKSPACE/ccpp-scm/ccpp/framework/capgen/ccpp_capgen.py" \
+          --host-name scm \
+          --host-files "$host_files" \
+          --scheme-files "$scheme_files" \
+          --suites "$suite_files" \
+          --output-root "$GITHUB_WORKSPACE/ccpp-scm/scm/bin/ccpp" \
+          --legacy-mode \
+          --gfs-dim-aliases \
+          --no-host-introspection \
+          --verbose
+
+        test -s "$GITHUB_WORKSPACE/ccpp-scm/scm/bin/ccpp/datatable.xml"

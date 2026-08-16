@@ -1,9 +1,12 @@
-name: CI test to run FV3 ccpp_prebuild step
+# to test locally run the following from the command line
+# act push -W .github/workflows/ci_fv3_ccpp_capgen.yml -j ccpp-capgen-FV3
+
+name: CI test to run FV3 capgen step
 
 on: [push, pull_request]
 
 jobs:
-  ccpp-prebuild-FV3:
+  ccpp-capgen-FV3:
     if: github.repository == 'NCAR/ccpp-physics' || github.repository == 'ufs-community/ccpp-physics'
 
     # The type of runner that the job will run on
@@ -12,46 +15,71 @@ jobs:
     steps:
     - name: Checkout current ccpp-physics code
       uses: actions/checkout@v6
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-
-    - name: Store remote-URL for current ccpp-physics code
-      run: echo "GIT_REMOTE_URL=`git remote get-url origin`" >> $GITHUB_ENV
-
-    - name: Store branch name for current ccpp-physics code
-      run: echo "GIT_REMOTE_BRANCH=`git rev-parse --abbrev-ref HEAD`" >> $GITHUB_ENV
-
-    - name: Store hash for HEAD of current ccpp-physics code
-      run: echo "GIT_REMOTE_HASH=`git rev-parse HEAD`" >> $GITHUB_ENV
 
     - name: Checkout latest fv3atm
-      run: git clone https://github.com/NOAA-EMC/fv3atm.git
+      run: git clone --depth 1 https://github.com/NOAA-EMC/fv3atm.git
 
     - name: Initialize submodules
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm
-        git submodule update --init --recursive
+        git config --global --add safe.directory "$GITHUB_WORKSPACE/fv3atm"
+        git -C "$GITHUB_WORKSPACE/fv3atm" submodule update --init --recursive
 
-    - name: Update ccpp-physics hash in fv3atm
-      if: github.event.pull_request == false
+    - name: Use current ccpp-physics code in fv3atm
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/ccpp/physics
-        git remote add remote_local $GIT_REMOTE_URL
-        git fetch remote_local $GIT_REMOTE_BRANCH
-        git checkout remote_local/$GIT_REMOTE_BRANCH
+        physics_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)"
+        echo "Physics SHA: $physics_sha"
+        git -C "$GITHUB_WORKSPACE/fv3atm/ccpp/physics" fetch --update-shallow "$GITHUB_WORKSPACE" "$physics_sha"
+        git -C "$GITHUB_WORKSPACE/fv3atm/ccpp/physics" checkout --detach "$physics_sha"
+        git -C "$GITHUB_WORKSPACE/fv3atm/ccpp/physics" submodule update --init --recursive
+        test "$(git -C "$GITHUB_WORKSPACE/fv3atm/ccpp/physics" rev-parse HEAD)" = "$physics_sha"
 
     - name: Set up Python 3.10.13
       uses: actions/setup-python@v6
       with:
         python-version: 3.10.13
 
-    - name: Add conda to system path
+    - name: Install capgen dependencies
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+        sudo apt-get update
+        sudo apt-get install --yes libxml2-utils
 
-    - name: Run ccpp_prebuild.py
+    - name: Run ccpp_capgen.py
       run: |
-        cd /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/ccpp/
-        mkdir -p /home/runner/work/ccpp-physics/ccpp-physics/fv3atm/bin/ccpp/physics/physics/
-        ./framework/scripts/ccpp_prebuild.py --config config/ccpp_prebuild_config_fv3.py
+        cd "$GITHUB_WORKSPACE/fv3atm"
+
+        scheme_files="$(
+          sed -n 's|.*${SCHEME_FILES_DIR}/\([^" ]*\.meta\)".*|\1|p' ccpp/CMakeLists.txt |
+            grep -Fv 'GFS_rad_time_vary.mpas.meta' |
+            sed "s|^|$GITHUB_WORKSPACE/fv3atm/ccpp/physics/physics/|" |
+            paste -sd, -
+        )"
+        host_files="$(
+          sed -n '/^set(HOST_METADATA_FILES$/,/^)/p' ccpp/CMakeLists.txt |
+            sed -n 's|.*"\([^" ]*\.meta\)".*|\1|p' |
+            sed "s|\${HOST_FILES_DIR}|$GITHUB_WORKSPACE/fv3atm/ccpp|" |
+            sed "s|^physics/|$GITHUB_WORKSPACE/fv3atm/ccpp/physics/|" |
+            paste -sd, -
+        )"
+        suite_files="$(
+          sed -n '/^  set(SUITE_FILES$/,/^  )/p' ccpp/CMakeLists.txt |
+            sed -n 's|.*${SUITE_FILES_DIR}/\([^" ]*\.xml\)".*|\1|p' |
+            sed "s|^|$GITHUB_WORKSPACE/fv3atm/ccpp/suites/|" |
+            paste -sd, -
+        )"
+
+        test -n "$scheme_files"
+        test -n "$host_files"
+        test -n "$suite_files"
+
+        "$GITHUB_WORKSPACE/fv3atm/ccpp/framework/capgen/ccpp_capgen.py" \
+          --host-name ufs \
+          --host-files "$host_files" \
+          --scheme-files "$scheme_files" \
+          --suites "$suite_files" \
+          --output-root "$GITHUB_WORKSPACE/fv3atm/bin/ccpp" \
+          --legacy-mode \
+          --gfs-dim-aliases \
+          --no-host-introspection \
+          --verbose
+
+        test -s "$GITHUB_WORKSPACE/fv3atm/bin/ccpp/datatable.xml"
