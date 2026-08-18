@@ -282,7 +282,7 @@
   intent = in
 [qgrs_gl]
   standard_name = physics_timestep_initial_graupel_mixing_ratio
-  long_name = moist ratio of mass of graupel to mass of dry air plus vapor (without condensates) 
+  long_name = moist ratio of mass of graupel to mass of dry air plus vapor (without condensates)
   units = kg kg-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real

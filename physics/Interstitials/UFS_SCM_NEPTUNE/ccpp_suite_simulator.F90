@@ -1,18 +1,18 @@
 !>\file ccpp_suite_simulator.F90
-!! Description: This suite simulates the evolution of the internal physics state 
+!! Description: This suite simulates the evolution of the internal physics state
 !!              represented by a CCPP Suite Definition File (SDF).
 !!
 !! To activate this suite it must be a) embedded within the SDF and b) activated through
 !! the physics namelist.
-!! The derived-data type "base_physics_process" contains the metadata needed to reconstruct 
+!! The derived-data type "base_physics_process" contains the metadata needed to reconstruct
 !! the temporal evolution of the state. An array of base_physics_process, physics_process,
-!! is populated by the host during initialization and passed to the physics. Additionally, 
+!! is populated by the host during initialization and passed to the physics. Additionally,
 !! this type holds any data, or type-bound procedures, required by the suite simulator(s).
 !!
 !! For this initial demonstration we are using 2-dimensional (height, time) forcing data,
-!! which is on the same native vertical grid as the SCM. The dataset has a temporal 
-!! resolution of 1-hour, created by averaging all local times from a Tropical Warm Pool 
-!! International Cloud Experiment (TWPICE) case. This was to create a dataset with a 
+!! which is on the same native vertical grid as the SCM. The dataset has a temporal
+!! resolution of 1-hour, created by averaging all local times from a Tropical Warm Pool
+!! International Cloud Experiment (TWPICE) case. This was to create a dataset with a
 !! (constant) diurnal cycle.
 !
 ! ########################################################################################
@@ -105,12 +105,12 @@ contains
 
           ! Using scheme simulator
           ! Very simple...
-          ! Interpolate 2D data (time,level) tendency to local time. 
-          ! Here the data is already on the SCM vertical coordinate. 
+          ! Interpolate 2D data (time,level) tendency to local time.
+          ! Here the data is already on the SCM vertical coordinate.
           !
-          ! In theory the data can be of any dimensionality and the onus falls on the 
+          ! In theory the data can be of any dimensionality and the onus falls on the
           ! developer to extend the type "base_physics_process" to work with for their
-          ! application. 
+          ! application.
           !
           if (physics_process(iprc)%use_sim) then
              if (physics_process(iprc)%name == "LWRAD") then
@@ -194,7 +194,7 @@ contains
     endif
 
     !
-    ! Update bookeeping indices 
+    ! Update bookeeping indices
     !
     if (in_pre_active) then
        in_pre_active  = .false.

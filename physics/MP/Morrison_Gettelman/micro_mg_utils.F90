@@ -4,7 +4,7 @@
 
 !>\ingroup mg2mg3
 !>\defgroup micro_mg_utils_mod Morrison-Gettelman MP utils Module
-!! This module contains process rates and utility functions used by the MG 
+!! This module contains process rates and utility functions used by the MG
 !! microphysics.
 !!
 !! Original MG authors: Andrew Gettelman, Hugh Morrison
@@ -61,7 +61,7 @@ public ::                           &
      rising_factorial,              &
      ice_deposition_sublimation,    &
      sb2001v2_liq_autoconversion,   &
-     sb2001v2_accre_cld_water_rain, &       
+     sb2001v2_accre_cld_water_rain, &
      kk2000_liq_autoconversion,     &
      ice_autoconversion,            &
      immersion_freezing,            &
@@ -306,7 +306,7 @@ end interface var_coef
 contains
 !==========================================================================
 
-!>\ingroup micro_mg_utils_mod 
+!>\ingroup micro_mg_utils_mod
 !! Initialize module variables.
 !
 ! "kind" serves no purpose here except to check for unlikely linking
@@ -975,7 +975,7 @@ subroutine kk2000_liq_autoconversion(microp_uniform, qcic, &
      end if
   enddo
 end subroutine kk2000_liq_autoconversion
-  
+
   !========================================================================
 !>\ingroup micro_mg_utils_mod
 !! This subroutine
@@ -984,35 +984,35 @@ subroutine sb2001v2_liq_autoconversion(pgam,qc,nc,qr,rho,relvar,au,nprc,nprc1,mg
   ! ---------------------------------------------------------------------
   ! AUTO_SB:  calculates the evolution of mass- and number mxg-ratio for
   ! drizzle drops due to autoconversion. The autoconversion rate assumes
-  ! f(x)=A*x**(nu_c)*exp(-Bx) in drop MASS x. 
+  ! f(x)=A*x**(nu_c)*exp(-Bx) in drop MASS x.
 
   ! Code from Hugh Morrison, Sept 2014
 
   ! autoconversion
   ! use simple lookup table of dnu values to get mass spectral shape parameter
   ! equivalent to the size spectral shape parameter pgam
-    
-  integer, intent(in) :: mgncol  
-  
+
+  integer, intent(in) :: mgncol
+
   real(r8), dimension(mgncol), intent (in)    :: pgam
   real(r8), dimension(mgncol), intent (in)    :: qc    ! = qc (cld water mixing ratio)
-  real(r8), dimension(mgncol), intent (in)    :: nc    ! = nc (cld water number conc /kg)    
+  real(r8), dimension(mgncol), intent (in)    :: nc    ! = nc (cld water number conc /kg)
   real(r8), dimension(mgncol), intent (in)    :: qr    ! = qr (rain water mixing ratio)
   real(r8), dimension(mgncol), intent (in)    :: rho   ! = rho : density profile
-  real(r8), dimension(mgncol), intent (in)    :: relvar 
-  
+  real(r8), dimension(mgncol), intent (in)    :: relvar
+
   real(r8), dimension(mgncol), intent (out)   :: au    ! = prc autoconversion rate
   real(r8), dimension(mgncol), intent (out)   :: nprc1 ! = number tendency
   real(r8), dimension(mgncol), intent (out)   :: nprc  ! = number tendency fixed size for rain
- 
-  ! parameters for droplet mass spectral shape, 
-  ! used by Seifert and Beheng (2001)                             
-  ! warm rain scheme only (iparam = 1)                                                                        
-  real(r8), parameter :: dnu(16) = [0._r8,-0.557_r8,-0.430_r8,-0.307_r8, & 
+
+  ! parameters for droplet mass spectral shape,
+  ! used by Seifert and Beheng (2001)
+  ! warm rain scheme only (iparam = 1)
+  real(r8), parameter :: dnu(16) = [0._r8,-0.557_r8,-0.430_r8,-0.307_r8, &
      -0.186_r8,-0.067_r8,0.050_r8,0.167_r8,0.282_r8,0.397_r8,0.512_r8,   &
      0.626_r8,0.739_r8,0.853_r8,0.966_r8,0.966_r8]
 
-  ! parameters for Seifert and Beheng (2001) autoconversion/accretion                                         
+  ! parameters for Seifert and Beheng (2001) autoconversion/accretion
   real(r8), parameter :: kc  = 9.44e9_r8
   real(r8), parameter :: kr  = 5.78e3_r8
   real(r8), parameter :: auf = kc / (20._r8*2.6e-7_r8) * 1000._r8, &
@@ -1028,7 +1028,7 @@ subroutine sb2001v2_liq_autoconversion(pgam,qc,nc,qr,rho,relvar,au,nprc,nprc1,mg
        nu   = dnu(dumi) + (dnu(dumi+1)-dnu(dumi))* (pgam(i)-dumi)
 
        !Anning fixed a bug here for FV3GFS 10/13/2017
-       dum  = max(one-qc(i)/(qc(i)+qr(i)), zero)  
+       dum  = max(one-qc(i)/(qc(i)+qr(i)), zero)
        tx1  = dum**0.68_r8
        tx2  = one - tx1
        dum1 = 600._r8 * tx1 * tx2 * tx2 * tx2      ! Moorthi
@@ -1056,11 +1056,11 @@ subroutine sb2001v2_liq_autoconversion(pgam,qc,nc,qr,rho,relvar,au,nprc,nprc1,mg
        nprc1(i) = zero
        nprc(i)  = zero
      end if
-  
+
   enddo
 
-  end subroutine sb2001v2_liq_autoconversion 
-  
+  end subroutine sb2001v2_liq_autoconversion
+
 !========================================================================
 !>\ingroup micro_mg_utils_mod
 !!  Anning Cheng 10/5/2017 add Liu et al. autoconversion
@@ -1125,13 +1125,13 @@ subroutine sb2001v2_accre_cld_water_rain(qc,nc,qr,rho,relvar,pra,npra,mgncol)
   !
   ! ---------------------------------------------------------------------
   ! ACCR_SB calculates the evolution of mass mxng-ratio due to accretion
-  ! and self collection following Seifert & Beheng (2001).  
+  ! and self collection following Seifert & Beheng (2001).
   !
-  
+
   integer, intent(in) :: mgncol
-  
+
   real(r8), dimension(mgncol), intent (in)    :: qc  ! = qc (cld water mixing ratio)
-  real(r8), dimension(mgncol), intent (in)    :: nc  ! = nc (cld water number conc /kg)    
+  real(r8), dimension(mgncol), intent (in)    :: nc  ! = nc (cld water number conc /kg)
   real(r8), dimension(mgncol), intent (in)    :: qr  ! = qr (rain water mixing ratio)
   real(r8), dimension(mgncol), intent (in)    :: rho ! = rho : density profile
   real(r8), dimension(mgncol), intent (in)    :: relvar
@@ -1140,7 +1140,7 @@ subroutine sb2001v2_accre_cld_water_rain(qc,nc,qr,rho,relvar,pra,npra,mgncol)
   real(r8), dimension(mgncol), intent(out) :: pra  ! MMR
   real(r8), dimension(mgncol), intent(out) :: npra ! Number
 
-  ! parameters for Seifert and Beheng (2001) autoconversion/accretion                                         
+  ! parameters for Seifert and Beheng (2001) autoconversion/accretion
   real(r8), parameter :: kc = 9.44e9_r8
   real(r8), parameter :: kr = 5.78e3_r8
 
@@ -1165,11 +1165,11 @@ subroutine sb2001v2_accre_cld_water_rain(qc,nc,qr,rho,relvar,pra,npra,mgncol)
     else
       pra(i)  = zero
       npra(i) = zero
-    end if 
-  
+    end if
+
   enddo
- 
-  end subroutine sb2001v2_accre_cld_water_rain   
+
+  end subroutine sb2001v2_accre_cld_water_rain
 
 !========================================================================
 ! Autoconversion of cloud ice to snow
@@ -1185,7 +1185,7 @@ subroutine ice_autoconversion(t, qiic, lami, n0i, dcs, ac_time, prci, nprci, mgn
   real(r8), dimension(mgncol), intent(in) :: lami
   real(r8), dimension(mgncol), intent(in) :: n0i
   real(r8),                    intent(in) :: dcs
-  real(r8), dimension(mgncol), intent(in) :: ac_time 
+  real(r8), dimension(mgncol), intent(in) :: ac_time
 
   real(r8), dimension(mgncol), intent(out) :: prci
   real(r8), dimension(mgncol), intent(out) :: nprci
@@ -1234,7 +1234,7 @@ subroutine gmao_ice_autoconversion(t, qiic, niic, lami, n0i,        &
       real(r8), dimension(mgncol), intent(in) :: niic
       real(r8), dimension(mgncol), intent(in) :: lami
       real(r8), dimension(mgncol), intent(in) :: n0i
-      real(r8), dimension(mgncol), intent(in) :: ac_time 
+      real(r8), dimension(mgncol), intent(in) :: ac_time
       real(r8), intent(in) :: dcs
 
       real(r8), dimension(mgncol), intent(out) :: prci
@@ -2715,7 +2715,7 @@ FUNCTION gamma_incomp(muice, x)
   xog  = log(alfa -0.3068_r8)
   kg   = 1.44818_r8*(alfa**0.5357_r8)
   auxx = max(min(kg*(log(x)-xog), 30._r8), -30._r8)
-  gamma_incomp = max(one/(one+exp(-auxx)), 1.0e-20) 
+  gamma_incomp = max(one/(one+exp(-auxx)), 1.0e-20)
 
 END FUNCTION gamma_incomp
 

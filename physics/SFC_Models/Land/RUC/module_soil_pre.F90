@@ -15,13 +15,13 @@ module module_soil_pre
 contains
 
 !>\ingroup lsm_ruc_group
-!> This subroutine defines level depth in soil and thickness of soil 
+!> This subroutine defines level depth in soil and thickness of soil
 !! layers RUC LSM.
 !!
 !! In RUC LSM ZS-soil levels, and DZS-soil layer thicknesses, not used
 !! ZS is specified in the namelist: num_soil_levels =6 or 9.
-!! other options with number of levels are possible, but 
-!! WRF users should change consistently the namelist entry with the 
+!! other options with number of levels are possible, but
+!! WRF users should change consistently the namelist entry with the
 !! ZS array in this subroutine.
    SUBROUTINE init_soil_depth_3 ( zs , dzs , num_soil_levels )
 
@@ -66,7 +66,7 @@ contains
 
 !>\ingroup lsm_ruc_group
 !! This subroutine initializes soil moisture and temperature at RUC vertical levels
-!! from the Noah layers. RUC has 3 levels in the top Noah layer, therefore, initialization of 
+!! from the Noah layers. RUC has 3 levels in the top Noah layer, therefore, initialization of
 !! soil moisture at these top levels is questionable.
    SUBROUTINE init_soil_3_real ( tsk , tmn , smois , tslb , &
                                  st_input , sm_input , landmask, sst, &
@@ -107,7 +107,7 @@ contains
       INTEGER :: i , j , l , lout , lin , lwant , lhave, k
       REAL :: temp
 
-      !  Allocate the soil layer array used for interpolating.      
+      !  Allocate the soil layer array used for interpolating.
 
       IF ( ( num_st_levels_input .LE. 0 ) .OR. &
            ( num_sm_levels_input .LE. 0 ) ) THEN
@@ -122,7 +122,7 @@ contains
            ALLOCATE ( zhave( MAX(num_st_levels_input,num_soil_layers)  ) )
          END IF
       END IF
-      
+
       !  Sort the levels for temperature.
 
       outert : DO lout = 1 , num_st_levels_input-1
@@ -151,7 +151,7 @@ contains
       END DO
       END IF
 
-      !  Sort the levels for moisture.      
+      !  Sort the levels for moisture.
 
       outerm: DO lout = 1 , num_sm_levels_input-1
          innerm : DO lin = lout+1 , num_sm_levels_input
@@ -182,14 +182,14 @@ contains
       END DO
       END IF
 
-      !  Here are the levels that we have from the input for temperature.      
+      !  Here are the levels that we have from the input for temperature.
 
       IF ( flag_soil_levels == 1 ) THEN
          DO l = 1 , num_st_levels_input
             zhave(l) = st_levels_input(l) / 100.
          END DO
 
-      
+
       !  Interpolate between the layers we have (zhave) and those that we want
       !  (zs).
 
@@ -218,7 +218,7 @@ contains
          zhave(num_st_levels_input+2) = 300. / 100.
 
       !  Interpolate between the layers we have (zhave) and those that we want
-      !  (zs).      
+      !  (zs).
 
       z_wantt_2 : DO lwant = 1 , num_soil_layers
          z_havet_2 : DO lhave = 1 , num_st_levels_input +2
@@ -238,7 +238,7 @@ contains
 
       END IF
 
-      !  Here are the levels that we have from the input for moisture.      
+      !  Here are the levels that we have from the input for moisture.
 
       IF ( flag_soil_levels .EQ. 1 ) THEN
          DO l = 1 , num_sm_levels_input
@@ -246,7 +246,7 @@ contains
          END DO
 
            !  Interpolate between the layers we have (zhave) and those that we
-           !  want (zs).      
+           !  want (zs).
 
       z_wantm : DO lwant = 1 , num_soil_layers
          z_havem : DO lhave = 1 , num_sm_levels_input -1
@@ -290,7 +290,7 @@ contains
 
       END IF
 
-      
+
 
       IF ( flag_sst .EQ. 1 ) THEN
          DO j = jts , jte

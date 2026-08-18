@@ -23,7 +23,7 @@
 
     ! Consistency checks
       if (.not. shinhong) then
-        write(errmsg,fmt='(*(a))') 'Logic error: shinhong = .false.'        
+        write(errmsg,fmt='(*(a))') 'Logic error: shinhong = .false.'
         errflg = 1
         return
       end if
@@ -59,13 +59,13 @@
 !
 !     the shinhongpbl (shin and hong 2015) is based on the les study of shin
 !     and hong (2013). the major ingredients of the shinhongpbl are
-!       1) the prescribed nonlocal heat transport profile fit to the les and 
-!       2) inclusion of explicit scale dependency functions for vertical 
-!          transport in convective pbl. 
+!       1) the prescribed nonlocal heat transport profile fit to the les and
+!       2) inclusion of explicit scale dependency functions for vertical
+!          transport in convective pbl.
 !     so, the shinhongpbl works at the gray zone resolution of convective pbl.
 !     note that honnert et al. (2011) first suggested explicit scale dependency
 !     function, and shin and hong (2013) further classified the function by
-!     stability (u*/w*) in convective pbl and calculated the function for 
+!     stability (u*/w*) in convective pbl and calculated the function for
 !     nonlocal and local transport separately.
 !     vertical mixing in the stable boundary layer and free atmosphere follows
 !     hong (2010) and hong et al. (2006), same as the ysupbl scheme.
@@ -84,7 +84,7 @@
 !        shin and hong (2013) j. atmos. sci.
 !        honnert, masson, and couvreux (2011) j. atmos. sci.
 !        hong (2010) quart. j. roy. met. soc
-!        hong, noh, and dudhia (2006), mon. wea. rev. 
+!        hong, noh, and dudhia (2006), mon. wea. rev.
 !
 !-------------------------------------------------------------------------------
 !
@@ -101,7 +101,7 @@
    real(kind=kind_phys),parameter    ::  gamcrt = 3.,gamcrq = 2.e-3
    real(kind=kind_phys),parameter    ::  xka = 2.4e-5
    real(kind=kind_phys),intent(in)   :: karman
-   real(kind=kind_phys),parameter    ::  corf=0.000073 
+   real(kind=kind_phys),parameter    ::  corf=0.000073
    real(kind=kind_phys),parameter    ::  rcl = 1.0
    integer,parameter ::  imvdif = 1
    integer,parameter ::  shinhong_tke_diag = 0
@@ -187,7 +187,7 @@
    real(kind=kind_phys)    ::  ss,ri,qmean,tmean,alpha,chi,zk,rl2,dk,sri
    real(kind=kind_phys)    ::  brint,dtodsd,dtodsu,rdz,dsdzt,dsdzq,dsdz2,rlamdz
    real(kind=kind_phys)    ::  dtstep,govrthv
-   real(kind=kind_phys)    ::  cont, conq, conw, conwrc 
+   real(kind=kind_phys)    ::  cont, conq, conw, conwrc
    real(kind=kind_phys)    ::  delxy,pu1,pth1,pq1
    real(kind=kind_phys)    ::  dex,hgame_c
    real(kind=kind_phys)    ::  zfacdx
@@ -237,7 +237,7 @@
                                                                        epshol, &
                                                                            ct
 !
-   real(kind=kind_phys),     dimension(im,km)   ::                                             &                
+   real(kind=kind_phys),     dimension(im,km)   ::                                             &
                                                                     xkzm,xkzh, &
                                                                         f1,f2, &
                                                                         r1,r2, &
@@ -322,7 +322,7 @@
      end if
    end do
 !
-!  k-start index for cloud and rain 
+!  k-start index for cloud and rain
 !
    ifvmix(:) = .true.
 !
@@ -362,7 +362,7 @@
        za(i,k)   = phil(i,k)*conw
      enddo
    enddo
-! 
+!
    do k = kts,kte
      do i = its,ite
        dzq(i,k) = zq(i,k+1)-zq(i,k)
@@ -776,7 +776,7 @@
          zfac(i,k) = min(max((1.-(zq(i,k+1)-zl1(i))/(hpbl(i)-zl1(i))),zfmin),1.)
          zfacent(i,k) = (1.-zfac(i,k))**3.
          wscalek(i,k) = (ust3(i)+phifac*karman*wstar3(i)*(1.-zfac(i,k)))**h1
-         if(sfcflg(i)) then 
+         if(sfcflg(i)) then
            prfac = conpr
            prfac2 = 15.9*wstar3(i)/ust3(i)/(1.+4.*karman*wstar3(i)/ust3(i))
            prnumfac = -3.*(max(zq(i,k+1)-sfcfrac*hpbl(i),0.))**2./hpbl(i)**2.

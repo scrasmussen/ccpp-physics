@@ -19,7 +19,7 @@ module module_gfdlmp_param
   real(kind_phys) :: c_cracw        = 0.9     !< rain accretion efficiency
   real(kind_phys) :: alin           = 842.0   !< "a" in lin1983
   real(kind_phys) :: clin           = 4.8     !< "c" in lin 1983, 4.8 -- > 6. (to ehance ql -- > qs)
-  logical         :: fast_sat_adj   = .false. !< has fast saturation adjustments 
+  logical         :: fast_sat_adj   = .false. !< has fast saturation adjustments
   logical         :: use_ccn        = .false. !< must be true when prog_ccn is false
   logical         :: use_ppm        = .false. !< use ppm fall scheme
   logical         :: mono_prof      = .true.  !< perform terminal fall with mono ppm scheme
@@ -133,7 +133,7 @@ module module_gfdlmp_param
   logical :: use_rhc_revap          = .false. !< cap of rh for rain evaporation
   logical :: do_cld_adj             = .false. !< do cloud fraction adjustment
   logical :: do_evap_timescale      = .true.  !< whether to apply a timescale to evaporation
-  logical :: do_cond_timescale      = .false. !< whether to apply a timescale to condensation    
+  logical :: do_cond_timescale      = .false. !< whether to apply a timescale to condensation
   logical :: consv_checker          = .false. !< turn on energy and water conservation checker
   logical :: do_warm_rain_mp        = .false. !< do warm rain cloud microphysics only
   logical :: do_wbf                 = .false. !< do Wegener Bergeron Findeisen process
@@ -252,7 +252,7 @@ module module_gfdlmp_param
   real(kind_phys) :: n0r_exp        = 6       !< intercept parameter (exponent) of rain (Lin et al. 1983) (1/m^4) (Marshall and Palmer 1948)
   real(kind_phys) :: n0s_exp        = 6       !< intercept parameter (exponent) of snow (Lin et al. 1983) (1/m^4) (Gunn and Marshall 1958)
   real(kind_phys) :: n0g_exp        = 6       !< intercept parameter (exponent) of graupel (Rutledge and Hobbs 1984) (1/m^4) (Houze et al. 1979)
-  real(kind_phys) :: n0h_exp        = 4       !< intercept parameter (exponent) of hail (Lin et al. 1983) (1/m^4) (Federer and Waldvogel 1975)    
+  real(kind_phys) :: n0h_exp        = 4       !< intercept parameter (exponent) of hail (Lin et al. 1983) (1/m^4) (Federer and Waldvogel 1975)
   real(kind_phys) :: muw            = 6.0     !< shape parameter of cloud water in Gamma distribution (Martin et al. 1994)
   real(kind_phys) :: mui            = 3.35    !< shape parameter of cloud ice in Gamma distribution (McFarquhar et al. 2015)
   real(kind_phys) :: mur            = 1.0     !< shape parameter of rain in Gamma distribution (Marshall and Palmer 1948)
@@ -272,7 +272,7 @@ module module_gfdlmp_param
   ! #######################################################################################
   ! NAMELISTS
   ! #######################################################################################
-  
+
   ! V1 namelist
   namelist / gfdl_cloud_microphysics_nml /                                                &
        mp_time, t_min, t_sub, tau_r2g, tau_smlt, tau_g2r, dw_land, dw_ocean, vi_fac,      &
@@ -341,7 +341,7 @@ contains
   ! Procedure to read GFDLMP namelists
   ! #######################################################################################
   subroutine read_gfdlmp_nml(errmsg, errflg, unit, input_nml_file, fn_nml, version, iostat)
-    
+
     character(len = *), intent(in ), optional  :: input_nml_file(:)
     character(len = *), intent(in ), optional  :: fn_nml
     integer,            intent(in ), optional  :: unit
@@ -363,7 +363,7 @@ contains
           errmsg = 'ERROR(module_gfdlmp_param): invalid scheme version number'
           return
        endif
-    
+
 #ifdef INTERNAL_FILE_NML
        if (version==1) read (input_nml_file, nml = gfdl_cloud_microphysics_nml)
        if (version==3) read (input_nml_file, nml = gfdl_cloud_microphysics_v3_nml)
@@ -383,6 +383,6 @@ contains
        close (unit)
 #endif
     endif
-  end subroutine read_gfdlmp_nml  
+  end subroutine read_gfdlmp_nml
   !
 end module module_gfdlmp_param

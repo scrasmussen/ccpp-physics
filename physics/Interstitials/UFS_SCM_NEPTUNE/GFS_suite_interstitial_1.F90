@@ -25,7 +25,7 @@
       real(kind=kind_phys), intent(out), dimension(:)     :: work1, work2, psurf
       real(kind=kind_phys), intent(out), dimension(:,:)   :: dudt, dvdt, dtdt
       real(kind=kind_phys), intent(out), dimension(:,:,:) :: dqdt
-      
+
       character(len=*),     intent(out)                   :: errmsg
       integer,              intent(out)                   :: errflg
 

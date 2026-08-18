@@ -27,8 +27,8 @@ subroutine ebu_driver (      flam_frac,ebu_in,ebu,                   &
                              frp_min, frp_wthreshold,zpbl_lim,uspd_lim,   &
                              ids,ide, jds,jde, kds,kde,              &
                              ims,ime, jms,jme, kms,kme,              &
-                             its,ite, jts,jte, kts,kte,              & 
-                             errmsg, errflg                          ) 
+                             its,ite, jts,jte, kts,kte,              &
+                             errmsg, errflg                          )
 
   use rrfs_smoke_config
   !use plume_data_mod
@@ -37,7 +37,7 @@ subroutine ebu_driver (      flam_frac,ebu_in,ebu,                   &
   IMPLICIT NONE
 
    REAL(kind_phys), intent(in) :: frp_min, frp_wthreshold, zpbl_lim, uspd_lim
-    
+
    real(kind=kind_phys), DIMENSION( ims:ime, jms:jme), INTENT(IN ) :: frp_inst         ! RAR: FRP array
 
    real(kind_phys), DIMENSION(ims:ime,jms:jme), INTENT(IN) ::  xlat,xlong ! SRB
@@ -123,36 +123,36 @@ check_pl:  IF (do_plumerise) THEN    ! if the namelist option is set for plumeri
                               u_in, v_in, w_in, theta_in ,pi_in,    &
                               rho_phyin, qv_in, zmid, z_lev,        &
                               wind_eff_opt,                         &
-                              frp_inst(i,j), k_min(i,j),            & 
+                              frp_inst(i,j), k_min(i,j),            &
                               k_max(i,j), dbg_opt, g, con_cp,       &
                               con_rd, cpor, errmsg, errflg,         &
-                              icall, mpiid, xlat(i,j), xlong(i,j),  & 
+                              icall, mpiid, xlat(i,j), xlong(i,j),  &
                               curr_secs, alpha, frp_min )
                if(errflg/=0) return
 
                kp1= k_min(i,j)
-               kp2= k_max(i,j)   
+               kp2= k_max(i,j)
 
-! SRB: Adding condition for overwriting plumerise levels               
+! SRB: Adding condition for overwriting plumerise levels
                !uspdavg=SUM(uspd(kts:kpbl(i)))/kpbl(i) !Average wind speed within the boundary layer
 
 ! SRB: Adding output
                !uspdavg2(i,j) = uspdavg
                !hpbl_thetav2(i,j) = z_lev(kpbl(i))
-               
+
                IF (frp_inst(i,j) .le. frp_min) THEN
                   !kp1=1
                   !kp2=2
-                  flam_frac(i,j)= 0. 
-               ELSE IF ( (frp_inst(i,j) .le. frp_wthreshold) .AND. ( uspdavg2d(i,1) .ge. uspd_lim ) .AND. & 
+                  flam_frac(i,j)= 0.
+               ELSE IF ( (frp_inst(i,j) .le. frp_wthreshold) .AND. ( uspdavg2d(i,1) .ge. uspd_lim ) .AND. &
                        ( hpbl2d(i,1) .gt. zpbl_lim) .AND. (wind_eff_opt .eq. 1)) THEN
                   kp1=2
                   kp2=MAX(3,NINT(real(kpbl(i,j))/3._kind_phys))
-                  flam_frac(i,j)=0.85 
+                  flam_frac(i,j)=0.85
                ELSE
                   flam_frac(i,j)=0.9  ! kp1,2 come from the plumerise scheme
                END IF
-! SRB: End modification 
+! SRB: End modification
 
                ! RAR: emission distribution
                dz_plume= z_at_w(i,kp2,j) - z_at_w(i,kp1,j)

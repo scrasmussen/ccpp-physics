@@ -8,8 +8,8 @@
 
 !>\file progomega_calc.f90
 !! This file contains the subroutine that calculates the prognostic
-!! updraft vertical velocity that is used for closure computations in 
-!! saSAS and C3 deep and shallow convection. 
+!! updraft vertical velocity that is used for closure computations in
+!! saSAS and C3 deep and shallow convection.
 
 !>\ingroup SAMFdeep
 !>\ingroup SAMF_shal
@@ -18,12 +18,12 @@
 !! This subroutine computes a prognostic updraft vertical velocity
 !! used in the closure computations in the samfshalcnv. and cu_c3_shal scheme
 !!\section gen_progomega progomega_calc General Algorithm
-       
+
    subroutine progomega_calc(first_time_step,flag_restart,im,km,kbcon1,ktcon,omegain,delt,del, &
         zi,cnvflg,omegaout,grav,buo,drag,wush,bb1,bb2)
-     
+
      use machine,  only : kind_phys
-     use funcphys, only : fpvs  
+     use funcphys, only : fpvs
      implicit none
 
      integer, intent(in)  :: im, km
@@ -41,7 +41,7 @@
      lbb1  = 1.5
      lbb2  = 0.6
      lbb3  = 1.2
-     
+
      !Initialization 2D
      do k = 1,km
         do i = 1,im
@@ -62,24 +62,24 @@
            endif
         enddo
      enddo
-     
+
      if(first_time_step .and. .not. flag_restart)then
         do k = 1,km
            do i = 1,im
               if(cnvflg(i))then
-                 omega(i,k)=-1.2 !Pa/s 
+                 omega(i,k)=-1.2 !Pa/s
               endif
            enddo
         enddo
      endif
-     
+
      ! Compute RHS terms
      !Lisa Bengtsson: !  compute updraft velocity omega (Pa/s)
      !> - Expand the steady state solution of updraft velocity from Han et al.'s (2017)
      !> \cite han_et_al_2017 equation 7 to include the time-derivative, and an aerodynamic
      !> drag term from Gueremy 2016.
-     !> Solve using implicit time-stepping scheme, solving the quadratic equation for omega. 
-     
+     !> Solve using implicit time-stepping scheme, solving the quadratic equation for omega.
+
      do k = 2, km
         do i = 1, im
            if (cnvflg(i)) then
@@ -89,13 +89,13 @@
                  !(dp/dz > 0)
                  dp = 1000. * del(i,k)
                  dz = zi(i,k+1) - zi(i,k)
-                 
+
                  !termA	- Ensures quadratic damping (drag).
                  !termB	- Ensures linear damping from wind shear.
-                 !termC - Adds buoyancy forcing 
-                 
+                 !termC - Adds buoyancy forcing
+
                  !Coefficients for the quadratic equation
-                 termA(i,k) = delt * ((lbb1 * drag(i,k) * (dp/dz))) 
+                 termA(i,k) = delt * ((lbb1 * drag(i,k) * (dp/dz)))
                  termB(i,k) = 1.0 - delt * lbb3 * wush(i,k) * dp/dz
                  termC(i,k) = omega(i,k) - delt * lbb2 * buo(i,k) * (dp/dz) &
                       - delt * omega(i,k) * (omega(i,k-1) - omega(i,k)) / dp
@@ -111,11 +111,11 @@
                  endif
 
                  omegaout(i,k) = MAX(MIN(omegaout(i,k), -1.2), -80.0)
-                
+
               endif
            endif
         enddo
      enddo
-     
+
     end subroutine progomega_calc
 end module progomega

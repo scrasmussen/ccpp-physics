@@ -2,14 +2,14 @@
 !! Interstitial CCPP suite to couple UFS physics to CCPP suite simulator.
 
 ! ########################################################################################
-! 
+!
 ! Description: Interstitial CCPP suite to couple UFS physics to ccpp_suite_simulator.
 !
 ! Contains:
 ! - load_ccpp_suite_sim(): read and load data into type used by ccpp_suite_simulator.
 !      called once during model initialization
-! - GFS_ccpp_suite_sim_pre_run(): prepare GFS diagnostic physics tendencies for 
-!      ccpp_suite_simulator. 
+! - GFS_ccpp_suite_sim_pre_run(): prepare GFS diagnostic physics tendencies for
+!      ccpp_suite_simulator.
 !
 ! ########################################################################################
 module GFS_ccpp_suite_sim_pre
@@ -22,7 +22,7 @@ contains
 
 !> \section arg_table_GFS_ccpp_suite_sim_pre_run Argument Table
 !! \htmlinclude GFS_ccpp_suite_sim_pre_run.html
-!! 
+!!
   subroutine GFS_ccpp_suite_sim_pre_run(do_ccpp_suite_sim, dtend, ntqv, dtidx, dtp,      &
        index_of_process_dcnv, index_of_process_longwave, index_of_process_shortwave,     &
        index_of_process_scnv, index_of_process_orographic_gwd, index_of_process_pbl,     &
@@ -61,11 +61,11 @@ contains
     ! ######################################################################################
     ! DJS2023: For the UFS and SCM, the physics tendencies are stored in a multi-dimensional
     ! array, CCPP standard_name = cumulative_change_of_state_variables.
-    ! These are not the instantaneous physics tendencies that are applied to the state by 
+    ! These are not the instantaneous physics tendencies that are applied to the state by
     ! the physics suites. Not all suites output physics tendencies...
-    ! Rather these are intended for diagnostic puposes and are accumulated over some 
+    ! Rather these are intended for diagnostic puposes and are accumulated over some
     ! interval.
-    ! In the UFS/SCM this is controlled by the diagnostic bucket interval, namelist option 
+    ! In the UFS/SCM this is controlled by the diagnostic bucket interval, namelist option
     ! "fhzero". For this to work, you need to clear the diagnostic buckets after each
     ! physics timestep when running in the UFS/SCM.
     !
@@ -128,7 +128,7 @@ contains
     logical :: exists, do_ccpp_suite_sim
     integer :: nprc_sim
 
-    ! For each process there is a corresponding namelist entry, which is constructed as 
+    ! For each process there is a corresponding namelist entry, which is constructed as
     ! follows:
     ! {use_suite_sim[0(no)/1(yes)], time_split[0(no)/1(yes)], order[1:nPhysProcess]}
     integer, dimension(3) ::    &
@@ -198,7 +198,7 @@ contains
        errflg = 1
        return
     endif
- 
+
     status = nf90_inq_dimid(ncid, 'lev', dimid)
     if (status == nf90_noerr) then
        status = nf90_inquire_dimension(ncid, dimid, len = nlev_data)

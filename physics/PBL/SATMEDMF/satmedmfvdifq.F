@@ -79,9 +79,9 @@
 !! satmedmfvdifq_run() computes subgrid vertical turbulence mixing
 !! using the scale-aware TKE-based moist eddy-diffusion mass-flux (EDMF) parameterization of
 !! Han and Bretherton (2019) \cite Han_2019 .
-!! -# The local turbulent mixing is represented by an eddy-diffusivity scheme which 
+!! -# The local turbulent mixing is represented by an eddy-diffusivity scheme which
 !! is a function of a prognostic TKE.
-!! -# For the convective boundary layer, nonlocal transport by large eddies 
+!! -# For the convective boundary layer, nonlocal transport by large eddies
 !! (mfpbltq.f), is represented using a mass flux approach (Siebesma et al.(2007) \cite Siebesma_2007 ).
 !! -# A mass-flux approach is also used to represent the stratocumulus-top-induced turbulence
 !! (mfscuq.f).
@@ -170,7 +170,7 @@
      &                                     ten_u(:,:), ten_v(:,:)
 !  flag for TTE-EDMF scheme
       logical, intent(in)  :: tte_edmf
-!     
+!
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
 
@@ -319,7 +319,7 @@
 
 !PCC_CANOPY------------------------------------
       integer COUNTCAN,KCAN
-      integer kount 
+      integer kount
       real(kind=kind_phys) FCH,       MOL,   HOL, TLCAN,
      &                     SIGMACAN,  RRCAN, BBCAN,
      &                     AACAN,     ZCAN,  ZFL, BOTCAN,
@@ -377,7 +377,7 @@
      &    allocate( EDDYVESTX    ( MAXCAN ) )
         if(.not.allocated(ZCANX))
      &    allocate( ZCANX    ( MAXCAN ) )
-        if(.not.allocated(ZOOOX)) 
+        if(.not.allocated(ZOOOX))
      &    allocate( ZOOOX    ( MAXCAN ) )
       endif
 !----------------------------------------------
@@ -762,10 +762,10 @@
          flg(i) = .false.
          rbup(i) = rbsoil(i)
       enddo
-!>  - Given the thermal's properties and the critical Richardson number, 
-!! a loop is executed to find the first level above the surface (kpblx) where 
+!>  - Given the thermal's properties and the critical Richardson number,
+!! a loop is executed to find the first level above the surface (kpblx) where
 !! the modified Richardson number is greater than the critical Richardson
-!! number, using equation 10a from Troen and Mahrt (1996) \cite troen_and_mahrt_1986 
+!! number, using equation 10a from Troen and Mahrt (1996) \cite troen_and_mahrt_1986
 !! (also equation 8 from Hong and Pan (1996) \cite hong_and_pan_1996):
       do k = 1, kmpbl
       do i = 1, im
@@ -931,7 +931,7 @@
 !!    \f[
 !!    \zeta = Ri_{sfc}\frac{F_m^2}{F_h} = \frac{z}{L}
 !!    \f]
-!!    where \f$F_m\f$ and \f$F_h\f$ are surface Monin-Obukhov stability functions calculated in sfc_diff.f and 
+!!    where \f$F_m\f$ and \f$F_h\f$ are surface Monin-Obukhov stability functions calculated in sfc_diff.f and
 !!    \f$L\f$ is the Obukhov length.
       do i=1,im
          zol(i) = max(rbsoil(i)*fm(i)*fm(i)/fh(i),rimin)
@@ -976,7 +976,7 @@
 !!    w_s=(u_*^3+7\alpha\kappa w_*^3)^{1/3}
 !!    \f]
 !!    where \f$u_*\f$ (ustar) is the surface friction velocity,\f$\alpha\f$ is the ratio
-!!    of the surface layer height to the PBL height (specified as sfcfrac =0.1), 
+!!    of the surface layer height to the PBL height (specified as sfcfrac =0.1),
 !!    \f$\kappa =0.4\f$ is the von Karman constant, and \f$w_*\f$ is the convective velocity
 !!    scale defined as eqn23 of Han et al.(2019):
 !!    \f[
@@ -1133,7 +1133,7 @@
 !> ## Determine whether stratocumulus layers exist and compute quantities
 !!  - Starting at the PBL top and going downward, if the level is less than 2.5 km
 !!    and \f$q_l\geq q_{lcr}\f$ then set kcld = k (find the cloud top index in the PBL.
-!!    If no cloud water above the threshold is hound, \e scuflg is set to F. 
+!!    If no cloud water above the threshold is hound, \e scuflg is set to F.
       do i=1,im
          flg(i)  = scuflg(i)
       enddo
@@ -1163,7 +1163,7 @@
       enddo
 !>  - Starting at the PBL top and going downward, if the level is less
 !!    than the cloud top, find the level of the minimum radiative heating
-!!    rate wihin the cloud. If the level of the minimum is the lowest model 
+!!    rate wihin the cloud. If the level of the minimum is the lowest model
 !!    level or the minimum radiative heating rate is positive, then set
 !!    scuflg to F.
       do i = 1, im
@@ -1814,7 +1814,7 @@
      &              EDDYVEST1 = (SIGMACAN*SIGMACAN)*TLCAN ! Model-layer top diffusivity
 
 ! Average In-Canopy diffusivity gives larger canopy correction (2022)
-!                IF ( ZCAN .LE. FCH )  THEN          ! Average In-Canopy   diffusivity (2022) 
+!                IF ( ZCAN .LE. FCH )  THEN          ! Average In-Canopy   diffusivity (2022)
 ! Average model-layer diffusivity gives smaller canopy correction (pre-2022) & Jan9, 2026
                  IF ( ZCAN .LE. ZFL )  THEN         ! Average model-layer diffusivity (2026)
 
@@ -1836,13 +1836,13 @@
                  ZZ_INT= IntegrateTrapezoid(
      &                  ZCANX(COUNTCAN:1:-1), ZOOOX(COUNTCAN:1:-1))
               END IF
- 
+
               IF (COUNTCAN .EQ. 1) THEN
                  EDDYVEST_INT = EDDYVESTX(COUNTCAN)
               ELSE
 
                  EDDYVEST_INT = IntegrateTrapezoid((ZCANX(COUNTCAN:1:-1)
-     &                                ),EDDYVESTX(COUNTCAN:1:-1)) / 
+     &                                ),EDDYVESTX(COUNTCAN:1:-1)) /
      &                                  ZZ_INT
               END IF
 
@@ -1859,7 +1859,7 @@
 
           enddo !i
 
-          kount = kount + 1 
+          kount = kount + 1
 
         enddo !k
 
@@ -2943,7 +2943,7 @@ c
           if(idtend>=1) then
             do k = 1,km1
               do i = 1,im
-                dtend(i,k,idtend) = dtend(i,k,idtend)+              
+                dtend(i,k,idtend) = dtend(i,k,idtend)+
      &                              (dspfac * diss(i,k) / cp)*delt
               enddo
             enddo
@@ -3077,7 +3077,7 @@ c
         if(allocated(EDDYVESTX)) deallocate(EDDYVESTX)
         if(allocated(ZCANX)) deallocate(ZCANX)
       endif
-      
+
       return
       end subroutine satmedmfvdifq_run
 !> @}

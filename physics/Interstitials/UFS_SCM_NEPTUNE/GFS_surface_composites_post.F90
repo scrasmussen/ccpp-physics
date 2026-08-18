@@ -263,7 +263,7 @@ contains
 !             tisfc(i) = tsfc(i)
 !           endif
 !         endif
-          
+
           if (.not. icy(i)) then
             !don't overwrite sea ice thickness/fraction when using CDEPS inline over the mask
             if (use_cdeps_data) then

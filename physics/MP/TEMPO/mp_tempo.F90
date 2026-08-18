@@ -38,7 +38,7 @@ module mp_tempo
            is_hail_aware, do_sat_adj, semi_sedi, &
            spechum, nwfa, nifa, nwfa2d, nifa2d, &
            tempo_cfgs, is_initialized, errmsg, errflg)
-         
+
          ! Interface variables
          integer,                   intent(in   ) :: ncol
          integer,                   intent(in   ) :: nlev
@@ -73,15 +73,15 @@ module mp_tempo
          character(len=*),          intent(  out) :: errmsg
          integer,                   intent(  out) :: errflg
          type(ty_tempo_cfgs),       intent(inout) :: tempo_cfgs
-         
+
          real(kind_phys) :: qv(1:ncol,1:nlev)       ! kg kg-1 (water vapor mixing ratio)
          real(kind_phys) :: hgt(1:ncol,1:nlev)      ! m
          real(kind_phys) :: rho(1:ncol,1:nlev)      ! kg m-3
          real(kind_phys) :: orho(1:ncol,1:nlev)     ! m3 kg-1
-         
+
          real (kind=kind_phys) :: h_01, z1, niIN3, niCCN3
          integer :: i, k
-         
+
          ! Initialize the CCPP error handling variables
          errmsg = ''
          errflg = 0
@@ -95,7 +95,7 @@ module mp_tempo
          end if
 
          if (is_initialized) return
-         
+
          ! Consistency checks
          if (imp_physics/=imp_physics_tempo) then
             write(errmsg,'(*(a))') "Logic error: namelist choice of microphysics is different from Tempo MP"
@@ -136,7 +136,7 @@ module mp_tempo
          end if
 
          where(spechum<0) spechum = 1.0e-10
-         qv = spechum/(1.0_kind_phys-spechum)         
+         qv = spechum/(1.0_kind_phys-spechum)
          if (convert_dry_rho) then
            if (is_aerosol_aware) then
               nwfa = nwfa/(1.0_kind_phys-spechum)
@@ -146,7 +146,7 @@ module mp_tempo
 
          ! Geopotential height in m2 s-2 to height in m
          hgt = phil/con_g
-         
+
          ! Density of moist air in kg m-3 and inverse density of air
          rho = roverrv*prsl/(rdry*tgrs*(qv+roverrv))
          orho = 1.0/rho
@@ -293,7 +293,7 @@ module mp_tempo
          real(kind_phys),           intent(inout) :: snow(:)
          real(kind_phys),           intent(  out) :: sr(:)
          ! Radar reflectivity
-         real(kind_phys),           intent(inout) :: refl_10cm(:,:)         
+         real(kind_phys),           intent(inout) :: refl_10cm(:,:)
          ! State variables and timestep information
          real(kind_phys),           intent(in   ) :: tgrs(:,:)
          real(kind_phys),           intent(in   ) :: prsl(:,:)
@@ -320,7 +320,7 @@ module mp_tempo
          real(kind_phys), optional, intent(  out) :: dnifa(:,:)
          real(kind_phys), optional, intent(  out) :: dng(:,:)
          real(kind_phys), optional, intent(  out) :: dvolg(:,:)
-         
+
          ! CCPP error handling
          character(len=*),          intent(  out) :: errmsg
          integer,                   intent(  out) :: errflg
@@ -340,7 +340,7 @@ module mp_tempo
          real(kind_phys) :: dz(1:ncol,1:nlev)               !< m
          real(kind_phys) :: xnwfa(1:ncol,1:nlev,1)
          real(kind_phys) :: xnwfa2d(1:ncol,1)
-         
+
          !temporary new states used to calculate tendencies
          real(kind_phys) :: new_spechum(1:ncol,1:nlev)
          real(kind_phys) :: new_qc(1:ncol,1:nlev)
@@ -363,7 +363,7 @@ module mp_tempo
                             ims,ime, jms,jme, kms,kme, &
                             its,ite, jts,jte, kts,kte
          integer :: itimestep = 1
-         
+
          ! Initialize the CCPP error handling variables
          errmsg = ''
          errflg = 0
@@ -375,7 +375,7 @@ module mp_tempo
          ten_t    = 0.0
          ten_u    = 0.0
          ten_v    = 0.0
-         
+
          dspechum = 0.0
          dqc      = 0.0
          dqr      = 0.0
@@ -384,7 +384,7 @@ module mp_tempo
          dqg      = 0.0
          dni      = 0.0
          dnr      = 0.0
-         
+
          new_spechum = spechum
          new_qc = qc
          new_qr = qr
@@ -399,7 +399,7 @@ module mp_tempo
            dnc      = 0.0
            dnwfa    = 0.0
            dnifa    = 0.0
-           
+
            allocate(new_nc(ncol,nlev))
            allocate(new_nwfa(ncol,nlev))
            allocate(new_nifa(ncol,nlev))
@@ -411,7 +411,7 @@ module mp_tempo
          if (is_hail_aware) then
            dng = 0.0
            dvolg  = 0.0
-           
+
            allocate(new_ng(ncol,nlev))
            allocate(new_volg(ncol,nlev))
            new_ng = ng
@@ -426,7 +426,7 @@ module mp_tempo
                return
             end if
          endif
-         
+
          ndt = max(nint(dtp/dt_inner), 1)
          dt = dtp/ndt
          if (dt <= dt_inner) dt = dt_inner
@@ -494,7 +494,7 @@ module mp_tempo
                     jms=jms, jme=jme, kms=kms, kme=kme, kts=kts)
                new_nwfa(:,:) = xnwfa(:,:,1)
             endif
-            
+
             call tempo_run(tempo_cfgs=tempo_cfgs, &
                  dt=dt, itimestep=itimestep , &
                  qv=qv, qc=new_qc, qr=new_qr, qi=new_qi, qs=new_qs, qg=new_qg, ni=new_ni, nr=new_nr, &
@@ -505,7 +505,7 @@ module mp_tempo
                  ims = ims , ime = ime , jms = jms , jme = jme , kms = kms , kme = kme , &
                  its = its , ite = ite , jts = jts , jte = jte , kts = kts , kte = kte , &
                  tempo_diags=tempo_driver_diags)
-            
+
             ice = ice + max(0.0, tempo_driver_diags%ice_liquid_equiv_precip(:,1)/1000.0_kind_phys)
             snow = snow + (max(0.0, tempo_driver_diags%ice_liquid_equiv_precip(:,1)) + &
                  max(0.0, tempo_driver_diags%snow_liquid_equiv_precip(:,1)))/1000.0_kind_phys
@@ -525,7 +525,7 @@ module mp_tempo
          endif
 
          itimestep = itimestep + 1
-         
+
          if (errflg/=0) return
 
          !> - Convert water vapor mixing ratio back to specific humidity
@@ -562,14 +562,14 @@ module mp_tempo
          if (is_hail_aware) then
            dng = (new_ng - ng)/dtp
            dvolg  = (new_volg - volg)/dtp
-           
+
            deallocate (new_ng, new_volg)
          end if
          if (is_aerosol_aware) then
            dnc = (new_nc - nc)/dtp
            dnwfa = (new_nwfa - nwfa)/dtp
            dnifa = (new_nifa - nifa)/dtp
-           
+
            deallocate(new_nc, new_nwfa, new_nifa)
          end if
 
@@ -579,7 +579,7 @@ module mp_tempo
 !! \htmlinclude mp_tempo_final.html
 !!
       subroutine mp_tempo_final(is_initialized, errmsg, errflg)
-        
+
          logical,                   intent(inout) :: is_initialized
          character(len=*),          intent(  out) :: errmsg
          integer,                   intent(  out) :: errflg

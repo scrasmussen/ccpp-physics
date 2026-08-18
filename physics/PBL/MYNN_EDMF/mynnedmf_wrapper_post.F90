@@ -15,7 +15,7 @@ contains
   subroutine mynnedmf_wrapper_post_run (tend_opt_pbl, im, levs, ntrac, &
        dtp, ten_t, ten_u, ten_v, ten_q, ten_t_pbl, ten_q_pbl, gt0, gu0, gv0, gq0, dtdt, dudt, dvdt, dqdt, &
        errmsg, errflg)
-    
+
     ! Inputs
     integer, intent(in) :: tend_opt_pbl, im, levs, ntrac
     real(kind=kind_phys), intent(in) :: dtp
@@ -32,14 +32,14 @@ contains
          errmsg          ! CCPP Error message.
     integer,  intent(out) :: &
          errflg          ! CCPP Error flag.
-    
+
     ! Locals
     integer :: i,k,n
-    
+
     ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
-    
+
     case_pbl_ten: select case (tend_opt_pbl)
       case (1) !immediately apply tendencies
                 !Current state = current state + dt*current tendency
@@ -96,7 +96,7 @@ contains
 
     ten_t_pbl(:,:)=0.
     ten_q_pbl(:,:)=0.
-    
+
     !Output t and q tenedncies for PBL only to be used
     !as input in other schemes
     do k=1,levs
@@ -105,7 +105,7 @@ contains
           ten_q_pbl(i,k)=ten_q(i,k,1)
        end do
     end do
-    
+
   end subroutine mynnedmf_wrapper_post_run
 
 end module mynnedmf_wrapper_post

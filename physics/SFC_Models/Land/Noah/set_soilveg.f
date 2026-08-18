@@ -81,7 +81,7 @@ c-----------------------------
      *          0.013, 0.000, 0.000, 0.000, 0.000, 0.000,
      &          0.000, 0.000, 0.000, 0.000, 0.000, 0.000,
      &          0.000, 0.000, 0.000, 0.000, 0.000, 0.000/)
- 
+
       bare =11
 
 c---------------------------------------------------------------------
@@ -407,10 +407,10 @@ c-----------------------------
      &           'namelist'
             return
          ENDIF
-         
+
          SMLOW  = SMLOW_DATA
          SMHIGH = SMHIGH_DATA
-         
+
          DO I = 1,DEFINED_SOIL
            if (satdk(i) /= 0.0 .and. bb(i) > 0.0) then
            SATDW(I)  = BB(I)*SATDK(I)*(SATPSI(I)/MAXSMC(I))
@@ -420,7 +420,7 @@ c-----------------------------
            REFSMC(I) = REFSMC1 + (MAXSMC(I)-REFSMC1) / SMHIGH
            WLTSMC1   = MAXSMC(I) * (200.0/SATPSI(I))**(-1.0/BB(I))
            WLTSMC(I) = WLTSMC1 - SMLOW * WLTSMC1
-            
+
 !     ----------------------------------------------------------------------
 !     CURRENT VERSION DRYSMC VALUES THAT EQUATE TO WLTSMC.
 !     FUTURE VERSION COULD LET DRYSMC BE INDEPENDENTLY SET VIA NAMELIST.
@@ -428,7 +428,7 @@ c-----------------------------
 !          DRYSMC(I) = WLTSMC(I)
            endif
          END DO
-         
+
 !       if (me == 0) write(6,soil_veg)
        end subroutine set_soilveg
 

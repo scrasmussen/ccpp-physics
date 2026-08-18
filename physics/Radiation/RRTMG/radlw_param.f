@@ -101,7 +101,7 @@
 ! Parameter constants for LW band structures
       integer, parameter :: NBANDS = 16     !< number of total spectral bands
       integer, parameter :: NGPTLW = 140    !< number of total g-points   
-      integer, parameter :: NTBL   = 10000  !< lookup table dimension 
+      integer, parameter :: NTBL   = 10000  !< lookup table dimension
       integer, parameter :: MAXGAS = 7      !< maximum number of absorbing gases
       integer, parameter :: MAXXSEC= 4      !< number of halocarbon gases
       integer, parameter :: NRATES = 6      !< number of ref rates of binary species   

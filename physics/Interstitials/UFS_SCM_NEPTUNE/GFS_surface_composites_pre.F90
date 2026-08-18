@@ -75,7 +75,7 @@ contains
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       if (use_cdeps_data) then
         do i=1,im
           if (mask_dat(i) > 0.0) then
@@ -209,7 +209,7 @@ contains
                 if (mask_dat(i) > 0.0) then
                   if (cice(i) >= min_lakeice) then
                     icy(i) = .true.
-                    islmsk(i) = 2 
+                    islmsk(i) = 2
                   else
                     icy(i) = .false.
                     cice(i) = zero
@@ -258,11 +258,11 @@ contains
             if (mask_dat(i) <= 0.0) then
               tsfc_wat(i) = tsfco(i)
               tsurf_wat(i) = tsfco(i)
-            endif  
+            endif
           else
             tsfc_wat(i) = tsfco(i)
             tsurf_wat(i) = tsfco(i)
-          endif 
+          endif
           zorlo(i) = max(1.0e-5, min(one, zorlo(i)))
         ! DH*
         else
@@ -280,7 +280,7 @@ contains
         !mjz
           tsfcl(i) = huge
         endif
-        if (icy(i) .or. wet(i)) then ! init uustar_ice for all water/ice grids 
+        if (icy(i) .or. wet(i)) then ! init uustar_ice for all water/ice grids
            uustar_ice(i) = uustar(i)
         endif
         if (icy(i)) then                   ! Ice
@@ -305,14 +305,14 @@ contains
         do i=1,im
           if (dry(i)) then
             if (icy(i)) then
-              if (kdt == 1 .or. (.not. cplflx .or. lakefrac(i) > zero)) then 
+              if (kdt == 1 .or. (.not. cplflx .or. lakefrac(i) > zero)) then
                 tem = one / (cice(i)*(one-frland(i)))
                 snowd_ice(i) = max(zero, (snowd(i) - snowd_lnd(i)*frland(i)) * tem)
                 weasd_ice(i) = max(zero, (weasd(i) - weasd_lnd(i)*frland(i)) * tem)
               endif
             endif
           elseif (icy(i)) then
-            if (kdt == 1 .or. (.not. cplflx .or. lakefrac(i) > zero)) then 
+            if (kdt == 1 .or. (.not. cplflx .or. lakefrac(i) > zero)) then
               tem = one / cice(i)
               snowd_lnd(i) = zero
               snowd_ice(i) = snowd(i) * tem

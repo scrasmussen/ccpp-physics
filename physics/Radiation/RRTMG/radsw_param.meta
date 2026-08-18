@@ -1,7 +1,7 @@
 [ccpp-table-properties]
   name = topfsw_type
   type = ddt
-  dependencies = 
+  dependencies =
   module_name = module_radsw_parameters
 
 [ccpp-arg-table]
@@ -12,7 +12,7 @@
 [ccpp-table-properties]
   name = sfcfsw_type
   type = ddt
-  dependencies = 
+  dependencies =
   module_name = module_radsw_parameters
 
 [ccpp-arg-table]
@@ -34,7 +34,7 @@
 [ccpp-table-properties]
   name = profsw_type
   type = ddt
-  dependencies = 
+  dependencies =
   module_name = module_radsw_parameters
 
 [ccpp-arg-table]

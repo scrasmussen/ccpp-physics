@@ -1,11 +1,11 @@
 !> \file GFS_rrtmgp_pre.F90
-!! \brief This module contains code to prepare model fields for use by the RRTMGP 
-!! radiation scheme.  
+!! \brief This module contains code to prepare model fields for use by the RRTMGP
+!! radiation scheme.
 
 module GFS_rrtmgp_pre
   use machine,                    only: kind_phys
   use funcphys,                   only: fpvs
-  use module_radiation_astronomy, only: coszmn 
+  use module_radiation_astronomy, only: coszmn
   use module_radiation_gases,     only: NF_VGAS, getgases
   use module_ozphys,              only: ty_ozphys
   use mo_gas_concentrations,      only: ty_gas_concs
@@ -26,7 +26,7 @@ module GFS_rrtmgp_pre
 
   ! Save trace gas indices.
   integer :: iStr_h2o, iStr_co2, iStr_o3, iStr_n2o, iStr_ch4, iStr_o2, iStr_ccl4, &
-       iStr_cfc11, iStr_cfc12, iStr_cfc22 
+       iStr_cfc11, iStr_cfc12, iStr_cfc22
 
   public GFS_rrtmgp_pre_run,GFS_rrtmgp_pre_init
 contains
@@ -47,7 +47,7 @@ contains
     ! Outputs
     character(len=*), intent(out) :: &
          errmsg             !< Error message
-    integer, intent(out) :: &  
+    integer, intent(out) :: &
          errflg             !< Error flag
 
     ! Local variables
@@ -60,7 +60,7 @@ contains
     errflg = 0
 
     if (len(active_gases) .eq. 0) return
-    
+
     ! Which gases are active? Provided via physics namelist.
 
     ! Pull out gas names from list...
@@ -76,7 +76,7 @@ contains
        endif
     enddo
     gasIndices(nGases,2)=len(trim(active_gases))
-    
+
     ! Now extract the gas names
     do ij=1,nGases
        active_gases_array(ij) = active_gases(gasIndices(ij,1):gasIndices(ij,2))
@@ -106,13 +106,13 @@ contains
        relhum, deltaZ, deltaZc, deltaP, active_gases_array,                                 &
        tsfc_radtime, coszen, coszdg, top_at_1, iSFC, iTOA, nDay, idxday, semis,             &
        sfc_emiss_byband, ico2, ozphys, con_pi, errmsg, errflg)
-    
+
     ! Inputs
     integer, intent(in)    :: &
          me,                & !< MPI rank
          nCol,              & !< Number of horizontal grid points
          nLev,              & !< Number of vertical layers
-         ico2,              & !< Flag for co2 radiation scheme 
+         ico2,              & !< Flag for co2 radiation scheme
          i_o3                 !< Index into tracer array for ozone
     type(ty_ozphys),intent(in) :: &
          ozphys
@@ -130,20 +130,20 @@ contains
          con_fvirt,         & !< Physical constant: Inverse of epsilon minus one
          con_epsqs,         & !< Physical constant: Minimum saturation mixing-ratio (kg/kg)
          con_pi,            & !< Physical constant: Pi
-         solhr                !< Time in hours after 00z at the current timestep 
-    real(kind_phys), dimension(:), intent(in) :: & 
+         solhr                !< Time in hours after 00z at the current timestep
+    real(kind_phys), dimension(:), intent(in) :: &
     	 xlon,              & !< Longitude
     	 xlat,              & !< Latitude
     	 tsfc,              & !< Surface skin temperature (K)
          coslat,            & !< Cosine(latitude)
-         sinlat,            & !< Sine(latitude) 
+         sinlat,            & !< Sine(latitude)
          semis
-    real(kind_phys), dimension(:,:), intent(in) :: & 
+    real(kind_phys), dimension(:,:), intent(in) :: &
          prsl,              & !< Pressure at model-layer centers (Pa)
          tgrs,              & !< Temperature at model-layer centers (K)
          prslk,             & !< Exner function at model layer centers (1)
          prsi                 !< Pressure at model-interfaces (Pa)
-    real(kind_phys), dimension(:,:,:), intent(in) :: & 
+    real(kind_phys), dimension(:,:,:), intent(in) :: &
          qgrs                 !< Tracer concentrations (kg/kg)
     character(len=*), dimension(:), intent(in), optional :: &
          active_gases_array   !< List of active gases from namelist as array
@@ -151,7 +151,7 @@ contains
     ! Outputs
     character(len=*), intent(out) :: &
          errmsg               !< Error message
-    integer, intent(out) :: &  
+    integer, intent(out) :: &
          errflg,            & !< Error flag
          nDay
     integer, intent(inout) :: &
@@ -163,18 +163,18 @@ contains
          raddt                !< Radiation time-step
     real(kind_phys), dimension(:), intent(inout) :: &
          tsfg,              & !< Ground temperature
-         tsfa,              & !< Skin temperature    
+         tsfa,              & !< Skin temperature
          tsfc_radtime,      & !< Surface temperature at radiation timestep
          coszen,            & !< Cosine of SZA
          coszdg               !< Cosine of SZA, daytime
     integer, dimension(:), intent(inout) ::  &
-         idxday               !< Indices for daylit points 
+         idxday               !< Indices for daylit points
     real(kind_phys), dimension(:,:), intent(inout), optional :: &
          p_lay,             & !< Pressure at model-layer
          t_lay,             & !< Temperature at model layer
          q_lay,             & !< Water-vapor mixing ratio (kg/kg)
-         tv_lay,            & !< Virtual temperature at model-layers 
-         relhum,            & !< Relative-humidity at model-layers   
+         tv_lay,            & !< Virtual temperature at model-layers
+         relhum,            & !< Relative-humidity at model-layers
          qs_lay,            & !< Saturation vapor pressure at model-layers
          deltaZ,            & !< Layer thickness (m)
          deltaZc,           & !< Layer thickness (m) (between layer centers)
@@ -200,12 +200,12 @@ contains
     nday   = 0
     idxday = 0
     if (.not. (doSWrad .or. doLWrad)) return
-        
+
     ! #######################################################################################
     ! What is vertical ordering?
     ! #######################################################################################
     top_at_1 = (prsi(1,1) .lt.  prsi(1, nLev))
-    if (top_at_1) then 
+    if (top_at_1) then
        iSFC = nLev
        iTOA = 1
        iSFC_ilev = iSFC + 1
@@ -218,11 +218,11 @@ contains
     ! #######################################################################################
     ! Compute some fields needed by RRTMGP
     ! #######################################################################################
-    
+
     ! Water-vapor mixing-ratio
     q_lay(1:ncol,:)  = qgrs(1:NCOL,:,1)
     where(q_lay .lt. 1.e-6) q_lay = 1.e-6
-    
+
     ! Pressure at layer-interface
     p_lev(1:NCOL,:) = prsi(1:NCOL,:)
 
@@ -250,7 +250,7 @@ contains
        enddo
     enddo
 
-    ! Temperature at layer-interfaces          
+    ! Temperature at layer-interfaces
     call cmp_tlev(nCol,nLev,real(lw_gas_props%get_press_min(),kind=kind_phys),p_lay,t_lay,p_lev,tsfc,t_lev)
     do iLev=1,nLev+1
        do iCol=1,nCol
@@ -265,15 +265,15 @@ contains
     ! radiation calls.
     tsfc_radtime = tsfc
 
-    ! Compute a bunch of thermodynamic fields needed by the cloud microphysics schemes. 
-    ! Relative humidity, saturation mixing-ratio, vapor mixing-ratio, virtual temperature, 
+    ! Compute a bunch of thermodynamic fields needed by the cloud microphysics schemes.
+    ! Relative humidity, saturation mixing-ratio, vapor mixing-ratio, virtual temperature,
     ! layer thickness,...
     do iLay=1,nLev
        do iCol=1,NCOL
           es                = min( p_lay(iCol,iLay),  fpvs( t_lay(iCol,iLay) ) )  ! fpvs and prsl in pa
           qs_lay(iCol,iLay) = max( con_epsqs, con_eps * es / (p_lay(iCol,iLay) + con_epsm1*es) )
           relhum(iCol,iLay) = max( 0._kind_phys, min( 1._kind_phys, max(con_epsqs, q_lay(iCol,iLay))/qs_lay(iCol,iLay) ) )
-          tv_lay(iCol,iLay) = t_lay(iCol,iLay) * (1._kind_phys + con_fvirt*q_lay(iCol,iLay)) 
+          tv_lay(iCol,iLay) = t_lay(iCol,iLay) * (1._kind_phys + con_fvirt*q_lay(iCol,iLay))
        enddo
     enddo
 
@@ -282,7 +282,7 @@ contains
     !
     deltaP = abs(p_lev(:,2:nLev+1)-p_lev(:,1:nLev))
     con_rdog = con_rd/con_g
-    do iCol=1,nCol 
+    do iCol=1,nCol
        if (top_at_1) then
           ! Layer thickness (m)
           do iLay=1,nLev
@@ -329,10 +329,10 @@ contains
     enddo
 
     ! #######################################################################################
-    ! Get layer ozone mass mixing ratio 
+    ! Get layer ozone mass mixing ratio
     ! #######################################################################################
 
-    if (i_o3 > 0) then 
+    if (i_o3 > 0) then
        do iLay=1,nlev
           do iCol=1,NCOL
              o3_lay(iCol,iLay) = max( con_epsqs, qgrs(iCol,iLay,i_o3) )
@@ -367,7 +367,7 @@ contains
     ! #######################################################################################
     iSFC_ilev = 1
     if (top_at_1) iSFC_ilev = iSFC + 1
-    
+
     tsfg(1:NCOL) = t_lev(1:NCOL,iSFC_ilev)
     tsfa(1:NCOL) = t_lay(1:NCOL,iSFC)
 
@@ -398,5 +398,5 @@ contains
     enddo
 
   end subroutine GFS_rrtmgp_pre_run
-  
+
 end module GFS_rrtmgp_pre

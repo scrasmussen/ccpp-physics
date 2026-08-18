@@ -63,9 +63,9 @@
       use module_radiation_clouds, only : gethml
       use radcons,  only: qmin          ! Minimum values for various calculations
       use funcphys, only: fpvs          ! Function to compute sat. vapor pressure over liq.
-!------------------------------------------------------------------- 
+!-------------------------------------------------------------------
       implicit none
-!------------------------------------------------------------------- 
+!-------------------------------------------------------------------
       ! Interface variables
       real(kind=kind_phys), intent(in) :: con_g, con_pi, eps, epsm1
       real(kind=kind_phys), intent(in) :: r_v, cpv, rcp
@@ -74,7 +74,7 @@
       real :: xls, xlvcp, xlscp !derived below
       real(kind=kind_phys)             :: gfac
       integer,             intent(in)  :: im, levs, imfdeepcnv, imfdeepcnv_gf, &
-           &  nlay, imfdeepcnv_sas, imfdeepcnv_c3, imp_physics, & 
+           &  nlay, imfdeepcnv_sas, imfdeepcnv_c3, imp_physics, &
            &  imp_physics_gfdl, imp_physics_fa, conv_cf_opt
       logical,             intent(in)  :: flag_init, flag_restart, do_mynnedmf
 
@@ -206,7 +206,7 @@
 
               Tc = T3D(i,k) - 273.15
               !crudely split frozen species into 50% ice and 50% snow below
-              !~700 mb and decrease snow to zero by ~300 mb 
+              !~700 mb and decrease snow to zero by ~300 mb
               snow_frac = min(0.5, max((p3d(i,k)-30000.0),0.0)/140000.0)
               ice_frac  = 1.0 - snow_frac
               if (qi(i,k) < 1.e-9 .and. cldfra_bl(i,k)>0.001) then
@@ -234,7 +234,7 @@
             enddo
           enddo
 
-        elseif (imp_physics /= imp_physics_gfdl) then 
+        elseif (imp_physics /= imp_physics_gfdl) then
 
           ! Non-MYNN cloud fraction AND non-GFDL microphysics, since both
           ! have their own cloud fractions. In this case, we resort to
@@ -307,7 +307,7 @@
                    ! get saturation water vapor mixing ratio at tl and p
                    es  = min( p3d(i,k), fpvs( tlk ) )   ! fpvs and prsl in pa
                    qsat= max( QMIN, eps*es / (p3d(i,k) + epsm1*es) )
-                   rsl = xl*qsat / (r_v*tlk**2)   ! slope of C-C curve at t = tl 
+                   rsl = xl*qsat / (r_v*tlk**2)   ! slope of C-C curve at t = tl
                                                   ! CB02, Eqn. 4
                    qt  = qc(i,k) + qi(i,k) + qv(i,k) !total water
                    cpm = cp + qt*cpv              ! CB02, sec. 2, para. 1

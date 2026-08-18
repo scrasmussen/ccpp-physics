@@ -83,7 +83,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
-  intent = in 
+  intent = in
 [zogw]
   standard_name = height_of_launch_level_of_orographic_gravity_wave
   long_name = height of launch level of orographic gravity wave

@@ -1,7 +1,7 @@
 !>\file rrtmg_lw_post.F90
 
 !> This module contains code executed after RRTMG-LW scheme
-      module rrtmg_lw_post 
+      module rrtmg_lw_post
       contains
 
 !>\defgroup rrtmg_lw_post GFS RRTMG scheme post
@@ -14,25 +14,25 @@
       subroutine rrtmg_lw_post_run (im, levs, ltp, lm, kd, lslwr, lwhtr, &
                  tsfa, htlwc, htlw0, sfcflw, tsflw, sfcdlw, htrlw, lwhc, &
                  errmsg, errflg)
-    
+
       use machine,                   only: kind_phys
       use module_radlw_parameters,   only: sfcflw_type
-      
+
       implicit none
-      
+
       integer,                                     intent(in) :: im, levs, ltp, lm, kd
       logical,                                     intent(in) :: lslwr, lwhtr
       real(kind=kind_phys), dimension(im),         intent(in) ::  tsfa
       real(kind=kind_phys), dimension(im, LM+LTP), intent(in) ::  htlwc
       real(kind=kind_phys), dimension(im, LM+LTP), intent(in) ::  htlw0
-      
+
       type(sfcflw_type), dimension(im),            intent(in) :: sfcflw
-      
+
       real(kind=kind_phys), dimension(im),         intent(inout) ::  tsflw, sfcdlw
       real(kind=kind_phys), dimension(im, levs),   intent(inout) ::  htrlw, lwhc
       character(len=*),                            intent(out) :: errmsg
       integer,                                     intent(out) :: errflg
-      
+
       ! local variables
       integer :: k1, k
 

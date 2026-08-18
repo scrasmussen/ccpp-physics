@@ -218,10 +218,10 @@ contains
       integer, dimension(:), intent(out) :: kbot, ktop, kcnv
       real(kind=kind_phys), dimension (:,:), intent(out), optional :: ud_mf
       real(kind=kind_phys), dimension (:,:), intent(out) :: dd_mf, dt_mf, cnvw, cnvc
-      
+
       real(kind=kind_phys), dimension (:,:), intent(out) :: ten_t, ten_u, ten_v, dclw_i, dclw_l
       real(kind=kind_phys), dimension (:,:,:), intent(out) :: ten_q
-      
+
 ! error messages
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
@@ -251,7 +251,7 @@ contains
 ! Initialize CCPP error handling variables
    errmsg = ''
    errflg = 0
-   
+
    ten_t = 0.0
    ten_u = 0.0
    ten_v = 0.0
@@ -4109,4 +4109,3 @@ contains
 !=================================================================================================================
  end module cu_ntiedtke
 !=================================================================================================================
-

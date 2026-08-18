@@ -38,14 +38,14 @@ module ugwp_driver_v0
 ! modified/revised version of gwdps.f (with bug fixes, tofd, appropriate
 !   computation of reference level for OGW + COORDE diagnostics
 !   all constants/parameters inside cires_ugwp_initialize.F90
-!---------------------------------------- 
+!----------------------------------------
 
       USE MACHINE ,      ONLY : kind_phys
       use ugwp_common_v0,only : rgrav,   grav,  cpd, rd, rv, rcpd, rcpd2, &
                                 pi,      rad_to_deg, deg_to_rad, pi2, &
                                 rdi,     gor,    grcp, gocp,  fv, gr2, &
                                 bnv2min, dw2min, velmin, arad
- 
+
       use ugwpv0_oro_init, only : rimin,  ric,     efmin,     efmax, &
                                   hpmax,  hpmin,   sigfaci => sigfac, &
                                   dpmin,  minwnd,  hminmt,    hncrit, &
@@ -56,16 +56,16 @@ module ugwp_driver_v0
                                   n_tofd, ze_tofd, ztop_tofd
 
       use cires_ugwpv0_module, only : kxw,  max_kdis, max_axyz
-      
+
 !----------------------------------------
       implicit none
 !----------------------------------------
 ! internal parameters
-!----------------------------------------        
+!----------------------------------------
       character(len=8)    :: strsolver='PSS-1986'  ! current operational solver or  'WAM-2017'
-      real(kind=kind_phys), parameter :: sigfac = 3                 ! N*hprime height of Subgrid Hill over which SSO-flo      
-      real(kind=kind_phys), parameter :: sigfacs = 0.5              ! M*hprime height is the low boundary of the hill 
-      
+      real(kind=kind_phys), parameter :: sigfac = 3                 ! N*hprime height of Subgrid Hill over which SSO-flo
+      real(kind=kind_phys), parameter :: sigfacs = 0.5              ! M*hprime height is the low boundary of the hill
+
 !---------------------------------------------------------------------
 ! # of permissible sub-grid orography hills for "any" resolution  < 25
 !    correction for "elliptical" hills based on shilmin-area =sgrid/25
@@ -77,7 +77,7 @@ module ugwp_driver_v0
 !     cleff = 2.5*0.5e-5 * sqrt(192./768.) => Lh_eff = 1004. km
 !      6*dx = 240 km 8*dx = 320. ~ 3-5 more effective
 !---------------------------------------------------------------------
-      real(kind=kind_phys)            :: gammin = 0.00999999       ! a/b = gammma_min =1% <====>      
+      real(kind=kind_phys)            :: gammin = 0.00999999       ! a/b = gammma_min =1% <====>
       real(kind=kind_phys), parameter :: nhilmax = 25.             ! max number of SSO-hills in grid-box
       real(kind=kind_phys), parameter :: sso_min = 3000.           ! min-lenghth of the hill, GTOP30 ~dx~1 km
       logical, parameter              :: do_adjoro = .true.
@@ -89,7 +89,7 @@ module ugwp_driver_v0
       integer, intent(in)              :: KPBL(IM)    ! Index for the PBL top layer!
       real(kind=kind_phys), intent(in) :: dtp         !  time step
       real(kind=kind_phys), intent(in) :: cdmbgwd(2)
-          
+
       real(kind=kind_phys), intent(in), dimension(im,km) :: &
                                         u1,  v1,   t1, q1, del, prsl, prslk, phil
 
@@ -103,7 +103,7 @@ module ugwp_driver_v0
       real(kind=kind_phys), intent(in) :: vSIGMA(IM),  vGAMMA(IM)
       real(kind=kind_phys)             :: SIGMA(IM),   GAMMA(IM)
 
-!    
+!
 !output -phys-tend
 !
       real(kind=kind_phys),dimension(im,km),intent(out) :: &
@@ -111,7 +111,7 @@ module ugwp_driver_v0
 ! output - diag-coorde
       real(kind=kind_phys),dimension(im,km),intent(out) :: &
                            dudt_mtb, dudt_ogw, dudt_tms
-                     
+
       real(kind=kind_phys),dimension(im) :: RDXZB,   zmtb,    zogw, &
                                             tau_ogw, tau_mtb, tau_tofd, &
                                             dusfc,   dvsfc
@@ -132,9 +132,9 @@ module ugwp_driver_v0
 !
       real(kind=kind_phys), dimension(im,km) :: RI_N, BNV2, RO
       real(kind=kind_phys), dimension(im,km) :: VTK, VTJ, VELCO
-!==================      
+!==================
 !mtb
-!==================      
+!==================
       real(kind=kind_phys), dimension(im)    :: elvmax, wk
       real(kind=kind_phys), dimension(im)    :: PE, EK, UP
       real(kind=kind_phys), dimension(im,km) :: DB, ANG, UDS
@@ -167,7 +167,7 @@ module ugwp_driver_v0
 
       integer, dimension(im) :: kref, idxzb, ipt, kreflm, iwklm, iwk, izlow
 !
-! local real scalars     
+! local real scalars
 !
       real(kind=kind_phys) :: bnv,  fr, ri_gw
       real(kind=kind_phys) :: brvf,   tem,   tem1,  tem2, temc, temv
@@ -180,25 +180,25 @@ module ugwp_driver_v0
       real(kind=kind_phys) :: kxridge, inv_b2eff, zw1, zw2
       real(kind=kind_phys) :: belps, aelps, nhills, selps
 
-!      
+!
 ! local integers
-!     
+!
       integer ::   kmm1, kmm2, lcap, lcapp1
       integer ::   npt,   kbps, kbpsp1,kbpsm1
       integer ::   kmps,  idir, nwd,  klcap, kp1, kmpbl, kmll
       integer ::   k_mtb, k_zlow, ktrial, klevm1
       integer ::   i, j, k
-!      
+!
 ! Initialize CCPP error handling variables
        errmsg = ''
-       errflg = 0      
+       errflg = 0
 !===========================
 !
       rcpdt = 1.0 / (cpd*dtp)
       grav2 = grav + grav
 !
 ! mtb-blocking  sigma_min and dxres => cires_initialize
-!  
+!
       sgrmax = maxval(sparea) ; sgrmin = minval(sparea)
       dsmax  = sqrt(sgrmax)   ; dsmin  = sqrt(sgrmin)
 
@@ -218,7 +218,7 @@ module ugwp_driver_v0
         zogw(i)     = 0.0
         rdxzb(i)    = 0.0
         tau_ogw(i)  = 0.0
-        tau_mtb(i)  = 0.0 
+        tau_mtb(i)  = 0.0
         dusfc(i)    = 0.0
         dvsfc(i)    = 0.0
         tau_tofd(i) = 0.0
@@ -258,7 +258,7 @@ module ugwp_driver_v0
 
 ! a, b > sso_min upscale ellipse  a/b > 0.1 a>sso_min & h/b=>new_sigm
 !
-            aelps = sso_min 
+            aelps = sso_min
             if (belps < sso_min ) then
               gamma(i) = 1.0
               belps = aelps*gamma(i)
@@ -285,7 +285,7 @@ module ugwp_driver_v0
 
       do i=1,npt
         iwklm(i)  = 2
-        IDXZB(i)  = 0 
+        IDXZB(i)  = 0
         kreflm(i) = 0
       enddo
 
@@ -298,8 +298,8 @@ module ugwp_driver_v0
       enddo
 
       KMM1 = km - 1 ;  KMM2   = km - 2 ; KMLL   = kmm1
-      LCAP = km     ;  LCAPP1 = LCAP + 1 
-      cdmb4 = 0.25*cdmb 
+      LCAP = km     ;  LCAPP1 = LCAP + 1
+      cdmb4 = 0.25*cdmb
 
       DO I = 1, npt
         j = ipt(i)
@@ -311,7 +311,7 @@ module ugwp_driver_v0
         DO I = 1, npt
           j = ipt(i)
           ztopH   = sigfac * hprime(j)
-          zlowH   = sigfacs* hprime(j) 
+          zlowH   = sigfacs* hprime(j)
           pkp1log =  phil(j,k+1) * rgrav
           pklog   =  phil(j,k)   * rgrav
 !         if (( ELVMAX(j) <= pkp1log) .and. (ELVMAX(j).ge.pklog) ) iwklm(I)  =  MAX(iwklm(I), k+1 )
@@ -374,7 +374,7 @@ module ugwp_driver_v0
         ROLL (I)   = 0.0
         PE   (I)   = 0.0
         EK   (I)   = 0.0
-        BNV2bar(I) = 0.0   
+        BNV2bar(I) = 0.0
       ENDDO
 !
       DO I = 1, npt
@@ -396,7 +396,7 @@ module ugwp_driver_v0
 ! integrate from Ztoph = sigfac*hprime  down to Zblk if exists
 ! find ph_blk, dz_blk as introduced in LM-97 and IFS
 !
-        ph_blk =0.  
+        ph_blk =0.
         DO K = iwklm(I), 1, -1
           PHIANG   =  atan2(V1(J,K),U1(J,K))*RAD_TO_DEG
           ANG(I,K) = THETA(J) - PHIANG
@@ -408,8 +408,8 @@ module ugwp_driver_v0
           IF (IDXZB(I) == 0 ) then
             dz_blk = ( PHII(J,K+1) - PHII(J,K) ) *rgrav
             PE(I)  =  PE(I) + BNV2(I,K) * ( ELVMAX(J) - phil(J,K)*rgrav ) * dz_blk
-            UP(I)  =  max(UDS(I,K) * cos(ANG(I,K)), velmin)  
-            EK(I)  = 0.5 *  UP(I) * UP(I) 
+            UP(I)  =  max(UDS(I,K) * cos(ANG(I,K)), velmin)
+            EK(I)  = 0.5 *  UP(I) * UP(I)
             ph_blk = ph_blk + dz_blk*sqrt(BNV2(I,K))/UP(I)
 
 ! --- Dividing Stream lime  is found when PE =exceeds EK. oper-l GFS
@@ -424,7 +424,7 @@ module ugwp_driver_v0
         ENDDO
 !
 ! Alternative expression: ZMTB = max(Heff*(1. -Fcrit_gfs/Fr), 0)
-! fcrit_gfs/fr	 
+! fcrit_gfs/fr
 !
 
 !        BNV     = SQRT( BNV2bar(I) )
@@ -434,7 +434,7 @@ module ugwp_driver_v0
 !        Fr      = heff*bnv/Ulow(i)
 !        ZW1     = max(Heff*(1. -fcrit_gfs/fr), 0.0)
 !        zw2     = phil(j,2)*rgrav
-!        if (Fr > fcrit_gfs .and. zw1 > zw2 ) then 
+!        if (Fr > fcrit_gfs .and. zw1 > zw2 ) then
 !          do k=2, kmm1
 !            pkp1log =  phil(j,k+1) * rgrav
 !            pklog   =  phil(j,k)   * rgrav
@@ -462,13 +462,13 @@ module ugwp_driver_v0
           DO K = IDXZB(I)-1, 1, -1
 
 ! empirical height dep-nt "blocking" length from LM-1997/IFS
-!	  
+!
             ZLEN = SQRT( ( PHIL(J,IDXZB(I)) - PHIL(J,K) ) / &
                          ( PHIL(J,K ) + Grav * hprime(J) ) )
 
             tem     = cos(ANG(I,K))
             COSANG2 = tem * tem
-            SINANG2 = 1.0 - COSANG2 
+            SINANG2 = 1.0 - COSANG2
             rdem = COSANG2      +  GAM2 * SINANG2
             rnom = COSANG2*GAM2 +         SINANG2
 !
@@ -484,7 +484,7 @@ module ugwp_driver_v0
             mtbridge = ZR * sigres*ZLEN / hprime(J)
             ! Scale the blocking coefficient by the inverse square root of dxres
             cdmb4 = cdmbgwd(1) * 100.0 / sqrt(sqrt(sparea(j)))
-!           dbtmp = cdmb4*mtbridge*max(cos(ang(i,k)), gamma(j)*sin(ang(i,k)))   ! (4.15)-ifs 	
+!           dbtmp = cdmb4*mtbridge*max(cos(ang(i,k)), gamma(j)*sin(ang(i,k)))   ! (4.15)-ifs
             dbtmp = cdmb4*mtbridge*(bgam * cosang2 + cgam * sinang2)            ! (4.16)-ifs
             DB(I,K)= DBTMP * UDS(I,K)
           ENDDO
@@ -502,12 +502,12 @@ module ugwp_driver_v0
 !  Scale cleff between IM=384*2 and 192*2 for T126/T170 and T62
 !  inside "cires_ugwp_initialize.F90" now
 !
-      KMPBL  = km / 2 
+      KMPBL  = km / 2
       iwk(1:npt) = 2
 !
-! METO-scheme: 
-! k_mtb = max(k_zmtb, k_n*hprime/2] to reduce diurnal variations taub_ogw 
-!     
+! METO-scheme:
+! k_mtb = max(k_zmtb, k_n*hprime/2] to reduce diurnal variations taub_ogw
+!
       DO K=3,KMPBL
         DO I=1,npt
           j   = ipt(i)
@@ -595,12 +595,12 @@ module ugwp_driver_v0
 !
 !------------------
 ! v0: incorporates latest modifications for kxridge and heff/hsat
-!             and taulin for Fr <=fcrit_gfs 
+!             and taulin for Fr <=fcrit_gfs
 !             and concept of "clipped" hill if zmtb > 0. to make
 ! the integrated "tau_sso = tau_ogw +tau_mtb" close to reanalysis data
 !      it is still used the "single-OGWave"-approach along ULOW-upwind
 !
-!      in contrast to the 2-orthogonal wave (2OTW) schemes of IFS/METO/E-CANADA  
+!      in contrast to the 2-orthogonal wave (2OTW) schemes of IFS/METO/E-CANADA
 ! 2OTW scheme requires "aver angle" and wind projections on 2 axes of ellipse a-b
 !     with 2-stresses:  taub_a & taub_b from AS of Phillips et al. (1984)
 !------------------
@@ -626,10 +626,10 @@ module ugwp_driver_v0
         ! Scale the cleff coefficient by the inverse square root of dxres
         cleff = cdmbgwd(2) * 0.001 / sqrt(sqrt(sparea(j)))
         XLINV(I) = COEFM * CLEFF           ! effective kxw for Lin-wave
-        XLINGFS  = COEFM * CLEFF 
+        XLINGFS  = COEFM * CLEFF
 !
         TEM      = FR    * FR * OC(J)
-        GFOBNV   = GMAX  * TEM / ((TEM + CG)*BNV) 
+        GFOBNV   = GMAX  * TEM / ((TEM + CG)*BNV)
 !
 !new specification of XLINV(I) & taulin(i)
 
@@ -637,7 +637,7 @@ module ugwp_driver_v0
         if (heff/sigres > hdxres) sigres = heff/hdxres
         inv_b2eff =  0.5*sigres/heff
         kxridge   =  1.0 / sqrt(sparea(J))
-        XLINV(I)  = XLINGFS    !or max(kxridge, inv_b2eff)  ! 6.28/Lx ..0.5*sigma(j)/heff = 1./Lridge  
+        XLINV(I)  = XLINGFS    !or max(kxridge, inv_b2eff)  ! 6.28/Lx ..0.5*sigma(j)/heff = 1./Lridge
         taulin(i) = 0.5*ROLL(I)*XLINV(I)*BNV*ULOW(I)* heff*heff
 
         if ( FR > fcrit_gfs ) then
@@ -645,12 +645,12 @@ module ugwp_driver_v0
                    * ULOW(I)  * GFOBNV  * EFACT       ! nonlinear FLUX Tau0...XLINV(I)
 !
         else
-!	 
+!
           TAUB(I)  = XLINV(I) * ROLL(I) * ULOW(I) * ULOW(I) &
-                   * ULOW(I)  * GFOBNV  * EFACT  
-!     
+                   * ULOW(I)  * GFOBNV  * EFACT
+!
 !         TAUB(I)  = taulin(i)                             !  linear flux for FR <= fcrit_gfs
-!   
+!
         endif
 !
 !
@@ -671,16 +671,16 @@ module ugwp_driver_v0
         ENDDO
       ENDDO
 
-      if (strsolver == 'PSS-1986') then     
+      if (strsolver == 'PSS-1986') then
 
 !======================================================
 !   V0-GFS OROGW-solver of Palmer et al 1986 -"PSS-1986"
 !   in V1-OROGW  LINSATDIS of                 "WAM-2017"
 !     with LLWB-mechanism for
-!     rotational/non-hydrostat OGWs important for 
+!     rotational/non-hydrostat OGWs important for
 !     HighRES-FV3GFS with dx < 10 km
 !======================================================
- 
+
         DO K = KMPS, KMM1                   ! Vertical Level Loop
           KP1 = K + 1
           DO I = 1, npt
@@ -700,7 +700,7 @@ module ugwp_driver_v0
                   SCORK   = BNV2(I,K) * TEMV * TEMV
                   RSCOR   = MIN(1.0, SCORK / SCOR(I))
                   SCOR(I) = SCORK
-                ELSE 
+                ELSE
                   RSCOR   = 1.
                 ENDIF
 !
@@ -727,7 +727,7 @@ module ugwp_driver_v0
                    TEMC = 2.0 + 1.0 / TEM2
                    HD   = VELCO(I,K) * (2.*SQRT(TEMC)-TEMC) / BRVF
                    TAUP(I,KP1) = TEM1 * HD * HD
-                ELSE 
+                ELSE
                    TAUP(I,KP1) = TAUP(I,K) * RSCOR
                 ENDIF
                 taup(i,kp1) = min(taup(i,kp1), taup(i,k))
@@ -738,7 +738,7 @@ module ugwp_driver_v0
 !
 !  zero momentum deposition at the top model layer
 !
-        taup(1:npt,km+1) = taup(1:npt,km)      
+        taup(1:npt,km+1) = taup(1:npt,km)
 !
 !     Calculate wave acc-n: - (grav)*d(tau)/d(p) = taud
 !
@@ -749,7 +749,7 @@ module ugwp_driver_v0
         ENDDO
 !
 !------scale MOMENTUM DEPOSITION  AT TOP TO 1/2 VALUE
-! it is zero now      
+! it is zero now
 !       DO I = 1,npt
 !         TAUD(I, km) = TAUD(I,km) * FACTOP
 !       ENDDO
@@ -784,19 +784,19 @@ module ugwp_driver_v0
 !
 !       sigres = max(sigmin, sigma(J))
 !	if (heff/sigres.gt.dxres) sigres=heff/dxres
-!         inv_b2eff =  0.5*sigres/heff 	
+!         inv_b2eff =  0.5*sigres/heff
 !       XLINV(I) = max(kxridge, inv_b2eff)           ! 0.5*sigma(j)/heff = 1./Lridge
         dtfac(:) =  1.0
-       
+
         call oro_wam_2017(im, km, npt, ipt, kref, kdt, me, master, &
              dtp, dxres, taub, u1, v1, t1, xn, yn, bnv2, ro, prsi,prsL, &
              del, sigma, hprime, gamma, theta, &
              sinlat, xlatd, taup, taud, pkdis)
-     
+
       endif            !  oro_wam_2017 - LINSATDIS-solver of WAM-2017
 !
 !--------------------------- OROGW-solver of WAM2017
-! 
+!
 ! TOFD as in BELJAARS-2004
 !
 ! ---------------------------
@@ -870,7 +870,7 @@ module ugwp_driver_v0
 !
             TAUD(I,K)  = TAUD(I,K) * DTFAC(I)
             DTAUX      = TAUD(I,K) * XN(I)
-            DTAUY      = TAUD(I,K) * YN(I) 
+            DTAUY      = TAUD(I,K) * YN(I)
 
             Pdvdt(j,k)   = DTAUY  +Pdvdt(j,k)
             Pdudt(j,k)   = DTAUX  +Pdudt(j,k)
@@ -908,9 +908,9 @@ module ugwp_driver_v0
 !===============================================================================
 !23456==============================================================================
 
-!> A modification of the Scinocca (2003) \cite scinocca_2003 algorithm for 
+!> A modification of the Scinocca (2003) \cite scinocca_2003 algorithm for
 !! NGWs with non-hydrostatic and rotational
-!!effects for GW propagations and background dissipation 
+!!effects for GW propagations and background dissipation
       subroutine fv3_ugwp_solv2_v0(klon, klev, dtime, &
                  tm1 , um1, vm1, qm1, &
                  prsl, prsi,   philg, xlatd, sinlat, coslat, &
@@ -939,7 +939,7 @@ module ugwp_driver_v0
                                    nslope,  ilaunch, zmsi, &
                                    zci,     zdci,    zci4, zci3, zci2, &
                                    zaz_fct, zcosang, zsinang, &
-                                   nwav,    nazd,    zcimin, zcimax      
+                                   nwav,    nazd,    zcimin, zcimax
 !
       implicit none
 !23456
@@ -952,7 +952,7 @@ module ugwp_driver_v0
       real,    intent(in) :: vm1(klon,klev)   ! meridional wind
       real,    intent(in) :: um1(klon,klev)   ! zonal wind
       real,    intent(in) :: qm1(klon,klev)   ! spec. humidity
-      real,    intent(in) :: tm1(klon,klev)   ! kin temperature 
+      real,    intent(in) :: tm1(klon,klev)   ! kin temperature
 
       real,    intent(in) :: prsl(klon,klev)  ! mid-layer pressure
       real,    intent(in) :: philg(klon,klev) ! m2/s2-phil => meters !!!!!       phil =philg/grav
@@ -986,9 +986,9 @@ module ugwp_driver_v0
 
 !      real  :: zthm1(klon,klev)                       ! temperature interface levels
        real  :: zthm1                                  ! 1.0 / temperature interface levels
-       real  :: zbvfhm1(klon,ilaunch:klev)             ! interface BV-frequency 
+       real  :: zbvfhm1(klon,ilaunch:klev)             ! interface BV-frequency
        real  :: zbn2(klon,ilaunch:klev)                ! interface BV-frequency
-       real  :: zrhohm1(klon,ilaunch:klev)             ! interface density 
+       real  :: zrhohm1(klon,ilaunch:klev)             ! interface density
        real  :: zuhm1(klon,ilaunch:klev)               ! interface zonal wind
        real  :: zvhm1(klon,ilaunch:klev)               ! meridional wind
        real  :: v_zmet(klon,ilaunch:klev)
@@ -1083,8 +1083,8 @@ module ugwp_driver_v0
            zthm1          = 2.0_kp / (tvc1+tvm1)
            zuhm1(jl,jk)   = half *(um1(jl,jk-1)+um1(jl,jk))
            zvhm1(jl,jk)   = half *(vm1(jl,jk-1)+vm1(jl,jk))
-!          zrhohm1(jl,jk) = prsi(jl,jk)*rdi/zthm1(jl,jk)   !  rho = p/(RTv) 
-           zrhohm1(jl,jk) = prsi(jl,jk)*rdi*zthm1          !  rho = p/(RTv) 
+!          zrhohm1(jl,jk) = prsi(jl,jk)*rdi/zthm1(jl,jk)   !  rho = p/(RTv)
+           zrhohm1(jl,jk) = prsi(jl,jk)*rdi*zthm1          !  rho = p/(RTv)
            zdelp          = phil(jl,jk)-phil(jl,jk-1)      !>0 ...... dz-meters
            v_zmet(jl,jk)  = zdelp + zdelp
            delpi(jl,jk)  = grav / (prsi(jl,jk-1) - prsi(jl,jk))
@@ -1137,16 +1137,16 @@ module ugwp_driver_v0
 
         enddo
 !                                         define rho(zo)/n(zo)
-!       ------------------- 
-      do jk=ilaunch, klev-1               
+!       -------------------
+      do jk=ilaunch, klev-1
         do jl=1,klon
            zfct(jl,jk) = zrhohm1(jl,jk) / zbvfhm1(jl,jk)
         enddo
       enddo
 
-!      ----------------------------------------- 
+!      -----------------------------------------
 !       set launch momentum flux spectral density
-!       ----------------------------------------- 
+!       -----------------------------------------
 
       if(nslope == 1) then                   ! s=1 case
                                              ! --------
@@ -1319,7 +1319,7 @@ module ugwp_driver_v0
 !=======================================================================
 ! saturated limit    wfit = kzw*kzw*kt; wfdt = wfit/(kxw*cx)*betat
 ! & dissipative      kzi = 2.*kzw*(wfdm+wfdt)*dzpi(k)
-!           define   kxw = 
+!           define   kxw =
 !=======================================================================
               v_cdp =  abs(zcin-zui(jL,jk,iazi))
               v_wdp = v_kxw*v_cdp
@@ -1332,9 +1332,9 @@ module ugwp_driver_v0
               endif
               if ( kzw2 > zero .and. cdf2 > zero) then
                 v_kzw = sqrt(kzw2)
-!	       
+!
 !linsatdis:  kzw2, kzw3, kdsat, c2f2,  cdf2, cdf1
-!	             
+!
 !kzw2 = (zBn2(k)-wdop2)/Cdf2  - rhp4 - v_kx2w  ! full lin DS-NiGW (N2-wd2)*k2=(m2+k2+[1/2H]^2)*(wd2-f2)
 !              Kds = kxw*Cdf1*rhp2/kzw3
 !
@@ -1357,10 +1357,10 @@ module ugwp_driver_v0
 !  linsatdis = 1.0 , here:   u'^2 ~ linsatdis* [v_cdp*v_cdp]
 !
               zfluxs = zfct(jl,jk)*v_cdp*v_cdp*zcinc
-!                                     
+!
 !             zfluxs= zfct(jl,jk)*(zcin-zui(jl,jk,iazi))**2/zcin
 ! flux_tot - sat.flux
-! 
+!
               zdep = zact(jl,inc,iazi)* (fdis-zfluxs)
               if(zdep > zero ) then
 ! subs on sat-limit
@@ -1377,13 +1377,13 @@ module ugwp_driver_v0
 ! integrate over spectral modes  zpu(y, z, azimuth)    zact(jl,inc,iazi)*zflux(jl,inc,iazi)*[d("zcinc")]
 !
           zdfdz_v(:,jk,iazi) = zero
- 
+
           do inc=1, nwav
             zcinc = zdci(inc)                    ! dc-integration
             do jl=1,klon
               vc_zflx_mode    = zact(jl,inc,iazi)*zflux(jl,inc,iazi)
               zpu(jl,jk,iazi) = zpu(jl,jk,iazi) + vc_zflx_mode*zcinc
-              
+
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ! check monotonic decrease
 !     (heat deposition integration over spectral mode for each azimuth
@@ -1447,7 +1447,7 @@ module ugwp_driver_v0
            ze2   = (tauy(jl,jk)-tauy(jl,jk-1))*zdelp
            if (abs(ze1) >= maxdudt ) then
              ze1 = sign(maxdudt, ze1)
-           endif 
+           endif
            if (abs(ze2) >= maxdudt ) then
              ze2 = sign(maxdudt, ze2)
            endif
@@ -1464,7 +1464,7 @@ module ugwp_driver_v0
        enddo
 !
 ! add limiters/efficiency for "unbalanced ics" if it is needed
-!       
+!
        do jk=ilaunch,klev
          do jl=1, klon
            pdudt(jl,jk) = gw_eff * pdudt(jl,jk)
@@ -1474,7 +1474,7 @@ module ugwp_driver_v0
          enddo
        enddo
 !
-!--------------------------------------------------------------------------- 
+!---------------------------------------------------------------------------
        end subroutine fv3_ugwp_solv2_v0
-      
+
 end module ugwp_driver_v0

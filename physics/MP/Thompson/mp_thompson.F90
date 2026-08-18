@@ -50,7 +50,7 @@ module mp_thompson
          use module_mp_thompson, only : R_uni, k_b, M_w, M_a, N_avo, lvap0, lfus
          use module_mp_thompson, only : av_i, av_s, D0s, bv_s, bv_i
          use module_mp_thompson, only : nt_c_l, nt_c_o, xnc_max, ssati_min, Nt_i_max, rr_min
-         
+
          implicit none
 
          ! Interface variables
@@ -132,7 +132,7 @@ module mp_thompson
          N_avo = con_avgd
          lvap0 = con_hvap
          lfus = con_hfus
-         
+
          if (present(con_nt_c_l)) nt_c_l = con_nt_c_l
          if (present(con_nt_c_o)) nt_c_o = con_nt_c_o
          if (present(con_av_i)) then
@@ -148,7 +148,7 @@ module mp_thompson
          if (present(con_ssati_min)) ssati_min = con_ssati_min
          if (present(con_Nt_i_max)) Nt_i_max = con_Nt_i_max
          if (present(con_rr_min)) rr_min = con_rr_min
-         
+
          ! Consistency checks
          if (imp_physics/=imp_physics_thompson) then
             write(errmsg,'(*(a))') "Logic error: namelist choice of microphysics is different from Thompson MP"
@@ -176,7 +176,7 @@ module mp_thompson
                             mpicomm=mpicomm, mpirank=mpirank, mpiroot=mpiroot, &
                             threads=threads, errmsg=errmsg, errflg=errflg)
          if (errflg /= 0) return
-         
+
          ! For restart runs, the init is done here
          if (restart) then
            is_initialized = .true.
@@ -198,7 +198,7 @@ module mp_thompson
          !> - Also, hydrometeor variables are mass or number mixing ratio
          !> - either kg of species per kg of dry air, or per kg of (dry + vapor).
          if (merra2_aerosol_aware) then
-           call get_niwfa(aerfld, nifa, nwfa, ncol, nlev) 
+           call get_niwfa(aerfld, nifa, nwfa, ncol, nlev)
          end if
 
 
@@ -320,7 +320,7 @@ module mp_thompson
 
            ! Copy to local array for calculating cloud effective radii below
            nc_local = nc
- 
+
         else if (merra2_aerosol_aware) then
 
            ! Ensure we have 1st guess cloud droplet number where mass non-zero but no number.
@@ -409,7 +409,7 @@ module mp_thompson
          real(kind_phys),           intent(in   ) :: ni(:,:)
          real(kind_phys),           intent(in   ) :: nr(:,:)
          ! Aerosols
-         logical,                   intent(in)    :: is_aerosol_aware, fullradar_diag 
+         logical,                   intent(in)    :: is_aerosol_aware, fullradar_diag
          logical,                   intent(in)    :: merra2_aerosol_aware
          real(kind_phys), optional, intent(in   ) :: nc(:,:)
          real(kind_phys), optional, intent(in   ) :: nwfa(:,:)
@@ -449,7 +449,7 @@ module mp_thompson
          logical,                   intent(in)    :: ext_diag
          real(kind_phys), target,   intent(inout), optional :: diag3d(:,:,:)
          logical,                   intent(in)    :: reset_diag3d
-         
+
          real(kind_phys),           intent(  out) :: ten_q(:,:,:)
          real(kind_phys),           intent(  out) :: ten_u(:,:)
          real(kind_phys),           intent(  out) :: ten_v(:,:)
@@ -465,11 +465,11 @@ module mp_thompson
          real(kind_phys), optional, intent(  out) :: dnwfa(:,:)
          real(kind_phys), optional, intent(  out) :: dnifa(:,:)
          real(kind_phys),           intent(  out) :: dtgrs(:,:)
-         
+
          ! CCPP error handling
          character(len=*),          intent(  out) :: errmsg
          integer,                   intent(  out) :: errflg
-         
+
          ! SPP
          integer,                   intent(in) :: spp_mp
          integer,                   intent(in) :: n_var_spp
@@ -507,7 +507,7 @@ module mp_thompson
          real(kind_phys) :: delta_graupel_mp(1:ncol)        ! mm
          real(kind_phys) :: delta_ice_mp(1:ncol)            ! mm
          real(kind_phys) :: delta_snow_mp(1:ncol)           ! mm
-         
+
          real(kind_phys) :: new_spechum(1:ncol,1:nlev)
          real(kind_phys) :: new_qc(1:ncol,1:nlev)
          real(kind_phys) :: new_qr(1:ncol,1:nlev)
@@ -518,7 +518,7 @@ module mp_thompson
          real(kind_phys) :: new_nr(1:ncol,1:nlev)
          real(kind_phys), allocatable :: new_nc(:,:), new_nwfa(:,:), new_nifa(:,:)
          real(kind_phys) :: new_tgrs(1:ncol,1:nlev)
-         
+
          real(kind_phys) :: pfils(1:ncol,1:nlev,1)
          real(kind_phys) :: pflls(1:ncol,1:nlev,1)
          ! Radar reflectivity
@@ -530,7 +530,7 @@ module mp_thompson
          integer, parameter :: has_reqi = 0
          integer, parameter :: has_reqs = 0
          integer, parameter :: kme_stoch = 1
-         integer         :: spp_mp_opt 
+         integer         :: spp_mp_opt
          ! Dimensions used in mp_gt_driver
          integer         :: ids,ide, jds,jde, kds,kde, &
                             ims,ime, jms,jme, kms,kme, &
@@ -580,7 +580,7 @@ module mp_thompson
          ! Initialize the CCPP error handling variables
          errmsg = ''
          errflg = 0
-         
+
          ten_q    = 0.0 ! Since this scheme is outputting tracer tendencies individually,
                         ! we also need to initialize the entire array to 0, so that when
                         ! tendencies are applied, all tracer tendencies other than those
@@ -596,7 +596,7 @@ module mp_thompson
          dni      = 0.0
          dnr      = 0.0
          dtgrs    = 0.0
-         
+
          new_spechum = spechum
          new_qc = qc
          new_qr = qr
@@ -606,12 +606,12 @@ module mp_thompson
          new_ni = ni
          new_nr = nr
          new_tgrs = tgrs
-         
+
          if (is_aerosol_aware .or. merra2_aerosol_aware) then
            dnc      = 0.0
            dnwfa    = 0.0
            dnifa    = 0.0
-           
+
            allocate(new_nc(ncol,nlev))
            allocate(new_nwfa(ncol,nlev))
            allocate(new_nifa(ncol,nlev))
@@ -619,7 +619,7 @@ module mp_thompson
            new_nwfa = nwfa
            new_nifa = nifa
          end if
-         
+
          if (first_time_step .and. istep==1) then
             ! Check initialization state
             if (.not.is_initialized) then
@@ -993,10 +993,10 @@ module mp_thompson
            dnc = (new_nc - nc)/dtp
            dnwfa = (new_nwfa - nwfa)/dtp
            dnifa = (new_nifa - nifa)/dtp
-           
+
            deallocate(new_nc, new_nwfa, new_nifa)
          end if
-         
+
       end subroutine mp_thompson_run
 !>@}
 
@@ -1041,7 +1041,7 @@ module mp_thompson
          ! 5: dust bin 5,                     6.0 to 10.0 micrometers
          ! 6: sea salt bin 1,                 0.03 to 0.1 micrometers
          ! 7: sea salt bin 2,                 0.1 to 0.5  micrometers
-         ! 8: sea salt bin 3,                 0.5 to 1.5  micrometers 
+         ! 8: sea salt bin 3,                 0.5 to 1.5  micrometers
          ! 9: sea salt bin 4,                 1.5 to 5.0  micrometers
          ! 10: sea salt bin 5,                5.0 to 10.0 micrometers
          ! 11: Sulfate,                       0.35 (mean) micrometers
@@ -1053,7 +1053,7 @@ module mp_thompson
          ! 6-10: sea salt bins 6-10: 2200 kg/m2
          ! 11:   sulfate:            1700 kg/m2
          ! 15:   organic carbon:     1800 kg/m2
-         
+
          implicit none
          integer, intent(in)::ncol, nlev
          real (kind=kind_phys), dimension(:,:,:), intent(in)  :: aerfld

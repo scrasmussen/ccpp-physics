@@ -3,7 +3,7 @@
   name = GFS_suite_interstitial_3
   type = scheme
   dependencies = ../../hooks/machine.F
-  
+
 ########################################################################
 [ccpp-arg-table]
   name = GFS_suite_interstitial_3_run

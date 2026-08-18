@@ -16,13 +16,13 @@
 !! used in the closure computations in the samfdeepcnv.f scheme
 !! This subroutine computes a prognostic updraft area fracftion
 !! used in the closure computations in the samfshalcnv. scheme
-!!\section gen_progsigma progsigma_calc General Algorithm 
+!!\section gen_progsigma progsigma_calc General Algorithm
       subroutine progsigma_calc (im,km,flag_init,flag_restart,flag_shallow,&
            flag_mid,del,tmf,qmicro,dbyo1,zdqca,omega_u,zeta,hvap,          &
            delt,qadv,kb,kbcon1,ktcon,cnvflg,betascu,betamcu,betadcu,       &
            sigmind,sigminm,sigmins,sigmain,sigmaout,sigmab)
-!                                                           
-!                                                                                                                                             
+!
+!
       use machine,  only : kind_phys
       use funcphys, only : fpvs
 
@@ -47,7 +47,7 @@
       integer              :: i,k,km1
       real(kind=kind_phys) :: termA(im),termB(im),termC(im),termD(im)
       real(kind=kind_phys) :: fdqa(im),form(im,km),              &
-           dp(im,km),inbu(im,km)                         
+           dp(im,km),inbu(im,km)
       real(kind=kind_phys) :: sumx(im)
 
       real(kind=kind_phys) :: gcvalmx,epsilon,ZZ,cvg,mcon,buy2,   &
@@ -75,7 +75,7 @@
             dp(i,k)=0.
          enddo
       enddo
-     
+
      !Initialization 1D
       do i=1,im
          sigmab(i)=0.
@@ -118,9 +118,9 @@
           endif
         endif
       enddo
-          
-      !compute termD "The vertical integral of the latent heat convergence is limited to the                                        
-      ! layers with positive moisture convergence (accumulated from the updraft starting level).                   
+
+      !compute termD "The vertical integral of the latent heat convergence is limited to the
+      ! layers with positive moisture convergence (accumulated from the updraft starting level).
        do k = 1,km1
           do i = 1,im
              if(cnvflg(i))then
@@ -152,7 +152,7 @@
           enddo
        enddo
 
-       !termB                                                                                                             
+       !termB
        do k = 2,km1
           do i = 1,im
              if(cnvflg(i))then
@@ -190,7 +190,7 @@
             cvg=MAX(0.0,cvg)
             sigmab(i)=(ZZ*(termA(i)+cvg))/(DEN+(1.0-ZZ))
             if(sigmab(i)>0.)then
-               sigmab(i)=MIN(sigmab(i),0.95)  
+               sigmab(i)=MIN(sigmab(i),0.95)
                sigmab(i)=MAX(sigmab(i),sigmind_new)
             endif
          endif!cnvflg
@@ -204,7 +204,7 @@
          enddo
       enddo
 
-      !Reduce area fraction before coupling back to mass-flux computation. 
+      !Reduce area fraction before coupling back to mass-flux computation.
       if(flag_shallow)then
          do i= 1, im
             if(cnvflg(i)) then

@@ -144,11 +144,11 @@ contains
       sig1t = 0.0_kind_phys
       npts  = nx*ny
 !
-! Some surface variables need to be updated by gcycle with coupled mode, and nsst mode dependent. A few variables are saved 
+! Some surface variables need to be updated by gcycle with coupled mode, and nsst mode dependent. A few variables are saved
 ! in order to be able to update them over the specific surface types only after call sfccycle
 !
       if ( cplflx ) then
-        hice_save   = hice 
+        hice_save   = hice
         fice_save   = fice
         snowd_save  = snowd
         snoalb_save = snoalb
@@ -283,8 +283,8 @@ contains
       if ( cplflx ) then
 !       In coupled mode, keep these variables the same as is (before sfccycle is called) over ocean
         do ix=1,npts
-          if ( oceanfrac(ix) > 0.0_kind_phys ) then      
-            hice(ix)   = hice_save(ix) 
+          if ( oceanfrac(ix) > 0.0_kind_phys ) then
+            hice(ix)   = hice_save(ix)
             fice(ix)   = fice_save(ix)
             snowd(ix)  = snowd_save(ix)
             snoalb(ix) = snoalb_save(ix)
@@ -292,17 +292,17 @@ contains
             weasd(ix)  = weasd_save(ix)
           endif
         enddo
-!       In the coupled mode and when NSST is on, update tref over non-ocean 
-        if ( nsst > 0 ) then       
+!       In the coupled mode and when NSST is on, update tref over non-ocean
+        if ( nsst > 0 ) then
           do ix=1,npts
-            if ( oceanfrac(ix) == 0.0_kind_phys ) then 
-              tref(ix)  = TSFFCS(ix) 
+            if ( oceanfrac(ix) == 0.0_kind_phys ) then
+              tref(ix)  = TSFFCS(ix)
             endif
           enddo
 !       In the coupled mode and when NSST is off, update tsfc and tsfco over non-ocean
-        else             
+        else
           do ix=1,npts
-            if ( oceanfrac(ix) == 0.0_kind_phys ) then 
+            if ( oceanfrac(ix) == 0.0_kind_phys ) then
               tsfc(ix)  = TSFFCS(ix)
               tsfco(ix) = TSFFCS(ix)
             endif

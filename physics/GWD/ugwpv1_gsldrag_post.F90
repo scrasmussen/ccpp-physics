@@ -39,7 +39,7 @@ contains
         real(kind=kind_phys), intent(in),    dimension(:),optional   :: du_ofdcol, du_oblcol
         real(kind=kind_phys), intent(inout), dimension(:)   :: tot_mtb, tot_ogw, tot_tofd, tot_ngw
         real(kind=kind_phys), intent(inout), dimension(:)   :: tot_zmtb, tot_zlwb, tot_zogw
-	
+
         real(kind=kind_phys), intent(in),    dimension(:,:) :: dudt_gw, dvdt_gw
         real(kind=kind_phys), intent(in),    dimension(:,:), optional :: dudt_obl, dvdt_obl, dudt_ogw
         real(kind=kind_phys), intent(in),    dimension(:,:), optional :: dvdt_ogw, dudt_ofd, dvdt_ofd
@@ -75,12 +75,12 @@ contains
           tot_zmtb =  tot_zmtb + dtf *zobl
           tot_zlwb =  tot_zlwb + dtf *zlwb
           tot_zogw =  tot_zogw + dtf *zogw
-    
+
           tot_tofd  = tot_tofd + dtf *du_ofdcol
           tot_mtb   = tot_mtb +  dtf *du_oblcol
           tot_ogw   = tot_ogw +  dtf *tau_ogw
           tot_ngw   = tot_ngw +  dtf *tau_ngw
-    
+
           du3dt_mtb = du3dt_mtb + dtf *dudt_obl
           du3dt_tms = du3dt_tms + dtf *dudt_ofd
           du3dt_ogw = du3dt_ogw + dtf *dudt_ogw
@@ -113,28 +113,28 @@ contains
           ldv3dt_ngw = ldv3dt_ngw + dtf *dvdt_ngw
           ldt3dt_ngw = ldt3dt_ngw + dtf *dtdt_ngw
         endif
-	
+
 !=====================================================================
 ! Updates inside the ugwpv1_gsldrag.F90
 !
 !
 !       "post" may  also create the "time-averaged" diagnostics"
-!            
+!
 !     if(ldiag3d .and. lssav .and. .not. flag_for_gwd_generic_tend) then
 !        do k=1,levs
 !          do i=1,im
 !             ldu3dt_ngw(i,k) = ldu3dt_ngw(i,k) + dudt_ngw(i,k)*dtf
 !             ldv3dt_ngw(i,k) = ldv3dt_ngw(i,k) + dvdt_ngw(i,k)*dtf
 !             ldt3dt_ngw(i,k) = ldt3dt_ngw(i,k) + dtdt_ngw(i,k)*dtf
-!	  
+!
 !             ldu3dt_ogw(i,k) = ldu3dt_ogw(i,k) + dudt_ogw(i,k)*dtf
 !             ldv3dt_ogw(i,k) = ldv3dt_ogw(i,k) + dvdt_ogw(i,k)*dtf
 !             ldt3dt_ogw(i,k) = ldt3dt_ogw(i,k) + dtdt_ogw(i,k)*dtf
 !          enddo
 !        enddo
 !      endif
-! 
+!
 !=====================================================================
-      end subroutine ugwpv1_gsldrag_post_run      
+      end subroutine ugwpv1_gsldrag_post_run
 
 end module ugwpv1_gsldrag_post

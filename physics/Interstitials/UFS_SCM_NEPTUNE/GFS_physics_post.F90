@@ -1,8 +1,8 @@
 !> \file GFS_physics_post.F90
 !!
 !! This module contains GFS specific calculations (e.g. diagnostics) and suite specific
-!! code (e.g Saving fields for subsequent physics timesteps).  For interoperability across a 
-!! wide range of hosts, CCPP compliant schemes should avoid including such calculations. This 
+!! code (e.g Saving fields for subsequent physics timesteps).  For interoperability across a
+!! wide range of hosts, CCPP compliant schemes should avoid including such calculations. This
 !! module/scheme is intended for such "host-specific" computations.
 !!
 ! ###########################################################################################
@@ -28,14 +28,14 @@ contains
          ntoz,           & !< Index for ozone mixing ratio
          ntqv,           & !< Index for water vapor mixing ratio
          ntracp100,      & !< Number of tracers plus 100
-         nprocess,       & !< Number of processes that cause changes in state variables 
+         nprocess,       & !< Number of processes that cause changes in state variables
          nprocess_summed,& !< Number of causes in dtidx per tracer summed for total physics tendency
          ip_physics,     & !< Index for process in diagnostic tendency output
          ip_photochem,   & !< Index for process in diagnostic tendency output
          ip_prod_loss,   & !< Index for process in diagnostic tendency output
          ip_ozmix,       & !< Index for process in diagnostic tendency output
          ip_temp,        & !< Index for process in diagnostic tendency output
-         ip_overhead_ozone !< Index for process in diagnostic tendency output    
+         ip_overhead_ozone !< Index for process in diagnostic tendency output
     integer, intent(in), dimension(:,:) :: &
          dtidx             !< Bookkeeping indices for GFS diagnostic tendencies
     logical, intent(in) :: &
@@ -78,7 +78,7 @@ contains
     !
     ! #######################################################################################
     idtend = dtidx(100+ntoz,ip_prod_loss)
-    if (idtend >= 1 .and. associated(do3_dt_prd)) then  
+    if (idtend >= 1 .and. associated(do3_dt_prd)) then
        dtend(:,:,idtend) = dtend(:,:,idtend) + do3_dt_prd
     endif
     !

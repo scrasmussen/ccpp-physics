@@ -1,5 +1,5 @@
 !>  \file cs_conv_aw_adj.F90
-!! This file contains a subroutine to adjusts surface rainrate for conservation for CSAW.  
+!! This file contains a subroutine to adjusts surface rainrate for conservation for CSAW.
 
 !>\defgroup mod_cs_conv_aw_adj CSAW adjustment Module
 !! This module adjusts surface rainrate for conservation.

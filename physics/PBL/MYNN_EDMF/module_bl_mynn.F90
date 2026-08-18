@@ -95,7 +95,7 @@
 ! *     5. Olson J. and coauthors, 2019: A description of the          *
 ! *        MYNN-EDMF scheme and coupling to other components in        *
 ! *        WRF-ARW. NOAA Tech. Memo. OAR GSD, 61, 37 pp.,              *
-! *        https://doi.org/10.25923/n9wm-be49.                         * 
+! *        https://doi.org/10.25923/n9wm-be49.                         *
 ! *     6. Puhales, Franciano S. and coauthors, 2020: Turbulent        *
 ! *        Kinetic Energy Budget for MYNN-EDMF PBL Scheme in WRF model.*
 ! *        Universidade Federal de Santa Maria Technical Note. 9 pp.   *
@@ -116,7 +116,7 @@
 ! 1. Addition of BouLac mixing length in the free atmosphere.
 ! 2. Changed the turbulent mixing length to be integrated from the
 !    surface to the top of the BL + a transition layer depth.
-! v3.4.1:    Option to use Kitamura/Canuto modification which removes 
+! v3.4.1:    Option to use Kitamura/Canuto modification which removes
 !            the critical Richardson number and negative TKE (default).
 !            Hybrid PBL height diagnostic, which blends a theta-v-based
 !            definition in neutral/convective BL and a TKE-based definition
@@ -126,29 +126,29 @@
 ! v3.5.1:    Fog deposition related changes.
 ! v3.6.0:    Removed fog deposition from the calculation of tendencies
 !            Added mixing of qc, qi, qni
-!            Added output for wstar, delta, TKE_PBL, & KPBL for correct 
-!                   coupling to shcu schemes  
+!            Added output for wstar, delta, TKE_PBL, & KPBL for correct
+!                   coupling to shcu schemes
 ! v3.8.0:    Added subgrid scale cloud output for coupling to radiation
 !            schemes (activated by setting icloud_bl =1 in phys namelist).
 !            Added WRF_DEBUG prints (at level 3000)
 !            Added Tripoli and Cotton (1981) correction.
 !            Added namelist option bl_mynn_cloudmix to test effect of mixing
-!                cloud species (default = 1: on). 
+!                cloud species (default = 1: on).
 !            Added mass-flux option (bl_mynn_edmf, = 1 for DMP mass-flux, 0: off).
-!                Related options: 
+!                Related options:
 !                 bl_mynn_edmf_mom = 1 : activate momentum transport in MF scheme
 !                 bl_mynn_edmf_tke = 1 : activate TKE transport in MF scheme
 !            Added mixing length option (bl_mynn_mixlength, see notes below)
 !            Added more sophisticated saturation checks, following Thompson scheme
 !            Added new cloud PDF option (bl_mynn_cloudpdf = 2) from Chaboureau
-!                and Bechtold (2002, JAS, with mods) 
+!                and Bechtold (2002, JAS, with mods)
 !            Added capability to mix chemical species when env variable
 !                WRF_CHEM = 1, thanks to Wayne Angevine.
 !            Added scale-aware mixing length, following Junshi Ito's work
 !                Ito et al. (2015, BLM).
 ! v3.9.0    Improvement to the mass-flux scheme (dynamic number of plumes,
 !                better plume/cloud depth, significant speed up, better cloud
-!                fraction). 
+!                fraction).
 !            Added Stochastic Parameter Perturbation (SPP) implementation.
 !            Many miscellaneous tweaks to the mixing lengths and stratus
 !                component of the subgrid clouds.
@@ -158,7 +158,7 @@
 !            Further refinement of mass-flux scheme from SCM experiments with
 !                Wayne Angevine: switch to linear entrainment and back to
 !                Simpson and Wiggert-type w-equation.
-!            Addition of TKE production due to radiation cooling at top of 
+!            Addition of TKE production due to radiation cooling at top of
 !                clouds (proto-version); not activated by default.
 !            Some code rewrites to move if-thens out of loops in an attempt to
 !                improve computational efficiency.
@@ -168,7 +168,7 @@
 !                component of the subgrid-scale (SGS) clouds.
 ! v4.1       Big improvements in downward SW radiation due to revision of subgrid clouds
 !                - better cloud fraction and subgrid scale mixing ratios.
-!                - may experience a small cool bias during the daytime now that high 
+!                - may experience a small cool bias during the daytime now that high
 !                  SW-down bias is greatly reduced...
 !            Some tweaks to increase the turbulent mixing during the daytime for
 !                bl_mynn_mixlength option 2 to alleviate cool bias (very small impact).
@@ -202,7 +202,7 @@
 !                a very small, but primarily  positive, impact on SW-down biases.
 !            Tweak to calculation of KPBL - urged by Laura Fowler - to make more intuitive.
 !            Tweak to temperature range of blending for saturation check (water to ice). This
-!                slightly reduces excessive SGS clouds in polar region. No impact warm clouds. 
+!                slightly reduces excessive SGS clouds in polar region. No impact warm clouds.
 !            Added namelist option bl_mynn_output (0 or 1) to suppress or activate the
 !                allocation and output of 10 3D variables. Most people will want this
 !                set to 0 (default) to save memory and disk space.
@@ -228,7 +228,7 @@
 !            Important bug fixes for mixing of chemical species.
 !            Addition of pressure-gradient effects on updraft momentum transport.
 !            Addition of bl_mynn_closure option = 2.5, 2.6, or 3.0
-!            Addition of higher-order moments for sigma when using 
+!            Addition of higher-order moments for sigma when using
 !                bl_mynn_cloudpdf = 2 (Chab-Becht).
 !            Removed WRF_CHEM dependencies.
 !            Many miscellaneous tweaks.
@@ -239,7 +239,7 @@
 !            Revision option bl_mynn_cloudpdf = 2, which now ensures cloud fractions for all
 !                optically relevant mixing ratios (tip from Greg Thompson). Also, added flexibility
 !                for tuning near-surface cloud fractions to remove excess fog/low ceilings.
-!            Now outputs all SGS cloud mixing ratios as grid-mean values, not in-cloud. This 
+!            Now outputs all SGS cloud mixing ratios as grid-mean values, not in-cloud. This
 !                results in a change in the pre-radiation code to no longer multiply mixing ratios
 !                by cloud fractions.
 !            Lots of code cleanup: removal of test code, comments, changing text case, etc.
@@ -297,7 +297,7 @@ MODULE module_bl_mynn
        &e4c = 12.0*a1*a2*cc2,    &
        &e5c =  6.0*a1*a1
 
-! Constants for min tke in elt integration (qmin), max z/L in els (zmax), 
+! Constants for min tke in elt integration (qmin), max z/L in els (zmax),
 ! and factor for eddy viscosity for TKE (Kq = Sqfac*Km):
   real(kind_phys), parameter :: qmin=0.0, zmax=1.0, Sqfac=3.0
 ! Note that the following mixing-length constants are now specified in mym_length
@@ -310,10 +310,10 @@ MODULE module_bl_mynn
   real(kind_phys), parameter :: rr2=0.7071068, rrp=0.3989423
 
   !>Use Canuto/Kitamura mod (remove Ric and negative TKE) (1:yes, 0:no)
-  !!For more info, see Canuto et al. (2008 JAS) and Kitamura (Journal of the 
+  !!For more info, see Canuto et al. (2008 JAS) and Kitamura (Journal of the
   !!Meteorological Society of Japan, Vol. 88, No. 5, pp. 857-864, 2010).
   !!Note that this change required further modification of other parameters
-  !!above (c2, c3). If you want to remove this option, set c2 and c3 constants 
+  !!above (c2, c3). If you want to remove this option, set c2 and c3 constants
   !!(above) back to NN2009 values (see commented out lines next to the
   !!parameters above). This only removes the negative TKE problem
   !!but does not necessarily improve performance - neutral impact.
@@ -353,8 +353,8 @@ CONTAINS
 ! ==================================================================
 !>\ingroup gp_mynnedmf
 !! This subroutine is the MYNN-EDNF PBL driver routine,which
-!! encompassed the majority of the subroutines that comprise the 
-!! procedures that ultimately solve for tendencies of 
+!! encompassed the majority of the subroutines that comprise the
+!! procedures that ultimately solve for tendencies of
 !! \f$U, V, \theta, q_v, q_c, and q_i\f$.
 !!\section gen_mynn_bl_driver  mynn_bl_driver General Algorithm
 !> @{
@@ -381,7 +381,7 @@ CONTAINS
        &rqnwfablten,rqnifablten,        &
        &rqnbcablten,dozone,             &
        &exch_h,exch_m,                  &
-       &pblh,kpbl,                      & 
+       &pblh,kpbl,                      &
        &el_pbl,                         &
        &dqke,qwt,qshear,qbuoy,qdiss,    &
        &qc_bl,qi_bl,cldfra_bl,          &
@@ -412,7 +412,7 @@ CONTAINS
        &IDS,IDE,JDS,JDE,KDS,KDE,        &
        &IMS,IME,JMS,JME,KMS,KME,        &
        &ITS,ITE,JTS,JTE,KTS,KTE         )
-    
+
 !-------------------------------------------------------------------
 
     integer, intent(in) :: initflag
@@ -453,7 +453,7 @@ CONTAINS
 !       closure       : <= 2.5;  Level 2.5
 !                  2.5< and <3;  Level 2.6
 !                        =   3;  Level 3
-    
+
     real(kind_phys), intent(in) :: delt
     real(kind_phys), dimension(:),   intent(in) :: dx
     real(kind_phys), dimension(:,:), intent(in) :: dz,       &
@@ -575,7 +575,7 @@ CONTAINS
 
     logical :: INITIALIZE_QKE,problem
 
-    ! Stochastic fields 
+    ! Stochastic fields
     integer,  intent(IN)                         :: spp_pbl
     real(kind_phys), dimension(:,:), intent(IN), optional  :: pattern_spp_pbl
     real(kind_phys), dimension(KTS:KTE)          :: rstoch_col
@@ -654,8 +654,8 @@ CONTAINS
     ! DH* CHECK HOW MUCH OF THIS INIT IF-BLOCK IS ACTUALLY NEEDED FOR RESTARTS
 !> - Within the MYNN-EDMF, there is a dependecy check for the first time step,
 !! If true, a three-dimensional initialization loop is entered. Within this loop,
-!! several arrays are initialized and k-oriented (vertical) subroutines are called 
-!! at every i and j point, corresponding to the x- and y- directions, respectively.  
+!! several arrays are initialized and k-oriented (vertical) subroutines are called
+!! at every i and j point, corresponding to the x- and y- directions, respectively.
     IF (initflag > 0 .and. .not.restart) THEN
 
        !Test to see if we want to initialize qke
@@ -671,7 +671,7 @@ CONTAINS
           INITIALIZE_QKE = .TRUE.
           !print*,"not restart nor cycling, must initialize QKE"
        ENDIF
- 
+
        if (.not.restart .or. .not.cycling) THEN
          Sh3D(its:ite,kts:kte)=0.
          Sm3D(its:ite,kts:kte)=0.
@@ -770,7 +770,7 @@ CONTAINS
                    zw(k)=zw(k-1)+dz(i,k-1)
                 ENDIF
                 IF (INITIALIZE_QKE) THEN
-                   !Initialize tke for initial PBLH calc only - using 
+                   !Initialize tke for initial PBLH calc only - using
                    !simple PBLH form of Koracin and Berkowicz (1988, BLM)
                    !to linearly taper off tke towards top of PBL.
                    qke1(k)=5.*ust(i) * MAX((ust(i)*700. - zw(k))/(MAX(ust(i),0.01)*700.), 0.01)
@@ -796,7 +796,7 @@ CONTAINS
 !>  - Call get_pblh() to calculate hybrid (\f$\theta_{v}-TKE\f$) PBL height.
              CALL GET_PBLH(KTS,KTE,PBLH(i),thetav,&
                &  Qke1,zw,dz1,xland(i),KPBL(i))
-             
+
 !>  - Call scale_aware() to calculate similarity functions for scale-adaptive control
 !! (\f$P_{\sigma-PBL}\f$ and \f$P_{\sigma-shcu}\f$).
              IF (scaleaware > 0.) THEN
@@ -808,10 +808,10 @@ CONTAINS
 
              ! DH* CHECK IF WE CAN DO WITHOUT CALLING THIS ROUTINE FOR RESTARTS
 !>  - Call mym_initialize() to initializes the mixing length, TKE, \f$\theta^{'2}\f$,
-!! \f$q^{'2}\f$, and \f$\theta^{'}q^{'}\f$. These variables are calculated after 
-!! obtaining prerequisite variables by calling the following subroutines from 
+!! \f$q^{'2}\f$, and \f$\theta^{'}q^{'}\f$. These variables are calculated after
+!! obtaining prerequisite variables by calling the following subroutines from
 !! within mym_initialize(): mym_level2() and mym_length().
-             CALL mym_initialize (                & 
+             CALL mym_initialize (                &
                   &kts,kte,xland(i),              &
                   &dz1, dx(i), zw,                &
                   &u1, v1, thl, sqv,              &
@@ -857,7 +857,7 @@ CONTAINS
 
     ENDIF ! end initflag
 
-!> - After initializing all required variables, the regular procedures 
+!> - After initializing all required variables, the regular procedures
 !! performed at every time step are ready for execution.
     !ACF- copy qke_adv array into qke if using advection
     IF (bl_mynn_tkeadvect) THEN
@@ -1045,8 +1045,8 @@ CONTAINS
        & Qke1,zw,dz1,xland(i),KPBL(i))
 
 !>  - Call scale_aware() to calculate the similarity functions,
-!! \f$P_{\sigma-PBL}\f$ and \f$P_{\sigma-shcu}\f$, to control 
-!! the scale-adaptive behaviour for the local and nonlocal 
+!! \f$P_{\sigma-PBL}\f$ and \f$P_{\sigma-shcu}\f$, to control
+!! the scale-adaptive behaviour for the local and nonlocal
 !! components, respectively.
        if (scaleaware > 0.) then
           call SCALE_AWARE(dx(i),PBLH(i),Psig_bl(i),Psig_shcu(i))
@@ -1190,7 +1190,7 @@ CONTAINS
        !do nsub = 1,2
        delt2 = delt !*0.5    !only works if topdown=0
 
-       call mym_turbulence(                              & 
+       call mym_turbulence(                              &
                &kts,kte,xland(i),closure,                &
                &dz1, DX(i), zw,                          &
                &u1, v1, thl, thetav, sqc, sqw,           &
@@ -1210,7 +1210,7 @@ CONTAINS
                &TKEprodTD,                               &
                &spp_pbl,rstoch_col                       )
 
-!>  - Call mym_predict() to solve TKE and 
+!>  - Call mym_predict() to solve TKE and
 !! \f$\theta^{'2}, q^{'2}, and \theta^{'}q^{'}\f$
 !! for the following time step.
        call mym_predict(kts,kte,closure,                 &
@@ -1226,14 +1226,14 @@ CONTAINS
              ! Set max dissipative heating rate to 7.2 K per hour
              diss_heat(k) = MIN(MAX(1.0*(qke1(k)**1.5)/(b1*MAX(0.5*(el(k)+el(k+1)),1.))/cp, 0.0),0.002)
              ! Limit heating above 100 mb:
-             diss_heat(k) = diss_heat(k) * exp(-10000./MAX(p1(k),1.)) 
+             diss_heat(k) = diss_heat(k) * exp(-10000./MAX(p1(k),1.))
           enddo
           diss_heat(kte) = 0.
        else
           diss_heat(1:kte) = 0.
        endif
 
-!>  - Call mynn_tendencies() to solve for tendencies of 
+!>  - Call mynn_tendencies() to solve for tendencies of
 !! \f$U, V, \theta, q_{v}, q_{c}, and q_{i}\f$.
        call mynn_tendencies(kts,kte,i,                   &
                &delt, dz1, rho1,                         &
@@ -1277,7 +1277,7 @@ CONTAINS
 
 
        if ( mix_chem ) then
-          if ( rrfs_sd ) then 
+          if ( rrfs_sd ) then
              call mynn_mix_chem(kts,kte,i,               &
                   &delt, dz1, pblh(i),                   &
                   &nchem, kdvel, ndvel,                  &
@@ -1308,7 +1308,7 @@ CONTAINS
              enddo
           enddo
        endif
- 
+
        call retrieve_exchange_coeffs(kts,kte,            &
             &dfm, dfh, dz1, K_m1, K_h1                   )
 
@@ -1361,7 +1361,7 @@ CONTAINS
           k=kts
           qSHEAR1(k)    =4.*(ust(i)**3*phi_m/(karman*dz(i,k)))-qSHEAR1(k+1) !! staggered
           qBUOY1(k)     =4.*(-ust(i)**3*zet/(karman*dz(i,k)))-qBUOY1(k+1) !! staggered
-          !! unstaggering SHEAR and BUOY and trasfering all TKE budget to 3D array               
+          !! unstaggering SHEAR and BUOY and trasfering all TKE budget to 3D array
           do k = kts,kte-1
              qSHEAR(i,k)=0.5*(qSHEAR1(k)+qSHEAR1(k+1)) !!! unstaggering in z
              qBUOY(i,k) =0.5*(qBUOY1(k)+qBUOY1(k+1)) !!! unstaggering in z
@@ -1369,7 +1369,7 @@ CONTAINS
              qDISS(i,k) =qDISS1(k)
              dqke(i,k)  =(qke1(k)-dqke(i,k))*0.5/delt
           enddo
-          !! Upper boundary conditions               
+          !! Upper boundary conditions
           k=kte
           qSHEAR(i,k)   =0.
           qBUOY(i,k)    =0.
@@ -1510,9 +1510,9 @@ CONTAINS
 !>\ingroup gp_mynnedmf
 !! This subroutine initializes the mixing length, TKE, \f$\theta^{'2}\f$,
 !! \f$q^{'2}\f$, and \f$\theta^{'}q^{'}\f$.
-!!\section gen_mym_ini  MYNN-EDMF mym_initialize General Algorithm 
+!!\section gen_mym_ini  MYNN-EDMF mym_initialize General Algorithm
 !> @{
-  SUBROUTINE  mym_initialize (                                & 
+  SUBROUTINE  mym_initialize (                                &
        &            kts,kte,xland,                            &
        &            dz, dx, zw,                               &
        &            u, v, thl, qw,                            &
@@ -1623,9 +1623,9 @@ CONTAINS
 !   **  Strictly, vkz*h(i,j) -> karman*( 0.5*dz(1)*h(i,j)+z0 )  **
        vkz = karman*0.5*dz(kts)
        elv = 0.5*( el(kts+1)+el(kts) ) /  vkz
-       IF (INITIALIZE_QKE)THEN 
+       IF (INITIALIZE_QKE)THEN
           !qke(kts) = ust**2 * ( b1*pmz*elv    )**(2.0/3.0)
-          qke(kts) = 1.0 * MAX(ust,0.02)**2 * ( b1*pmz*elv    )**(2.0/3.0) 
+          qke(kts) = 1.0 * MAX(ust,0.02)**2 * ( b1*pmz*elv    )**(2.0/3.0)
        ENDIF
 
        phm      = phh*b2 / ( b1*pmz/elv**2 )**(1.0/3.0)
@@ -1674,7 +1674,7 @@ CONTAINS
 
   END SUBROUTINE mym_initialize
 !> @}
-  
+
 !
 ! ==================================================================
 !     SUBROUTINE  mym_level2:
@@ -1695,7 +1695,7 @@ CONTAINS
 
 !>\ingroup gp_mynnedmf
 !! This subroutine calculates the level 2, non-dimensional wind shear
-!! \f$G_M\f$ and vertical temperature gradient \f$G_H\f$ as well as 
+!! \f$G_M\f$ and vertical temperature gradient \f$G_H\f$ as well as
 !! the level 2 stability funcitons \f$S_h\f$ and \f$S_m\f$.
 !!\param kts    horizontal dimension
 !!\param kte    vertical dimension
@@ -1847,7 +1847,7 @@ CONTAINS
 !
 !>\ingroup gp_mynnedmf
 !! This subroutine calculates the mixing lengths.
-  SUBROUTINE  mym_length (                     & 
+  SUBROUTINE  mym_length (                     &
     &            kts,kte,xland,                &
     &            dz, dx, zw,                   &
     &            rmo, flt, fltv, flq,          &
@@ -1859,7 +1859,7 @@ CONTAINS
     &            Psig_bl, cldfra_bl1D,         &
     &            bl_mynn_mixlength,            &
     &            edmf_w1,edmf_a1               )
-    
+
 !-------------------------------------------------------------------
 
     integer, intent(in)   :: kts,kte
@@ -1894,7 +1894,7 @@ CONTAINS
             alp6                 !< for mass-flux/
 
     !THE FOLLOWING LIMITS DO NOT DIRECTLY AFFECT THE ACTUAL PBLH.
-    !THEY ONLY IMPOSE LIMITS ON THE CALCULATION OF THE MIXING LENGTH 
+    !THEY ONLY IMPOSE LIMITS ON THE CALCULATION OF THE MIXING LENGTH
     !SCALES SO THAT THE BOULAC MIXING LENGTH (IN FREE ATMOS) DOES
     !NOT ENCROACH UPON THE BOUNDARY LAYER MIXING LENGTH (els, elb & elt).
     real(kind_phys), parameter :: minzi = 300.  !< min mixed-layer height
@@ -1942,7 +1942,7 @@ CONTAINS
         END DO
 
         elt = 1.0e-5
-        vsc = 1.0e-5        
+        vsc = 1.0e-5
 
         !   **  Strictly, zwk*h(i,j) -> ( zwk*h(i,j)+z0 )  **
         k = kts+1
@@ -2000,8 +2000,8 @@ CONTAINS
       CASE (1) !NONLOCAL (using BouLac) FORM OF MIXING LENGTH
 
         ugrid = sqrt(u1(kts)**2 + v1(kts)**2)
-        uonset= 15. 
-        wt_u = (1.0 - min(max(ugrid - uonset, 0.0)/30.0, 0.5)) 
+        uonset= 15.
+        wt_u = (1.0 - min(max(ugrid - uonset, 0.0)/30.0, 0.5))
         cns  = 3.5
         alp1 = 0.23
         alp2 = 0.3
@@ -2163,7 +2163,7 @@ CONTAINS
            !   **  Length scale limited by the buoyancy effect  **
            IF ( dtv(k) .GT. 0.0 ) THEN
               !impose min value on bv
-              bv  = MAX( SQRT( gtr*dtv(k) ), 0.001)  
+              bv  = MAX( SQRT( gtr*dtv(k) ), 0.001)
               !elb_mf = alp2*qkw(k) / bv  &
               elb_mf = MAX(alp2*qkw(k),                    &
                   &    alp6*edmf_a1(k-1)*edmf_w1(k-1)) / bv    &
@@ -2286,7 +2286,7 @@ CONTAINS
 
 
      !----------------------------------
-     ! FIND DISTANCE UPWARD             
+     ! FIND DISTANCE UPWARD
      !----------------------------------
      zup=0.
      dlu=zw(kte+1)-zw(k)-dz(k)*0.5
@@ -2337,7 +2337,7 @@ CONTAINS
      endif
 
      !----------------------------------
-     ! FIND DISTANCE DOWN               
+     ! FIND DISTANCE DOWN
      !----------------------------------
      zdo=0.
      zdo_sup=0.
@@ -2385,7 +2385,7 @@ CONTAINS
      endif
 
      !----------------------------------
-     ! GET MINIMUM (OR AVERAGE)         
+     ! GET MINIMUM (OR AVERAGE)
      !----------------------------------
      !The surface layer length scale can exceed z for large z/L,
      !so keep maximum distance down > z.
@@ -2416,7 +2416,7 @@ CONTAINS
 !! length scales, and also considers the distance to the
 !! surface.
   SUBROUTINE boulac_length(kts,kte,zw,dz,qtke,theta,lb1,lb2)
-!      dlu = the distance a parcel can be lifted upwards give a finite 
+!      dlu = the distance a parcel can be lifted upwards give a finite
 !            amount of TKE.
 !      dld = the distance a parcel can be displaced downwards given a
 !            finite amount of TKE.
@@ -2476,7 +2476,7 @@ CONTAINS
                     else
                        tl=0.
                     endif
-                 endif            
+                 endif
                  dlu(iz)=zzz-dzt+tl
                  !print*,"  FOUND Dup:",dlu(iz)," z=",zw(izz)," tl=",tl
                  found =1
@@ -2490,7 +2490,7 @@ CONTAINS
           ENDDO
 
         endif
-                   
+
         !----------------------------------
         ! FIND DISTANCE DOWN
         !----------------------------------
@@ -2503,8 +2503,8 @@ CONTAINS
         if (iz .gt. kts) then  !cant integrate downwards from lowest level
 
           found = 0
-          izz=iz       
-          DO WHILE (found .EQ. 0) 
+          izz=iz
+          DO WHILE (found .EQ. 0)
 
             if (izz .gt. kts) then
               dzt=dz(izz-1)
@@ -2525,7 +2525,7 @@ CONTAINS
                     else
                        tl=0.
                     endif
-                 endif            
+                 endif
                  dld(iz)=zzz-dzt+tl
                  !print*,"  FOUND Ddown:",dld(iz)," z=",zw(izz)," tl=",tl
                  found = 1
@@ -2555,7 +2555,7 @@ CONTAINS
         !Apply soft limit (only impacts very large lb; lb=100 by 5%, lb=500 by 20%).
         lb1(iz) = lb1(iz)/(1. + (lb1(iz)/Lmax))
         lb2(iz) = lb2(iz)/(1. + (lb2(iz)/Lmax))
- 
+
         if (iz .eq. kte) then
            lb1(kte) = lb1(kte-1)
            lb2(kte) = lb2(kte-1)
@@ -2564,7 +2564,7 @@ CONTAINS
         !print*,"IN MYNN-BouLac",iz,dld(iz),dlu(iz)
 
      ENDDO
-                   
+
   END SUBROUTINE boulac_length
 !
 ! ==================================================================
@@ -2599,8 +2599,8 @@ CONTAINS
 !       dfm, dfh, dfq, tcd and qcd, respectively, for saving memory.
 !
 !>\ingroup gp_mynnedmf
-!! This subroutine calculates the vertical diffusivity coefficients and the 
-!! production terms for the turbulent quantities.      
+!! This subroutine calculates the vertical diffusivity coefficients and the
+!! production terms for the turbulent quantities.
 !>\section gen_mym_turbulence  mym_turbulence General Algorithm
 !! Two subroutines mym_level2() and mym_length() are called within this
 !!subrouine to collect variable to carry out successive calculations:
@@ -2614,7 +2614,7 @@ CONTAINS
 !! - Production terms of TKE,\f$\theta^{'2}\f$,\f$q^{'2}\f$, and \f$\theta^{'}q^{'}\f$
 !! are calculated.
 !! - Eddy diffusivity \f$K_h\f$ and eddy viscosity \f$K_m\f$ are calculated.
-!! - TKE budget terms are calculated (if the namelist parameter \p tke_budget 
+!! - TKE budget terms are calculated (if the namelist parameter \p tke_budget
 !! is set to True)
   SUBROUTINE  mym_turbulence (                                &
     &            kts,kte,                                     &
@@ -2651,7 +2651,7 @@ CONTAINS
     real(kind_phys), dimension(kts:kte+1), intent(in) :: zw
     real(kind_phys), intent(in)       :: rmo,flt,fltv,flq,                 &
          &Psig_bl,Psig_shcu,xland,dx,zi
-    real(kind_phys), dimension(kts:kte), intent(in) :: u,v,thl,thetav,qw,  & 
+    real(kind_phys), dimension(kts:kte), intent(in) :: u,v,thl,thetav,qw,  &
          &ql,vt,vq,qke,tsq,qsq,cov,cldfra_bl1D,edmf_w1,edmf_a1,            &
          &TKEprodTD
 
@@ -3093,24 +3093,24 @@ CONTAINS
 !       Tpwp = -elq*sh(k)*dTdz
 !       Tpwp = SIGN(MAX(ABS(Tpwp),1.E-6),Tpwp)
 
-       
-!!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB   
+
+!!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB
 
        !!!Shear Term
        !!!qSHEAR1D(k)=-(upwp*dudz + vpwp*dvdz)
        qSHEAR1D(k) = elq*sm(k)*gm(k) !staggered
 
-       !!!Buoyancy Term    
+       !!!Buoyancy Term
        !!!qBUOY1D(k)=grav*Tpwp/thl(k)
        !qBUOY1D(k)= elq*(sh(k)*gh(k) + gamv)
        !qBUOY1D(k) = elq*(sh(k)*(-dTdz*grav/thl(k)) + gamv) !! ORIGINAL CODE
-       
+
        !! Buoyncy term takes the TKEprodTD(k) production now
        qBUOY1D(k) = elq*(sh(k)*gh(k)+gamv)+0.5*TKEprodTD(k) ! xmchen
 
        !!!Dissipation Term (now it evaluated in mym_predict)
        !qDISS1D(k) = (q3sq**(3./2.))/(b1*MAX(el(k),1.)) !! ORIGINAL CODE
-       
+
        !! >> EOB
     ENDIF
 
@@ -3206,7 +3206,7 @@ CONTAINS
        &            qWT1D, qDISS1D,tke_budget)  !! TKE budget  (Puhales, 2020)
 
 !-------------------------------------------------------------------
-    integer, intent(in) :: kts,kte    
+    integer, intent(in) :: kts,kte
 
 #ifdef HARDCODE_VERTICAL
 # define kts 1
@@ -3222,12 +3222,12 @@ CONTAINS
     real(kind_phys), dimension(kts:kte), intent(inout) :: qke,tsq, qsq, cov
 ! WA 8/3/15
     real(kind_phys), dimension(kts:kte+1), intent(inout) :: s_awqke,s_aw
-    
-    !!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB 
-    real(kind_phys), dimension(kts:kte), intent(out) :: qWT1D, qDISS1D  
-    real(kind_phys), dimension(kts:kte) :: tke_up,dzinv  
+
+    !!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB
+    real(kind_phys), dimension(kts:kte), intent(out) :: qWT1D, qDISS1D
+    real(kind_phys), dimension(kts:kte) :: tke_up,dzinv
     !! >> EOB
-    
+
     integer :: k
     real(kind_phys), dimension(kts:kte) :: qkw, bp, rp, df3q
     real(kind_phys):: vkz,pdk1,phm,pdt1,pdq1,pdc1,b1l,b2l,onoff
@@ -3362,9 +3362,9 @@ CONTAINS
        qke(k)=max(x(k), qkemin)
        qke(k)=min(qke(k), 150.)
     ENDDO
-      
-   
-!!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB 
+
+
+!!  TKE budget  (Puhales, 2020, WRF 4.2.1)  << EOB
     IF (tke_budget .eq. 1) THEN
        !! TKE Vertical transport << EOBvt
         tke_up=0.5*qke
@@ -3389,8 +3389,8 @@ CONTAINS
         !!  >> EOBvt
         qDISS1D=bp*tke_up !! TKE dissipation rate !unstaggered
     END IF
-!! >> EOB 
-   
+!! >> EOB
+
     IF ( closure > 2.5 ) THEN
 
        !   **  Prediction of the moisture variance  **
@@ -3421,7 +3421,7 @@ CONTAINS
 
 !       CALL tridiag(kte,a,b,c,d)
     CALL tridiag2(kte,a,b,c,d,x)
-       
+
        DO k=kts,kte
           !qsq(k)=d(k-kts+1)
           qsq(k)=MAX(x(k),1e-17)
@@ -3438,7 +3438,7 @@ CONTAINS
        END DO
        qsq(kte)=qsq(kte-1)
     END IF
-!!!!!!!!!!!!!!!!!!!!!!end level 2.6   
+!!!!!!!!!!!!!!!!!!!!!!end level 2.6
 
     IF ( closure .GE. 3.0 ) THEN
 !
@@ -3449,11 +3449,11 @@ CONTAINS
        DO k = kts,kte-1
           b2l = b2*0.5*( el(k+1)+el(k) )
           bp(k) = 2.*qkw(k) / b2l
-          rp(k) = pdt(k+1) + pdt(k) 
+          rp(k) = pdt(k+1) + pdt(k)
        END DO
-       
+
 !zero gradient for tsq at bottom and top
-       
+
 !!       a(1)=0.
 !!       b(1)=1.
 !!       c(1)=-1.
@@ -3483,7 +3483,7 @@ CONTAINS
        b(kte)=1.
        c(kte)=0.
        d(kte)=0.
-       
+
 !       CALL tridiag(kte,a,b,c,d)
        CALL tridiag2(kte,a,b,c,d,x)
 
@@ -3497,11 +3497,11 @@ CONTAINS
        DO k = kts,kte-1
           b2l = b2*0.5*( el(k+1)+el(k) )
           bp(k) = 2.*qkw(k) / b2l
-          rp(k) = pdc(k+1) + pdc(k) 
+          rp(k) = pdc(k+1) + pdc(k)
        END DO
-       
+
 !zero gradient for tqcov at bottom and top
-       
+
 !!       a(1)=0.
 !!       b(1)=1.
 !!       c(1)=-1.
@@ -3534,12 +3534,12 @@ CONTAINS
 
 !       CALL tridiag(kte,a,b,c,d)
     CALL tridiag2(kte,a,b,c,d,x)
-       
+
        DO k=kts,kte
 !          cov(k)=d(k-kts+1)
           cov(k)=x(k)
        ENDDO
-       
+
     ELSE
 
        !Not level 3 - default to level 2 diagnostic
@@ -3553,10 +3553,10 @@ CONTAINS
           tsq(k) = b2l*( pdt(k+1)+pdt(k) )
           cov(k) = b2l*( pdc(k+1)+pdc(k) )
        END DO
-       
+
        tsq(kte)=tsq(kte-1)
        cov(kte)=cov(kte-1)
-      
+
     END IF
 
 #ifdef HARDCODE_VERTICAL
@@ -3565,7 +3565,7 @@ CONTAINS
 #endif
 
   END SUBROUTINE mym_predict
-  
+
 ! ==================================================================
 !     SUBROUTINE  mym_condensation:
 !
@@ -3595,9 +3595,9 @@ CONTAINS
 !       Set these values to those adopted by you.
 !
 !-------------------------------------------------------------------
-!>\ingroup gp_mynnedmf 
-!! This subroutine calculates the nonconvective component of the 
-!! subgrid cloud fraction and mixing ratio as well as the functions used to 
+!>\ingroup gp_mynnedmf
+!! This subroutine calculates the nonconvective component of the
+!! subgrid cloud fraction and mixing ratio as well as the functions used to
 !! calculate the buoyancy flux. Different cloud PDFs can be selected by
 !! use of the namelist parameter \p bl_mynn_cloudpdf .
   SUBROUTINE  mym_condensation (kts,kte,   &
@@ -3666,7 +3666,7 @@ CONTAINS
     real(kind_phys)           :: qw_pert
 
 ! First, obtain an estimate for the tropopause height (k), using the method employed in the
-! Thompson subgrid-cloud scheme.  This height will be a consideration later when determining 
+! Thompson subgrid-cloud scheme.  This height will be a consideration later when determining
 ! the "final" subgrid-cloud properties.
 ! JAYMES:  added 3 Nov 2016, adapted from G. Thompson
 
@@ -3676,7 +3676,7 @@ CONTAINS
        ht1 = 44307.692 * (1.0 - (p(k)/101325.)**0.190)
        ht2 = 44307.692 * (1.0 - (p(k+2)/101325.)**0.190)
        if ( (((theta2-theta1)/(ht2-ht1)) .lt. 10./1500. ) .AND.       &
-     &                       (ht1.lt.19000.) .and. (ht1.gt.4000.) ) then 
+     &                       (ht1.lt.19000.) .and. (ht1.gt.4000.) ) then
           exit
        endif
     ENDDO
@@ -3769,7 +3769,7 @@ CONTAINS
            alp(k) = 1.0/( 1.0+dqsl*xlvcp )
            bet(k) = dqsl*exner(k)
 
-           if (k .eq. kts) then 
+           if (k .eq. kts) then
              dzk = 0.5*dz(k)
            else
              dzk = dz(k)
@@ -3783,7 +3783,7 @@ CONTAINS
            q1(k) = qmq / sgm(k)
            cldfra_bl1D(K) = 0.5*( 1.0+erf( q1(k)*rr2 ) )
 
-           !now compute estimated lwc for PBL scheme's use 
+           !now compute estimated lwc for PBL scheme's use
            !qll IS THE NORMALIZED LIQUID WATER CONTENT (Sommeria and
            !Deardorff (1977, eq 29a). rrp = 1/(sqrt(2*pi)) = 0.3989
            q1k  = q1(k)
@@ -3831,7 +3831,7 @@ CONTAINS
            dqsl   = qsat_tk*ep_2*xlv/( r_d*t**2 )
            alp(k) = 1.0/( 1.0+dqsl*xlvcp )
            bet(k) = dqsl*exner(k)
- 
+
            rsl    = xl*qsat_tk / (r_v*t**2)  ! slope of C-C curve at t (=abs temperature)
                                              ! CB02, Eqn. 4
            cpm    = cp + qw(k)*cpv           ! CB02, sec. 2, para. 1
@@ -3911,7 +3911,7 @@ CONTAINS
            endif
 
            !In saturated grid cells, use average of SGS and resolved values
-           !if ( qc(k) > 1.e-6 ) ql_water = 0.5 * ( ql_water + qc(k) ) 
+           !if ( qc(k) > 1.e-6 ) ql_water = 0.5 * ( ql_water + qc(k) )
            !ql_ice is actually the total frozen condensate (snow+ice),
            !if ( (qi(k)+qs(k)) > 1.e-9 ) ql_ice = 0.5 * ( ql_ice + (qi(k)+qs(k)) )
 
@@ -3942,8 +3942,8 @@ CONTAINS
               q1k=max(Q1(k),-2.0)
            endif
            ! "Fng" represents the non-Gaussian transport factor
-           ! (non-dimensional) from Bechtold et al. 1995 
-           ! (hereafter BCMT95), section 3(c).  Their suggested 
+           ! (non-dimensional) from Bechtold et al. 1995
+           ! (hereafter BCMT95), section 3(c).  Their suggested
            ! forms for Fng (from their Eq. 20) are:
            !IF (q1k < -2.) THEN
            !  Fng = 2.-q1k
@@ -3980,10 +3980,10 @@ CONTAINS
            beta  = (th(k)/t)*(xl/cp) - 1.61*th(k)
            vt(k) = qww   - cfmax*beta*bb*Fng   - 1.
            vq(k) = alpha + cfmax*beta*a(k)*Fng - tv0
-           ! vt and vq correspond to beta-theta and beta-q, respectively,  
+           ! vt and vq correspond to beta-theta and beta-q, respectively,
            ! in NN09, Eq. B8.  They also correspond to the bracketed
            ! expressions in BCMT95, Eq. 15, since (s*ql/sigma^2) = cldfra*Fng
-           ! The "-1" and "-tv0" terms are included for consistency with 
+           ! The "-1" and "-tv0" terms are included for consistency with
            ! the legacy vt and vq formulations (above).
 
            ! dampen amplification factor where need be
@@ -4211,7 +4211,7 @@ CONTAINS
 !    c(kte)=0.
 !    d(kte)=0.
 
-!! specified gradient at the top 
+!! specified gradient at the top
 !    a(kte)=-1.
 !    b(kte)=1.
 !    c(kte)=0.
@@ -4365,7 +4365,7 @@ IF (bl_mynn_mixqt > 0) THEN
  !============================================
  ! MIX total water (sqw = sqc + sqv + sqi)
  ! NOTE: no total water tendency is output; instead, we must calculate
- !       the saturation specific humidity and then 
+ !       the saturation specific humidity and then
  !       subtract out the moisture excess (sqc & sqi)
  !============================================
 
@@ -4562,7 +4562,7 @@ ELSE
 ENDIF
 
 !============================================
-! MIX CLOUD ICE ( sqi )                      
+! MIX CLOUD ICE ( sqi )
 !============================================
 IF (bl_mynn_cloudmix > 0 .AND. FLAG_QI) THEN
 
@@ -4581,10 +4581,10 @@ IF (bl_mynn_cloudmix > 0 .AND. FLAG_QI) THEN
     ENDDO
 
 !! no flux at the top
-!    a(kte)=-1.       
-!    b(kte)=1.        
-!    c(kte)=0.        
-!    d(kte)=0.        
+!    a(kte)=-1.
+!    b(kte)=1.
+!    c(kte)=0.
+!    d(kte)=0.
 
 !! specified gradient at the top
 !assume gradqw_top=gradqv_top
@@ -4688,8 +4688,8 @@ ELSE
 ENDIF
 
 !!============================================
-!! cloud water number concentration (qnc)     
-!! include non-local transport                
+!! cloud water number concentration (qnc)
+!! include non-local transport
 !!============================================
   IF (bl_mynn_cloudmix > 0 .AND. FLAG_QNC .AND. &
       bl_mynn_mixscalars > 0) THEN
@@ -4813,7 +4813,7 @@ ELSE
 ENDIF
 
 !============================================
-! Black-carbon aerosols ( qnbca ).           
+! Black-carbon aerosols ( qnbca ).
 !============================================
 IF (bl_mynn_cloudmix > 0 .AND. FLAG_QNBCA .AND. &
       bl_mynn_mixscalars > 0) THEN
@@ -4873,7 +4873,7 @@ ENDIF
        d(k)=ozone(k)
     ENDDO
 
-! prescribed value                                                                                                           
+! prescribed value
     a(kte)=0.
     b(kte)=1.
     c(kte)=0.
@@ -4893,14 +4893,14 @@ ENDIF
 !! Note that the momentum tendencies are calculated above.
 !!============================================
 
-   IF (bl_mynn_mixqt > 0) THEN 
+   IF (bl_mynn_mixqt > 0) THEN
       DO k=kts,kte
          !compute updated theta using updated thl and old condensate
          th_new = thl(k) + xlvcp/exner(k)*sqc(k) &
            &             + xlscp/exner(k)*sqi(k)
 
          t  = th_new*exner(k)
-         qsat = qsat_blend(t,p(k)) 
+         qsat = qsat_blend(t,p(k))
          !SATURATED VAPOR PRESSURE
          !esat=esat_blend(t)
          !SATURATED SPECIFIC HUMIDITY
@@ -4916,7 +4916,7 @@ ENDIF
             sqi2(k) = condensate*portion_qi
          ELSE                     ! initially unsaturated -----
             sqv2(k) = sqw2(k)     ! let microphys decide what to do
-            sqi2(k) = 0.0         ! if sqw2 > qsat 
+            sqi2(k) = 0.0         ! if sqw2 > qsat
             sqc2(k) = 0.0
          ENDIF
       ENDDO
@@ -4954,7 +4954,7 @@ ENDIF
          DO k=kts,kte
            Dqnc(k) = (qnc2(k)-qnc(k))/delt
            !IF(Dqnc(k)*delt + qnc(k) < 0.)Dqnc(k)=-qnc(k)/delt
-         ENDDO 
+         ENDDO
       ELSE
          DO k=kts,kte
            Dqnc(k) = 0.
@@ -5134,14 +5134,14 @@ ENDIF
                             qv, qc, qi, qs, th,     &
                             dqv, dqc, dqi, dqs, dth )
 
-  ! This subroutine was adopted from the CAM-UW ShCu scheme and 
+  ! This subroutine was adopted from the CAM-UW ShCu scheme and
   ! adapted for use here.
   !
   ! If qc < qcmin, qi < qimin, or qv < qvmin happens in any layer,
-  ! force them to be larger than minimum value by (1) condensating 
-  ! water vapor into liquid or ice, and (2) by transporting water vapor 
+  ! force them to be larger than minimum value by (1) condensating
+  ! water vapor into liquid or ice, and (2) by transporting water vapor
   ! from the very lower layer.
-  ! 
+  !
   ! We then update the final state variables and tendencies associated
   ! with this correction. If any condensation happens, update theta too.
   ! Note that (qv,qc,qi,th) are the final state variables after
@@ -5251,11 +5251,11 @@ ENDIF
     real(kind_phys), dimension(kts:kte) :: a,b,c,d,x
     real(kind_phys):: rhs,dztop
     real(kind_phys):: t,dzk
-    real(kind_phys):: hght 
+    real(kind_phys):: hght
     real(kind_phys):: khdz_old, khdz_back
     integer :: k,kk,kmaxfire                         ! JLS 12/21/21
     integer :: ic  ! Chemical array loop index
-    
+
     integer, SAVE :: icall
 
     real(kind_phys), dimension(kts:kte) :: rhoinv
@@ -5322,7 +5322,7 @@ ENDIF
        a(k)=  -dtz(k)*khdz(k)*rhoinv(k)
        b(k)=1.+dtz(k)*(khdz(k+1)+khdz(k))*rhoinv(k) - 0.5*dtz(k)*rhoinv(k)*s_aw(k+1)
        c(k)=  -dtz(k)*khdz(k+1)*rhoinv(k)           - 0.5*dtz(k)*rhoinv(k)*s_aw(k+1)
-       d(k)=chem1(k,ic) & !dtz(k)*flt  !neglecting surface sources 
+       d(k)=chem1(k,ic) & !dtz(k)*flt  !neglecting surface sources
             & - dtz(k)*vd1(ic)*chem1(k,ic) &
             & - dtz(k)*rhoinv(k)*s_awchem(k+1,ic)
 
@@ -5388,30 +5388,30 @@ ENDIF
 
 !! to solve system of linear eqs on tridiagonal matrix n times n
 !! after Peaceman and Rachford, 1955
-!! a,b,c,d - are vectors of order n 
+!! a,b,c,d - are vectors of order n
 !! a,b,c - are coefficients on the LHS
 !! d - is initially RHS on the output becomes a solution vector
-    
+
 !-------------------------------------------------------------------
 
     integer, intent(in):: n
     real(kind_phys), dimension(n), intent(in) :: a,b
     real(kind_phys), dimension(n), intent(inout) :: c,d
-    
+
     integer :: i
     real(kind_phys):: p
     real(kind_phys), dimension(n) :: q
-    
+
     c(n)=0.
     q(1)=-c(1)/b(1)
     d(1)=d(1)/b(1)
-    
+
     DO i=2,n
        p=1./(b(i)+a(i)*q(i-1))
        q(i)=-c(i)*p
        d(i)=(d(i)-a(i)*d(i-1))*p
     ENDDO
-    
+
     DO i=n-1,1,-1
        d(i)=d(i)+q(i)*d(i+1)
     ENDDO
@@ -5457,17 +5457,17 @@ ENDIF
 !>\ingroup gp_mynnedmf
        subroutine tridiag3(kte,a,b,c,d,x)
 
-!ccccccccccccccccccccccccccccccc                                                                   
-! Aim: Inversion and resolution of a tridiagonal matrix                                            
-!          A X = D                                                                                 
-! Input:                                                                                           
-!  a(*) lower diagonal (Ai,i-1)                                                                  
-!  b(*) principal diagonal (Ai,i)                                                                
-!  c(*) upper diagonal (Ai,i+1)                                                                  
-!  d                                                                                               
-! Output                                                                                           
-!  x     results                                                                                   
-!ccccccccccccccccccccccccccccccc                                                                   
+!ccccccccccccccccccccccccccccccc
+! Aim: Inversion and resolution of a tridiagonal matrix
+!          A X = D
+! Input:
+!  a(*) lower diagonal (Ai,i-1)
+!  b(*) principal diagonal (Ai,i)
+!  c(*) upper diagonal (Ai,i+1)
+!  d
+! Output
+!  x     results
+!ccccccccccccccccccccccccccccccc
 
        implicit none
         integer,intent(in)   :: kte
@@ -5505,7 +5505,7 @@ ENDIF
 !!temperature within the boundary layer by 1.5 K. When applied to.
 !!observed temperatures, this method has been shown to produce PBL-
 !!height estimates that are unbiased relative to profiler-based.
-!!estimates (Nielsen-Gammon et al. 2008 \cite Nielsen_Gammon_2008). 
+!!estimates (Nielsen-Gammon et al. 2008 \cite Nielsen_Gammon_2008).
 !! However, their study did not
 !!include LLJs. Banta and Pichugina (2008) \cite Pichugina_2008  show that a TKE-based.
 !!threshold is a good estimate of the PBL height in LLJs. Therefore,
@@ -5520,13 +5520,13 @@ ENDIF
     !---------------------------------------------------------------
     !             NOTES ON THE PBLH FORMULATION
     !
-    !The 1.5-theta-increase method defines PBL heights as the level at 
-    !which the potential temperature first exceeds the minimum potential 
-    !temperature within the boundary layer by 1.5 K. When applied to 
+    !The 1.5-theta-increase method defines PBL heights as the level at
+    !which the potential temperature first exceeds the minimum potential
+    !temperature within the boundary layer by 1.5 K. When applied to
     !observed temperatures, this method has been shown to produce PBL-
-    !height estimates that are unbiased relative to profiler-based 
+    !height estimates that are unbiased relative to profiler-based
     !estimates (Nielsen-Gammon et al. 2008). However, their study did not
-    !include LLJs. Banta and Pichugina (2008) show that a TKE-based 
+    !include LLJs. Banta and Pichugina (2008) show that a TKE-based
     !threshold is a good estimate of the PBL height in LLJs. Therefore,
     !a hybrid definition is implemented that uses both methods, weighting
     !the TKE-method more during stable conditions (PBLH < 400 m).
@@ -5582,7 +5582,7 @@ ENDIF
 
     zi=0.
     k = kthv+1
-!    DO WHILE (zi .EQ. 0.) 
+!    DO WHILE (zi .EQ. 0.)
     DO k=kts+1,kte-1
        IF (thetav1D(k) .GE. (minthv + delt_thv))THEN
           zi = zw1D(k) - dz1D(k-1)* &
@@ -5597,18 +5597,18 @@ ENDIF
 
     !> - FOR STABLE BOUNDARY LAYERS, USE TKE METHOD TO COMPLEMENT THE
     !! THETAV-BASED DEFINITION (WHEN THE THETA-V BASED PBLH IS BELOW ~0.5 KM).
-    !!THE TANH WEIGHTING FUNCTION WILL MAKE THE TKE-BASED DEFINITION NEGLIGIBLE 
+    !!THE TANH WEIGHTING FUNCTION WILL MAKE THE TKE-BASED DEFINITION NEGLIGIBLE
     !!WHEN THE THETA-V-BASED DEFINITION IS ABOVE ~1 KM.
     ktke = 1
     maxqke = MAX(Qke1D(kts),0.)
     !Use 5% of tke max (Kosovic and Curry, 2000; JAS)
     !TKEeps = maxtke/20. = maxqke/40.
     TKEeps = maxqke/40.
-    TKEeps = MAX(TKEeps,0.02) !0.025) 
+    TKEeps = MAX(TKEeps,0.02) !0.025)
     PBLH_TKE=0.
 
     k = ktke+1
-!    DO WHILE (PBLH_TKE .EQ. 0.) 
+!    DO WHILE (PBLH_TKE .EQ. 0.)
     DO k=kts+1,kte-1
        !QKE CAN BE NEGATIVE (IF CKmod == 0)... MAKE TKE NON-NEGATIVE.
        qtke  =MAX(Qke1D(k)/2.,0.)      ! maximum TKE
@@ -5625,7 +5625,7 @@ ENDIF
        IF (PBLH_TKE .NE. 0.) exit
     ENDDO
 
-    !> - With TKE advection turned on, the TKE-based PBLH can be very large 
+    !> - With TKE advection turned on, the TKE-based PBLH can be very large
     !! in grid points with convective precipitation (> 8 km!),
     !! so an artificial limit is imposed to not let PBLH_TKE exceed the
     !!theta_v-based PBL height +/- 350 m.
@@ -5638,7 +5638,7 @@ ENDIF
     IF (maxqke <= 0.05) THEN
        !Cold pool situation - default to theta_v-based def
     ELSE
-       !BLEND THE TWO PBLH TYPES HERE: 
+       !BLEND THE TWO PBLH TYPES HERE:
        zi=PBLH_TKE*(1.-wt) + zi*wt
     ENDIF
 
@@ -5657,13 +5657,13 @@ ENDIF
 
   END SUBROUTINE GET_PBLH
 !> @}
-  
+
 ! ==================================================================
 !>\ingroup gp_mynnedmf
 !! This subroutine is the Dynamic Multi-Plume (DMP) Mass-Flux Scheme.
-!! 
+!!
 !! dmp_mf() calculates the nonlocal turbulent transport from the dynamic
-!! multiplume mass-flux scheme as well as the shallow-cumulus component of 
+!! multiplume mass-flux scheme as well as the shallow-cumulus component of
 !! the subgrid clouds. Note that this mass-flux scheme is called when the
 !! namelist paramter \p bl_mynn_edmf is set to 1 (recommended).
 !!
@@ -5675,7 +5675,7 @@ ENDIF
 !!  -# Chaboureau-Bechtold cloud fraction & coupling to radiation (when icloud_bl > 0)
 !!  -# some extra limits for numerical stability
 !!
-!! This scheme remains under development, so consider it experimental code. 
+!! This scheme remains under development, so consider it experimental code.
 !!
   SUBROUTINE DMP_mf(                            &
                  & kts,kte,dt,zw,dz,p,rho,      &
@@ -5688,11 +5688,11 @@ ENDIF
                  & exner,vt,vq,sgm,             &
                  & ust,flt,fltv,flq,flqv,       &
                  & pblh,kpbl,dx,landsea,ts,     &
-            ! outputs - updraft properties   
+            ! outputs - updraft properties
                  & edmf_a,edmf_w,               &
                  & edmf_qt,edmf_thl,            &
                  & edmf_ent,edmf_qc,            &
-            ! outputs - variables needed for solver 
+            ! outputs - variables needed for solver
                  & s_aw,s_awthl,s_awqt,         &
                  & s_awqv,s_awqc,               &
                  & s_awu,s_awv,s_awqke,         &
@@ -5717,7 +5717,7 @@ ENDIF
             ! output info
                  & maxwidth,ktop,maxmf,ztop,    &
             ! inputs for stochastic perturbations
-                 & spp_pbl,rstoch_col           ) 
+                 & spp_pbl,rstoch_col           )
 
   ! inputs:
      integer, intent(in) :: KTS,KTE,KPBL,momentum_opt,tke_opt,scalar_opt
@@ -5727,7 +5727,7 @@ ENDIF
 # define kte HARDCODE_VERTICAL
 #endif
 
-! Stochastic 
+! Stochastic
      integer,  intent(in)                 :: spp_pbl
      real(kind_phys), dimension(kts:kte)  :: rstoch_col
 
@@ -5781,8 +5781,8 @@ ENDIF
      real(kind_phys), parameter ::                                     &
           &Wa=2./3.,                                                   &
           &Wb=0.002,                                                   &
-          &Wc=1.5 
-        
+          &Wc=1.5
+
   ! Lateral entrainment parameters ( L0=100 and ENT0=0.1) were taken from
   ! Suselj et al (2013, jas). Note that Suselj et al (2014,waf) use L0=200 and ENT0=0.2.
      real(kind_phys),parameter ::                                      &
@@ -5793,7 +5793,7 @@ ENDIF
      real(kind_phys), parameter :: Atot = 0.10 ! Maximum total fractional area of all updrafts
      real(kind_phys), parameter :: lmax = 1000.! diameter of largest plume (absolute maximum, can be smaller)
      real(kind_phys), parameter :: lmin = 300. ! diameter of smallest plume (absolute minimum, can be larger)
-     real(kind_phys), parameter :: dlmin = 0.  ! delta increase in the diameter of smallest plume (large fltv) 
+     real(kind_phys), parameter :: dlmin = 0.  ! delta increase in the diameter of smallest plume (large fltv)
      real(kind_phys)            :: minwidth    ! actual width of smallest plume
      real(kind_phys)            :: dl          ! variable increment of plume size
      real(kind_phys), parameter :: dcut = 1.2  ! max diameter of plume to parameterize relative to dx (km)
@@ -5854,7 +5854,7 @@ ENDIF
    !parameter "Csub" determines the propotion of upward vertical velocity that contributes to
    !environmenatal subsidence. Some portion is expected to be compensated by downdrafts instead of
    !gentle environmental subsidence. 1.0 assumes all upward vertical velocity in the mass-flux scheme
-   !is compensated by "gentle" environmental subsidence. 
+   !is compensated by "gentle" environmental subsidence.
    real(kind_phys), parameter :: Csub=0.25
 
    !Factor for the pressure gradient effects on momentum transport
@@ -5974,7 +5974,7 @@ ENDIF
      hux = -0.005  ! LAND    ! dT/dz must be < - 0.5 K per 100 m.
   endif
   tvs = ts*(1.0+p608*qv(kts))
-  do k=1,max(1,k50-1) !use "-1" because k50 used interface heights (zw). 
+  do k=1,max(1,k50-1) !use "-1" because k50 used interface heights (zw).
     if (k == 1) then
       if ((thv(k)-tvs)/(0.5*dz(k)) < hux) then
         superadiabatic = .true.
@@ -6003,7 +6003,7 @@ ENDIF
   ! Criteria (1)
     maxwidth = min(dx*dcut, lmax)
   !Criteria (2)
-    maxwidth = min(maxwidth, 1.1_kind_phys*PBLH) 
+    maxwidth = min(maxwidth, 1.1_kind_phys*PBLH)
   ! Criteria (3)
     if ((landsea-1.5) .lt. 0) then  !land
        maxwidth = MIN(maxwidth, 0.5_kind_phys*cloud_base)
@@ -6023,7 +6023,7 @@ ENDIF
     minwidth = lmin
     !allow min plume size to increase in large flux conditions (eddy diffusivity should be
     !large enough to handle the representation of small plumes).
-    if (maxwidth .ge. (lmax - 1.0) .and. fltv .gt. 0.2)minwidth = lmin + dlmin*min((fltv-0.2)/0.3, 1._kind_phys) 
+    if (maxwidth .ge. (lmax - 1.0) .and. fltv .gt. 0.2)minwidth = lmin + dlmin*min((fltv-0.2)/0.3, 1._kind_phys)
 
     if (maxwidth .le. minwidth) then ! deactivate MF component
        nup2 = 0
@@ -6114,7 +6114,7 @@ if ( fltv2 > 0.002 .AND. (maxwidth > minwidth) .AND. superadiabatic) then
     sigmaTH=csigma*thstar*(z0/pblh)**(onethird)
 
     !Note: Given the pwmin & pwmax set above, these max/mins are
-    !      rarely exceeded. 
+    !      rarely exceeded.
     wmin=MIN(sigmaW*pwmin,0.1)
     wmax=MIN(sigmaW*pwmax,0.5)
 
@@ -6186,7 +6186,7 @@ if ( fltv2 > 0.002 .AND. (maxwidth > minwidth) .AND. superadiabatic) then
           !ENT(k,i) = 0.04*l**-0.50 - 0.0009   !more plume diversity
           !ENT(k,i) = 0.04*l**-0.495 - 0.0009  !"neg1+"
 
-          !Minimum background entrainment 
+          !Minimum background entrainment
           ENT(k,i) = max(ENT(k,i),0.0003)
           !ENT(k,i) = max(ENT(k,i),0.05/ZW(k))  !not needed for Tian and Kuang
 
@@ -6327,7 +6327,7 @@ if ( fltv2 > 0.002 .AND. (maxwidth > minwidth) .AND. superadiabatic) then
           detturb  = 0.00008
           oow      = -0.060/MAX(1.0,(0.5*(Wn+UPW(K-1,I))))   !coef for dynamical detrainment rate
           detrate  = MIN(MAX(oow*(Wn-UPW(K-1,I))/dz(k), detturb), .0002) ! dynamical detrainment rate (m^-1)
-          detrateUV= MIN(MAX(oow*(Wn-UPW(K-1,I))/dz(k), detturb), .0001) ! dynamical detrainment rate (m^-1) 
+          detrateUV= MIN(MAX(oow*(Wn-UPW(K-1,I))/dz(k), detturb), .0001) ! dynamical detrainment rate (m^-1)
           envm_thl(k)=envm_thl(k) + (0.5*(thl_ent + UPTHL(K-1,I)) - thl(k))*detrate*aratio*MIN(dzp,dzpmax)
           qv_ent = 0.5*(MAX(qt_ent-qc_ent,0.) + MAX(UPQT(K-1,I)-UPQC(K-1,I),0.))
           envm_sqv(k)=envm_sqv(k) + (qv_ent-QV(K))*detrate*aratio*MIN(dzp,dzpmax)
@@ -6409,7 +6409,7 @@ IF (nup2 > 0) THEN
         s_awthl(k+1)= s_awthl(k+1) + rhoz(k)*UPA(K,i)*UPW(K,i)*UPTHL(K,i)*Psig_w
         s_awqt(k+1) = s_awqt(k+1)  + rhoz(k)*UPA(K,i)*UPW(K,i)*UPQT(K,i)*Psig_w
         !to conform to grid mean properties, move qc to qv in grid mean
-        !saturated layers, so total water fluxes are preserved but 
+        !saturated layers, so total water fluxes are preserved but
         !negative qc fluxes in unsaturated layers is reduced.
 !        if (qc(k) > 1e-12 .or. qc(k+1) > 1e-12) then
           qc_plume = UPQC(K,i)
@@ -6620,7 +6620,7 @@ IF (nup2 > 0) THEN
    ENDIF !end subsidence/env detranment
 
    !First, compute exner, plume theta, and dz centered at interface
-   !Here, k=1 is the top of the first model layer. These values do not 
+   !Here, k=1 is the top of the first model layer. These values do not
    !need to be defined at k=kte (unused level).
    DO K=KTS,KTE-1
        exneri(k) = (exner(k)*dz(k+1)+exner(k+1)*dz(k))/(dz(k+1)+dz(k))
@@ -6643,7 +6643,7 @@ IF (nup2 > 0) THEN
             !SATURATED VAPOR PRESSURE
             esat = esat_blend(tk(k))
             !SATURATED SPECIFIC HUMIDITY
-            qsl=ep_2*esat/max(1.e-7,(p(k)-ep_3*esat)) 
+            qsl=ep_2*esat/max(1.e-7,(p(k)-ep_3*esat))
 
             !condensed liquid in the plume on mass levels
             if (edmf_qc(k)>0.0 .and. edmf_qc(k-1)>0.0) then
@@ -6660,7 +6660,7 @@ IF (nup2 > 0) THEN
                                                 ! CB02, Eqn. 4
             cpm = cp + qt(k)*cpv                ! CB02, sec. 2, para. 1
             a   = 1./(1. + xl*rsl/cpm)          ! CB02 variable "a"
-            b9  = a*rsl                         ! CB02 variable "b" 
+            b9  = a*rsl                         ! CB02 variable "b"
 
             q2p  = xlvcp/exner(k)
             pt = thl(k) +q2p*QCp*Aup ! potential temp (env + plume)
@@ -6687,7 +6687,7 @@ IF (nup2 > 0) THEN
             !sigq = SQRT(sigq**2 + sgm(k)**2)    ! combined conv + stratus components
             !Per S.DeRoode 2009?
             !sigq = 5. * Aup * (QTp - qt(k))
-            sigq = 10. * Aup * (QTp - qt(k)) 
+            sigq = 10. * Aup * (QTp - qt(k))
             !constrain sigq wrt saturation:
             sigq = max(sigq, qsat_tk*0.02 )
             sigq = min(sigq, qsat_tk*0.25 )
@@ -6742,7 +6742,7 @@ IF (nup2 > 0) THEN
 
             !Now recalculate the terms for the buoyancy flux for mass-flux clouds:
             !See mym_condensation for details on these formulations.
-            !Use Bechtold and Siebesma (1998) piecewise estimation of Fng with 
+            !Use Bechtold and Siebesma (1998) piecewise estimation of Fng with
             !limits ,since they really should be recalculated after all the other changes...:
             !Only overwrite vt & vq in non-stratus condition
             !if ((landsea-1.5).GE.0) then      ! WATER
@@ -6771,7 +6771,7 @@ ENDIF  !end nup2 > 0
 
 !modify output (negative: dry plume, positive: moist plume)
 if (ktop > 0) then
-   maxqc = maxval(edmf_qc(1:ktop)) 
+   maxqc = maxval(edmf_qc(1:ktop))
    if ( maxqc < 1.E-8) maxmf = -1.0*maxmf
 endif
 
@@ -6785,12 +6785,12 @@ if (edmf_w(1) > 4.0) then
     print *,'sigmaW=',sigmaW,' sigmaTH=',sigmaTH,' sigmaQT=',sigmaQT
 ! means
 !   print *,'u:',u
-!   print *,'v:',v  
+!   print *,'v:',v
 !   print *,'thl:',thl
 !   print *,'thv:',thv
 !   print *,'qt:',qt
 !   print *,'p:',p
- 
+
 ! updrafts
 ! DO I=1,NUP2
 !   print *,'up:A',i
@@ -6799,22 +6799,22 @@ if (edmf_w(1) > 4.0) then
 !   print*,UPW(:,i)
 !   print *,'up:thv',i
 !   print *,UPTHV(:,i)
-!   print *,'up:thl',i 
+!   print *,'up:thl',i
 !   print *,UPTHL(:,i)
 !   print *,'up:qt',i
 !   print *,UPQT(:,i)
 !   print *,'up:tQC',i
 !   print *,UPQC(:,i)
 !   print *,'up:ent',i
-!   print *,ENT(:,i)   
+!   print *,ENT(:,i)
 ! ENDDO
- 
+
 ! mean updrafts
    print *,' edmf_a',edmf_a(1:14)
    print *,' edmf_w',edmf_w(1:14)
    print *,' edmf_qt:',edmf_qt(1:14)
    print *,' edmf_thl:',edmf_thl(1:14)
- 
+
 ENDIF !END Debugging
 
 
@@ -6826,7 +6826,7 @@ ENDIF !END Debugging
 END SUBROUTINE DMP_MF
 !=================================================================
 !>\ingroup gp_mynnedmf
-!! This subroutine 
+!! This subroutine
 subroutine condensation_edmf(QT,THL,P,zagl,THV,QC)
 !
 ! zero or one condensation for edmf: calculates THV and QC
@@ -6843,7 +6843,7 @@ real(kind_phys):: diff,exn,t,th,qs,qcold
 ! rcp ... Rd/cp
 ! xlv ... latent heat for water (2.5e6)
 ! cp
-! rvord .. r_v/r_d  (1.6) 
+! rvord .. r_v/r_d  (1.6)
 
 ! number of iterations
   niter=50
@@ -6881,7 +6881,7 @@ real(kind_phys):: diff,exn,t,th,qs,qcold
   !THV= TH*(1. + p608*QT)
 
   !print *,'t,p,qt,qs,qc'
-  !print *,t,p,qt,qs,qc 
+  !print *,t,p,qt,qs,qc
 
 
 end subroutine condensation_edmf
@@ -6889,26 +6889,26 @@ end subroutine condensation_edmf
 !===============================================================
 
 subroutine condensation_edmf_r(QT,THL,P,zagl,THV,QC)
-!                                                                                                
-! zero or one condensation for edmf: calculates THL and QC                                       
-! similar to condensation_edmf but with different inputs                                         
-!                                                                                                
+!
+! zero or one condensation for edmf: calculates THL and QC
+! similar to condensation_edmf but with different inputs
+!
 real(kind_phys),intent(in)   :: QT,THV,P,zagl
 real(kind_phys),intent(out)  :: THL, QC
 
 integer :: niter,i
 real(kind_phys):: diff,exn,t,th,qs,qcold
 
-! number of iterations                                                                           
+! number of iterations
   niter=50
-! minimum difference                                                                             
+! minimum difference
   diff=2.e-5
 
   EXN=(P/p1000mb)**rcp
-  ! assume first that th = thv                                                                   
+  ! assume first that th = thv
   T = THV*EXN
-  !QS = qsat_blend(T,P)                                                                          
-  !QC = QS - QT                                                                                  
+  !QS = qsat_blend(T,P)
+  !QC = QS - QT
 
   QC=0.
 
@@ -6925,8 +6925,8 @@ end subroutine condensation_edmf_r
 
 !===============================================================
 ! ===================================================================
-! This is the downdraft mass flux scheme - analogus to edmf_JPL but  
-! flipped updraft to downdraft. This scheme is currently only tested 
+! This is the downdraft mass flux scheme - analogus to edmf_JPL but
+! flipped updraft to downdraft. This scheme is currently only tested
 ! for Stratocumulus cloud conditions. For a detailed desctiption of the
 ! model, see paper.
 
@@ -7000,10 +7000,10 @@ SUBROUTINE DDMF_JPL(kts,kte,dt,zw,dz,p,              &
             & dp,                    &   !diameter of plume
             & dl,                    &   !diameter increment
             & Adn                        !total area of downdrafts
-   !additional printouts for debugging 
+   !additional printouts for debugging
         integer, parameter :: debug_mf=0
 
-   dl = (1000.-500.)/real(ndown) 
+   dl = (1000.-500.)/real(ndown)
    pwmin=-3. ! drawing from the negative tail -3sigma to -1sigma
    pwmax=-1.
 
@@ -7074,7 +7074,7 @@ SUBROUTINE DDMF_JPL(kts,kte,dt,zw,dz,p,              &
    enddo
    F0 = max(F0, 1.0)
 
-   !Allow the total fractional area of the downdrafts to be proportional 
+   !Allow the total fractional area of the downdrafts to be proportional
    !to the radiative forcing:
    !for  50 W/m2, Adn = 0.10
    !for 100 W/m2, Adn = 0.15
@@ -7145,7 +7145,7 @@ SUBROUTINE DDMF_JPL(kts,kte,dt,zw,dz,p,              &
 
          !DOWNW(ki,I)=0.5*(wlv+wtv)
          DOWNW(ki,I)=wlv
-         !multiply downa by cloud fraction, so it's impact will diminish if 
+         !multiply downa by cloud fraction, so it's impact will diminish if
          !clouds are mixed away over the course of the longer radiation time step
          !DOWNA(ki,I)=0.5*ERF(wtv/(sqrt(2.)*sigmaW))-0.5*ERF(wlv/(sqrt(2.)*sigmaW))
          DOWNA(ki,I)=Adn/real(NDOWN)
@@ -7369,13 +7369,13 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
     Psig_shcu= ((dxdh**2) + 0.145*(dxdh**0.667))/((dxdh**2) +0.172*(dxdh**0.667) + 0.170)
 
     ! Hyeyum Hailey Shin and Song-You Hong 2013, w'theta' in PBL
-    !Psig(i)= 0.5 + 0.5*((dxdh**2) -0.098)/((dxdh**2) + 0.106) 
+    !Psig(i)= 0.5 + 0.5*((dxdh**2) -0.098)/((dxdh**2) + 0.106)
     ! Hyeyum Hailey Shin and Song-You Hong 2013, w'theta' in entrainment zone
     !Psig(i)= 0.5 + 0.5*((dxdh**2) - 0.112*(dxdh**0.25) -0.071)/((dxdh**2)
     !+ 0.054*(dxdh**0.25) + 0.10)
 
     !print*,"in scale_aware; dx, dxdh, Psig(i)=",dx,dxdh,Psig(i)
-    !If(Psig_bl(i) < 0.0 .OR. Psig(i) > 1.)print*,"dx, dxdh, Psig(i)=",dx,dxdh,Psig_bl(i) 
+    !If(Psig_bl(i) < 0.0 .OR. Psig(i) > 1.)print*,"dx, dxdh, Psig(i)=",dx,dxdh,Psig_bl(i)
     If(Psig_bl > 1.0) Psig_bl=1.0
     If(Psig_bl < 0.0) Psig_bl=0.0
 
@@ -7392,10 +7392,10 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
 !! final returned value is a temperature-dependant "blend". Because the final
 !! value is "phase-aware", this formulation may be preferred for use throughout
 !! the module (replacing "svp").
-  FUNCTION esat_blend(t) 
+  FUNCTION esat_blend(t)
 
       IMPLICIT NONE
-      
+
       real(kind_phys), intent(in):: t
       real(kind_phys):: esat_blend,XC,ESL,ESI,chi
       !liquid
@@ -7421,11 +7421,11 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
 
       XC=MAX(-80.,t - t0c) !note t0c = 273.15, tice is set in module mynn_common to 240
 
-! For 240 < t < 268.16 K, the vapor pressures are "blended" as a function of temperature, 
-! using the approach similar to Chaboureau and Bechtold (2002), JAS, p. 2363.  The resulting 
+! For 240 < t < 268.16 K, the vapor pressures are "blended" as a function of temperature,
+! using the approach similar to Chaboureau and Bechtold (2002), JAS, p. 2363.  The resulting
 ! values are returned from the function.
       IF (t .GE. (t0c-6.)) THEN
-          esat_blend = J0+XC*(J1+XC*(J2+XC*(J3+XC*(J4+XC*(J5+XC*(J6+XC*(J7+XC*J8))))))) 
+          esat_blend = J0+XC*(J1+XC*(J2+XC*(J3+XC*(J4+XC*(J5+XC*(J6+XC*(J7+XC*J8)))))))
       ELSE IF (t .LE. tice) THEN
           esat_blend = K0+XC*(K1+XC*(K2+XC*(K3+XC*(K4+XC*(K5+XC*(K6+XC*(K7+XC*K8)))))))
       ELSE
@@ -7475,7 +7475,7 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
       IF (t .GE. (t0c-6.)) THEN
           ESL  = J0+XC*(J1+XC*(J2+XC*(J3+XC*(J4+XC*(J5+XC*(J6+XC*(J7+XC*J8)))))))
           ESL  = min(ESL, P*0.15) ! Even with P=1050mb and T=55C, the sat. vap. pres only contributes to ~15% of total pres.
-          qsat_blend = 0.622*ESL/max(P-ESL, 1e-5) 
+          qsat_blend = 0.622*ESL/max(P-ESL, 1e-5)
       ELSE IF (t .LE. tice) THEN
           ESI  = K0+XC*(K1+XC*(K2+XC*(K3+XC*(K4+XC*(K5+XC*(K6+XC*(K7+XC*K8)))))))
           ESI  = min(ESI, P*0.15)
@@ -7488,7 +7488,7 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
           RSLF = 0.622*ESL/max(P-ESL, 1e-5)
           RSIF = 0.622*ESI/max(P-ESI, 1e-5)
 !          chi  = (268.16-t)/(268.16-240.)
-          chi  = ((t0c-6.) - t)/((t0c-6.) - tice) 
+          chi  = ((t0c-6.) - t)/((t0c-6.) - tice)
          qsat_blend = (1.-chi)*RSLF + chi*RSIF
       END IF
 
@@ -7498,7 +7498,7 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
 
 !>\ingroup gp_mynnedmf
 !! This function interpolates the latent heats of vaporization and sublimation into
-!! a single, temperature-dependent, "blended" value, following 
+!! a single, temperature-dependent, "blended" value, following
 !! Chaboureau and Bechtold (2002) \cite Chaboureau_2002, Appendix.
 !!\author JAYMES
   FUNCTION xl_blend(t)
@@ -7527,8 +7527,8 @@ SUBROUTINE SCALE_AWARE(dx,PBL1,Psig_bl,Psig_shcu)
 
   FUNCTION phim(zet)
      ! New stability function parameters for momentum (Puhales, 2020, WRF 4.2.1)
-     ! The forms in unstable conditions (z/L < 0) use Grachev et al. (2000), which are a blend of 
-     ! the classical (Kansas) forms (i.e., Paulson 1970, Dyer and Hicks 1970), valid for weakly 
+     ! The forms in unstable conditions (z/L < 0) use Grachev et al. (2000), which are a blend of
+     ! the classical (Kansas) forms (i.e., Paulson 1970, Dyer and Hicks 1970), valid for weakly
      ! unstable conditions (-1 < z/L < 0). The stability functions for stable conditions use an
      ! updated form taken from Cheng and Brutsaert (2005), which extends the validity into very
      ! stable conditions [z/L ~ O(10)].

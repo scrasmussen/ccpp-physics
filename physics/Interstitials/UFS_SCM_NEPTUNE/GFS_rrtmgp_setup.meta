@@ -57,7 +57,7 @@
   long_name = choice of Morrison-Gettelman microphysics scheme
   units = flag
   dimensions = ()
-  type = integer 
+  type = integer
   intent = in
 [si]
   standard_name = sigma_pressure_hybrid_vertical_coordinate

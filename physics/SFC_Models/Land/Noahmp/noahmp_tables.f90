@@ -1,5 +1,5 @@
 !>  \file noahmp_tables.f90
-!!  This file contains Fortran versions of the data tables included with NoahMP in mptable.tbl, soilparm.tbl, and genparm.tbl. 
+!!  This file contains Fortran versions of the data tables included with NoahMP in mptable.tbl, soilparm.tbl, and genparm.tbl.
 
 !> \ingroup NoahMP_LSM
 
@@ -23,10 +23,10 @@ use machine ,   only : kind_phys
 ! mptable.tbl vegetation parameters
 
     integer :: isurban_table
-    integer :: iswater_table 
+    integer :: iswater_table
     integer :: isbarren_table
-    integer :: isice_table 
-    integer :: iscrop_table 
+    integer :: isice_table
+    integer :: iscrop_table
     integer :: eblforest_table
     integer :: natural_table
     integer :: lcz_1_table
@@ -56,7 +56,7 @@ use machine ,   only : kind_phys
     real (kind=kind_phys) :: sla_table(mvt)         !< single-side leaf area per kg [m2/kg]
     real (kind=kind_phys) :: dilefc_table(mvt)      !< coeficient for leaf stress death [1/s]
     real (kind=kind_phys) :: dilefw_table(mvt)      !< coeficient for leaf stress death [1/s]
-    real (kind=kind_phys) :: fragr_table(mvt)       !< fraction of growth respiration  !original was 0.3 
+    real (kind=kind_phys) :: fragr_table(mvt)       !< fraction of growth respiration  !original was 0.3
     real (kind=kind_phys) :: ltovrc_table(mvt)      !< leaf turnover [1/s]
 
     real (kind=kind_phys) :: c3psn_table(mvt)       !< photosynthetic pathway: 0. = c4, 1. = c3
@@ -101,16 +101,16 @@ use machine ,   only : kind_phys
 
     integer :: slcats
 
-    real (kind=kind_phys) :: bexp_table(max_soiltyp)   
-    real (kind=kind_phys) :: smcdry_table(max_soiltyp)  
-    real (kind=kind_phys) :: f1_table(max_soiltyp)     
+    real (kind=kind_phys) :: bexp_table(max_soiltyp)
+    real (kind=kind_phys) :: smcdry_table(max_soiltyp)
+    real (kind=kind_phys) :: f1_table(max_soiltyp)
     real (kind=kind_phys) :: smcmax_table(max_soiltyp)
-    real (kind=kind_phys) :: smcref_table(max_soiltyp)  
-    real (kind=kind_phys) :: psisat_table(max_soiltyp) 
-    real (kind=kind_phys) :: dksat_table(max_soiltyp) 
+    real (kind=kind_phys) :: smcref_table(max_soiltyp)
+    real (kind=kind_phys) :: psisat_table(max_soiltyp)
+    real (kind=kind_phys) :: dksat_table(max_soiltyp)
     real (kind=kind_phys) :: dwsat_table(max_soiltyp)
-    real (kind=kind_phys) :: smcwlt_table(max_soiltyp)   
-    real (kind=kind_phys) :: quartz_table(max_soiltyp)  
+    real (kind=kind_phys) :: smcwlt_table(max_soiltyp)
+    real (kind=kind_phys) :: quartz_table(max_soiltyp)
     real (kind=kind_phys) :: bvic_table(max_soiltyp)        !vic model infiltration parameter (-) for opt_run=6
     real (kind=kind_phys) :: axaj_table(max_soiltyp)        !Xinanjiang: Tension water distribution inflection parameter [-] for opt_run=7
     real (kind=kind_phys) :: bxaj_table(max_soiltyp)        !Xinanjiang: Tension water distribution shape parameter [-] for opt_run=7
@@ -122,7 +122,7 @@ use machine ,   only : kind_phys
 ! genparm.tbl parameters
 
     real (kind=kind_phys) :: slope_table(num_slope)                     !< slope factor for soil drainage
-    
+
     real (kind=kind_phys) :: csoil_table       !< soil heat capacity [j m-3 k-1]
     real (kind=kind_phys) :: refdk_table       !< parameter in the surface runoff parameterization
     real (kind=kind_phys) :: refkdt_table      !< parameter in the surface runoff parameterization
@@ -142,7 +142,7 @@ use machine ,   only : kind_phys
     real (kind=kind_phys) :: eg_table(2)               !< emissivity
 
 ! mptable.tbl global parameters
- 
+
     real (kind=kind_phys) :: co2_table                 !< co2 partial pressure
     real (kind=kind_phys) :: o2_table                  !< o2 partial pressure
     real (kind=kind_phys) :: timean_table              !< gridcell mean topgraphic index (global mean)
@@ -189,10 +189,10 @@ use machine ,   only : kind_phys
     real (kind=kind_phys) :: gddtbase_table(ncrop)       !< base temperature for gdd accumulation [c]
     real (kind=kind_phys) :: gddtcut_table(ncrop)        !< upper temperature for gdd accumulation [c]
     real (kind=kind_phys) :: gdds1_table(ncrop)          !< gdd from seeding to emergence
-    real (kind=kind_phys) :: gdds2_table(ncrop)          !< gdd from seeding to initial vegetative 
+    real (kind=kind_phys) :: gdds2_table(ncrop)          !< gdd from seeding to initial vegetative
     real (kind=kind_phys) :: gdds3_table(ncrop)          !< gdd from seeding to  post vegetative
     real (kind=kind_phys) :: gdds4_table(ncrop)          !< gdd from seeding to  intial reproductive
-    real (kind=kind_phys) :: gdds5_table(ncrop)          !< gdd from seeding to pysical maturity 
+    real (kind=kind_phys) :: gdds5_table(ncrop)          !< gdd from seeding to pysical maturity
 
     real (kind=kind_phys) :: c3psni_table(ncrop)       !photosynthetic pathway: 0. = c4, 1. = c3 ! Zhe Zhang 2020-07-03
     real (kind=kind_phys) :: kc25i_table(ncrop)        !co2 michaelis-menten constant at 25c (pa)
@@ -207,7 +207,7 @@ use machine ,   only : kind_phys
     real (kind=kind_phys) :: folnmxi_table(ncrop)      !foliage nitrogen concentration when
 
     integer :: c3c4_table(ncrop)           !< photosynthetic pathway:  1. = c3 2. = c4
-    real (kind=kind_phys) :: aref_table(ncrop)           !< reference maximum co2 assimulation rate 
+    real (kind=kind_phys) :: aref_table(ncrop)           !< reference maximum co2 assimulation rate
     real (kind=kind_phys) :: psnrf_table(ncrop)          !< co2 assimulation reduction factor(0-1) (caused by non-modeling part,e.g.pest,weeds)
     real (kind=kind_phys) :: i2par_table(ncrop)          !< fraction of incoming solar radiation to photosynthetically active radiation
     real (kind=kind_phys) :: tassim0_table(ncrop)        !< minimum temperature for co2 assimulation [c]
@@ -380,7 +380,7 @@ contains
 
     ! radiation parameters
     real (kind=kind_phys)                   :: betads, betais, eice
-    real (kind=kind_phys), dimension(mband) :: albice, alblak, omegas 
+    real (kind=kind_phys), dimension(mband) :: albice, alblak, omegas
     real (kind=kind_phys), dimension(2)     :: eg
     real (kind=kind_phys), dimension(msc)   :: albsat_vis, albsat_nir, albdry_vis, albdry_nir
     namelist / noahmp_rad_parameters /          albsat_vis, albsat_nir, albdry_vis, albdry_nir, albice, alblak, omegas,      &
@@ -651,11 +651,11 @@ rsurf_snow_table     = -1.0e36
 !   z0lake_table           = -1.0e36
 
     ! irrigation parameters
-    irr_har_table    =  -99999        ! number of days before harvest date to stop irrigation 
+    irr_har_table    =  -99999        ! number of days before harvest date to stop irrigation
     irr_frac_table   = -1.0e36    ! irrigation fraction
     irr_lai_table    = -1.0e36    ! minimum lai to trigger irrigation
     irr_mad_table    = -1.0e36    ! management allowable deficit (0-1)
-    filoss_table     = -1.0e36    ! fraction of flood irrigation loss (0-1) 
+    filoss_table     = -1.0e36    ! fraction of flood irrigation loss (0-1)
     sprir_rate_table = -1.0e36    ! mm/h, sprinkler irrigation rate
     micir_rate_table = -1.0e36    ! mm/h, micro irrigation rate
     firtfac_table    = -1.0e36    ! flood application rate factor
@@ -1086,11 +1086,11 @@ rsurf_snow_table     = -1.0e36
      irr_har_table    = irr_har
      irr_lai_table    = irr_lai
      irr_mad_table    = irr_mad
-     filoss_table     = filoss  
+     filoss_table     = filoss
      sprir_rate_table = sprir_rate
      micir_rate_table = micir_rate
      firtfac_table    = firtfac
-     ir_rain_table    = ir_rain 
+     ir_rain_table    = ir_rain
 
     !---------------- noahmptable.tbl crop parameters
     inquire( file='noahmptable.tbl', exist=file_named )
@@ -1335,4 +1335,3 @@ rsurf_snow_table     = -1.0e36
   end subroutine read_mp_table_parameters
 
 end module noahmp_tables
-

@@ -33,7 +33,7 @@
   intent = in
   kind = len=128
 [rrtmgp_lw_file_clouds]
-  standard_name = filename_of_rrtmgp_longwave_cloud_optics_coefficients 
+  standard_name = filename_of_rrtmgp_longwave_cloud_optics_coefficients
   long_name = file containing coefficients for RRTMGP LW cloud optics
   units = none
   dimensions =  ()
@@ -136,7 +136,7 @@
   long_name = flag to output lw heating rate (Radtend%lwhc)
   units = flag
   dimensions = ()
-  type = logical  
+  type = logical
   intent = in
 [top_at_1]
   standard_name = flag_for_vertical_ordering_in_radiation
@@ -145,12 +145,12 @@
   dimensions = ()
   type = logical
   intent = in
-[doGP_lwscat] 
+[doGP_lwscat]
   standard_name = flag_to_include_longwave_scattering_in_cloud_optics
-  long_name = logical flag to control the addition of LW scattering in RRTMGP 
+  long_name = logical flag to control the addition of LW scattering in RRTMGP
   units = flag
   dimensions = ()
-  type = logical  
+  type = logical
   intent = in
 [ncol]
   standard_name = horizontal_loop_extent

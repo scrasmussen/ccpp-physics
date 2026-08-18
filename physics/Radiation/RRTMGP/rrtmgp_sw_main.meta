@@ -137,7 +137,7 @@
   long_name = flag to output sw heating rate (Radtend%swhc)
   units = flag
   dimensions = ()
-  type = logical  
+  type = logical
   intent = in
 [top_at_1]
   standard_name = flag_for_vertical_ordering_in_radiation

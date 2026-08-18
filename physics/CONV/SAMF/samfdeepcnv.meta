@@ -372,7 +372,7 @@
   intent = in
 [hwrf_samfdeep]
   standard_name = flag_for_hurricane_specific_code_in_scale_aware_mass_flux_deep_convection
-  long_name = flag for hwrf samfdeepcnv scheme 
+  long_name = flag for hwrf samfdeepcnv scheme
   units = flag
   dimensions = ()
   type = logical
@@ -578,7 +578,7 @@
 [do_mynnedmf]
   standard_name = flag_for_mellor_yamada_nakanishi_niino_pbl_scheme
   long_name = flag to activate MYNN-EDMF
-  units = flag 
+  units = flag
   dimensions = ()
   type = logical
   intent = in
@@ -587,7 +587,7 @@
   long_name = flag to cold start for sigmab initialization
   units = flag
   dimensions = ()
-  type = logical 
+  type = logical
   intent = in
 [qlcn]
   standard_name = mass_fraction_of_convective_cloud_liquid_water

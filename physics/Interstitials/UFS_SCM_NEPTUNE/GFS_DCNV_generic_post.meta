@@ -396,7 +396,7 @@
 [dwn_mf]
   standard_name = cumulative_atmosphere_downdraft_convective_mass_flux
   long_name = cumulative downdraft mass flux
-  units = kg m-1 s-2 
+  units = kg m-1 s-2
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys

@@ -243,7 +243,7 @@ contains
       fname_dl="merra2_"//myr//mn//dy//".nc"
 !     rjday is the minutes in a day
       rjday =  jdat(5)*60+jdat(6)+jdat(7)/60.
-!     
+!
 !     n1sv  saves the jdat(3), n2sv is the up boundary index
       n1sv=jdat(3)
       fd_upb=.false.
@@ -283,7 +283,7 @@ contains
       integer   i1,i2, iday,j,j1,j2,l,npts,nc,n1,n2,lev,k,i,ii, klev
       real(kind=kind_phys) fhour,temj, tx1, tx2,temi, tem, tem1, tem2
       real(kind=kind_phys), dimension(npts) :: temij,temiy,temjx,ddxy
-      
+
 !
 
       integer  JINDX1(npts), JINDX2(npts), iINDX1(npts), iINDX2(npts)
@@ -333,7 +333,7 @@ contains
          fname_dl="merra2_"//myr//mn//dy//".nc"
          call read_netfaer_dl(mpicomm, mpirank, mpiroot, fname_dl,n2sv, iflip, 2, errmsg, errflg)
       else if (rjday >= t2sv) then
-        if(t2sv < aer_t(tsaer)) then 
+        if(t2sv < aer_t(tsaer)) then
           n1sv=jdat(3)
           t1sv=t2sv
           n2sv=n2sv+1
@@ -699,7 +699,7 @@ contains
       integer   i1,i2, iday,j,j1,j2,l,npts,nc,n1,n2,lev,k,i,ii, klev
       real(kind=kind_phys) fhour,temj, tx1, tx2,temi, tem, tem1, tem2
       real(kind=kind_phys), dimension(npts) :: temij,temiy,temjx,ddxy
-      
+
 !
 
       integer  JINDX1(npts), JINDX2(npts), iINDX1(npts), iINDX2(npts)
@@ -743,7 +743,7 @@ contains
       enddo
       n1 = n2 - 1
       if (n2 > 12) n2 = n2 -12
-!     need to read a new month 
+!     need to read a new month
       if (n1.ne.n1sv) then
 #ifdef DEBUG
         if (mpirank==mpiroot) write(*,*)"read in a new month MERRA2", n2
@@ -994,7 +994,7 @@ contains
 
       deallocate (buff, pres_tmp)
       deallocate (buffx)
-      
+
       END SUBROUTINE read_netfaer_dl
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       subroutine read_netfaer(mpicomm, mpirank, mpiroot, nf, iflip, nt, errmsg, errflg)
@@ -1013,7 +1013,7 @@ contains
       real(kind=kind_io4),allocatable,dimension(:,:,:,:):: buffx
       real(kind=kind_io4),allocatable,dimension(:,:)   :: pres_tmp
       integer :: ierr
-      
+
 !! ===================================================================
       allocate (buff(lonsaer, latsaer, levsw))
       allocate (pres_tmp(lonsaer, levsw))
@@ -1025,7 +1025,7 @@ contains
       pres_tmp = 0
       buffx = 0
 
-      write(mn,'(i2.2)') nf 
+      write(mn,'(i2.2)') nf
       fname=trim("aeroclim.m"//mn//".nc")
       ncid = -1
       if(.not.netcdf_check(nf90_open(fname , nf90_NOWRITE, ncid), &
@@ -1110,4 +1110,3 @@ contains
       END SUBROUTINE read_netfaer
 
 end module aerinterp
-

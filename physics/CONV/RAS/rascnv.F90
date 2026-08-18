@@ -99,7 +99,7 @@
                             rvi,     facw,     faci, hsub, tmix, DEN
 
       contains
- 
+
 ! -----------------------------------------------------------------------
 ! CCPP entry points for gfdl cloud microphysics
 ! -----------------------------------------------------------------------
@@ -196,7 +196,7 @@
       picon    = half*pi*onebg  ; zfac    = 0.28888889e-4_kp * ONEBG
       testmboalhl = testmb/alhl
 !
-      rvi  = one / rv       ; facw = CVAP - CLIQ 
+      rvi  = one / rv       ; facw = CVAP - CLIQ
       faci = CVAP - CSOL    ; hsub = alhl + alhf
       tmix = TTP  - 20.0_kp ; DEN  = one / (TTP-TMIX)
 !
@@ -231,8 +231,8 @@
 !!    qin      - real, input specific humidity (kg/kg)
 !!    uin      - real, input zonal wind component
 !!    vin      - real, input meridional wind component
-!!    ccin     - real, input condensates+tracers 
-!!    fscav    - real 
+!!    ccin     - real, input condensates+tracers
+!!    fscav    - real
 !!    prsi     - real, layer interface pressure
 !!    prsl     - real, layer mid pressure
 !!    prsik    - real, layer interface Exner function
@@ -403,13 +403,13 @@
       end if
       trcmin = -99999.0_kp
       if (ntk-2 > 0) trcmin(ntk-2) = 1.0e-4_kp
-      
+
       ten_t = 0.0
       ten_u = 0.0
       ten_v = 0.0
       ten_q = 0.0
       ten_cc = 0.0
-      
+
 !> - Initialize CCPP error handling variables
 
       errmsg = ''
@@ -487,7 +487,7 @@
 !       ctei = .false.
 !       if (ctei_r(ipt) > ctei_rm) ctei = .true.
 !
-!     Compute NCRND  : 
+!     Compute NCRND  :
 !                      if flipv is true, then input variables are from bottom
 !                      to top while RAS goes top to bottom
 !
@@ -511,9 +511,9 @@
 !         IF (SGC <= 0.930_kp) KFMAX = L
           IF (SGC <= 0.970_kp) KFMAX = L    ! Commented on 20060202
 !         IF (SGC <= 0.700_kp) kblmx = L    ! Commented on 20101015
-          IF (SGC <= 0.600_kp) kblmx = L    ! 
+          IF (SGC <= 0.600_kp) kblmx = L    !
 !         IF (SGC <= 0.650_kp) kblmx = L    ! Commented on 20060202
-          IF (SGC <= 0.980_kp) kblmn = L    ! 
+          IF (SGC <= 0.980_kp) kblmn = L    !
         ENDDO
         krmin = max(krmin,2)
 
@@ -608,7 +608,7 @@
             phi_h(LL) = phii(ipt,L)
           enddo
 !
-          if (ccin(ipt,1,2) <= -998.0_kp) then  ! input ice/water are together 
+          if (ccin(ipt,1,2) <= -998.0_kp) then  ! input ice/water are together
             do l=1,k
               ll = kp1 -l
               tem = ccin(ipt,ll,1)                                      &
@@ -928,7 +928,7 @@
             endif
 
           endif
-! 
+!
 !
 !   Warning!!!!
 !   ------------
@@ -1142,7 +1142,7 @@
 !===>  PRJM(K)    INPUT   (P/P0)^KAPPA  @ LAYERS  NON-DIMENSIONAL
 
 !===>  K          INPUT   THE RISE & THE INDEX OF THE SUBCLOUD LAYER
-!===>  KD         INPUT   DETRAINMENT LEVEL ( 1<= KD < K )          
+!===>  KD         INPUT   DETRAINMENT LEVEL ( 1<= KD < K )
 !===>  NTRC       INPUT   NUMBER OF TRACERS. MAY BE ZERO.
 !===>  kblmx      INPUT   highest level the pbl can take
 !===>  kblmn      INPUT   lowest  level the pbl can take
@@ -1211,7 +1211,7 @@
       real(kind=kind_phys) FRACBL, MAX_NEG_BOUY, DPD                    &
      &,                    RHFACL, RHFACS, area, ccwf                   &
      &,                    c0, qw0, c0i, qi0, dlq_fac
- 
+
 !  UPDATE ARGUMENTS
 
       real(kind=kind_phys), dimension(K)      :: TCU, QCU, TCD, QCD, PCU
@@ -1330,10 +1330,10 @@
         GAM(L) = DQS * ELOCP
         ST1    = ONE + GAM(L)
         GAF(L) = ONEOALHL * GAM(L) / ST1
- 
+
         QL     = MAX(MIN(QS*RHMAX,QOL(L)), ONE_M10)
         QOL(L) = QL
- 
+
         TEM    = CP * TL
         LTL(L) = TEM * ST1 / (ONE+NU*(QST(L)+TL*DQS))
         vtf(L) = one + NU * QL
@@ -1888,7 +1888,7 @@
 !
 !     rel_fac = max(zero, min(one,rel_fac))
       rel_fac = max(zero, min(half,rel_fac))
-      
+
       IF (CRTFUN) THEN
         iwk = tem*0.02_kp - 0.999999999_kp
         iwk = MAX(1, MIN(iwk, 16))
@@ -1962,7 +1962,7 @@
 !
          ST1  = TEM3 + TEM4
 
-         WFN = WFN + ST1       
+         WFN = WFN + ST1
          AKM = AKM - min(ST1,ZERO)
 
          if (st1 < zero .and. wfn < zero) then
@@ -2087,7 +2087,7 @@
         rnn(l) = rns(l) * tem
         dlq(l) = rns(l) * tem * dlq_fac
       enddo
-      DO L=KBL,K 
+      DO L=KBL,K
         RNN(L) = zero
       ENDDO
 !
@@ -2116,7 +2116,7 @@
      &,             QRB, QRT, BUY,   KBL, IDH, ETA, RNN, ETAI           &
      &,             ALM, WFN, TRAIN, DDFT                               &
      &,             ETD, HOD, QOD,   EVP, DOF, CLDFR, ETZ               &
-     &,             GMS, GSD, GHD,   wvl)               
+     &,             GMS, GSD, GHD,   wvl)
 
       ENDIF
 !
@@ -2187,7 +2187,7 @@
 
          TEM      = ALFINT(L,4)*CIL(LM1) + ST4*CIL(L)
          TEM2     = ALFINT(L,3)*CLL(LM1) + ST3*CLL(L)
- 
+
          TEM1     = ETA(L) * (TEM - CIL(L))
          TEM3     = ETA(L) * (TEM2 - CLL(L))
 
@@ -2318,7 +2318,7 @@
 !        hbl = hbl * hpert_fac
 !        qbl = qbl * hpert_fac
 !     endif
- 
+
 !***********************************************************************
 
 !===>  CLOUD WORKFUNCTION FOR MODIFIED SOUNDING, THEN KERNEL (AKM)
@@ -2394,7 +2394,7 @@
       AMB  = AMB * CLP * rel_fac
 
 !!!   if (DDFT) AMB = MIN(AMB, ONE/CLDFRD)
-       
+
 !===>   SUB-CLOUD LAYER DEPTH LIMIT ON MASS FLUX
 
       AMBMAX = (PRL(KMAXP1)-PRL(KBL))*(FRACBL*GRAVCON)
@@ -2417,7 +2417,7 @@
           tx1 = (0.2_kp / max(alm, 1.0e-5_kp))
           tx2 = one - min(one, pi * tx1 * tx1 / area)
 
-          tx2 = tx2 * tx2 
+          tx2 = tx2 * tx2
 
 ! comnet out the following for now - 07/23/18
 !         do l=kd1,kbl
@@ -2609,7 +2609,7 @@
 !
 
                ST1     = ST1 * ELOCP
-               TOI(L)  = TOI(L) - ST1 
+               TOI(L)  = TOI(L) - ST1
                TCU(L)  = TCU(L) - ST1
              ENDIF
            ENDIF
@@ -2654,7 +2654,7 @@
                 HOD(L) = HB
               ENDIF
             ENDDO
-             
+
             DO L=KB1,KD,-1
               HCC = HCC + (ETA(L)-ETA(L+1))*HOL(L)
             ENDDO
@@ -2705,7 +2705,7 @@
                 RCU(L,N) = RCU(L,N) + ST1
                 st2 = zero
               endif
-              
+
             ENDDO
           ENDDO                             ! Tracer loop NTRC
         endif
@@ -2723,7 +2723,7 @@
      &,                 QRB, QRT, BUY, KBL, IDH, ETA, RNN, ETAI         &
      &,                 ALM, WFN, TRAIN, DDFT                           &
      &,                 ETD, HOD, QOD, EVP, DOF, CLDFRD, WCB            &
-     &,                 GMS, GSD, GHD, wvlu)                   
+     &,                 GMS, GSD, GHD, wvlu)
 
 !
 !***********************************************************************
@@ -2744,8 +2744,8 @@
 !===>  PRL(KP1)   INPUT   PRESSURE @ EDGES       MB
 
 !===>  K     INPUT   THE RISE & THE INDEX OF THE SUBCLOUD LAYER
-!===>  KD    INPUT   DETRAINMENT LEVEL ( 1<= KD < K )          
-!     
+!===>  KD    INPUT   DETRAINMENT LEVEL ( 1<= KD < K )
+!
       IMPLICIT NONE
 !
 !  INPUT ARGUMENTS
@@ -2887,7 +2887,7 @@
       do l=kd1,kb1
         buy(l) = 0.25_kp * (qrpi(l-1)+qrpi(l)+qrpi(l)+qrpi(l+1))
       enddo
-      
+
 !
 !     CALL ANGRAD(TX1, ALM, STLA, CTL2, AL2, PI, TLA, TX2, WFN, TX3)
       tx1 = 1000.0_kp + tx1 - prl(kp1)
@@ -3057,7 +3057,7 @@
             DO L=KD1,KB1
               KTEM    = MAX(L-2, KD)
               LL      = L - 1
-! 
+!
 !             VT(2)   = GMS(L) * QRP(L)**0.1364
               VT(2)   = GMS(L) * QRPF(QRP(L))
               TRW(2)  = ETA(L) * QRP(L) * STLT(L)
@@ -3253,7 +3253,7 @@
               DO  N=L,KBL+1
                 AA(L,N) = AA(L,N) - TX1 * AA(LM1,N)
               ENDDO
-            ENDDO     
+            ENDDO
 !
 !-----BACK SUBSTITUTION AND CHECK IF THE SOLUTION CONVERGES
 !
@@ -3288,13 +3288,13 @@
             ENDDO
 !
             IF (ITR < ITRMIN) THEN
-               TEM = ABS(ERRQ-TX2) 
-               IF (TEM >= ERRMI2 .AND. TX2 >= ERRMIN) THEN 
+               TEM = ABS(ERRQ-TX2)
+               IF (TEM >= ERRMI2 .AND. TX2 >= ERRMIN) THEN
                  ERRQ  = TX2                              ! Further iteration !
-               ELSE 
+               ELSE
                  SKPUP = .TRUE.                           ! Converges      !
                  ERRQ  = zero                             ! Rain profile exists!
-               ENDIF 
+               ENDIF
             ELSE
                TEM = ERRQ - TX2
 !              IF (TEM < ZERO .AND. ERRQ > 0.1_kp) THEN
@@ -3318,7 +3318,7 @@
                  ERRQ = TX2                               ! Further iteration !
 
 !              if (itr == itrmu .and. ERRQ > ERRMIN*10                  &
-!    &            .and. ntla == 1) ERRQ = 10.0 
+!    &            .and. ntla == 1) ERRQ = 10.0
                ENDIF
             ENDIF
 !
@@ -3899,7 +3899,7 @@
                 if (tx5 > zero) idnm  = idnm + 1
               endif
             ENDIF
-! 
+!
 !     If downdraft properties are not obtainable, (i.e.solution does
 !      not converge) , no downdraft is assumed
 !
@@ -4094,7 +4094,7 @@
         TBQRP(JX) =        X ** 0.1364_kp
         TBQRA(JX) = TEM1 * X ** 0.2046_kp
         TBQRB(JX) = TEM2 * X ** 0.525_kp
-      ENDDO    
+      ENDDO
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       RETURN
       end subroutine setqrp

@@ -1,4 +1,4 @@
-!> \file GFS_gwd_generic_post.F90 
+!> \file GFS_gwd_generic_post.F90
 !! This file contains the CCPP-compliant orographic gravity wave drag post
 !! interstitial codes.
 module GFS_GWD_generic_post
@@ -17,10 +17,10 @@ contains
 
       use machine, only : kind_phys
       implicit none
-      
+
       integer, intent(in) :: im, levs, ntrac, tend_opt_gwd
       logical, intent(in) :: lssav, ldiag3d, flag_for_gwd_generic_tend
-      
+
       real(kind=kind_phys), intent(in) :: dusfcg(:), dvsfcg(:)
       real(kind=kind_phys), intent(in) :: ten_t(:,:), ten_u(:,:), ten_v(:,:)
       real(kind=kind_phys), intent(in) :: ten_q(:,:,:)
@@ -29,14 +29,14 @@ contains
       real(kind=kind_phys), intent(inout) :: gt0(:,:), gv0(:,:), gu0(:,:)
       real(kind=kind_phys), intent(inout) :: gq0(:,:,:)
       real(kind=kind_phys), intent(in) :: dtf, dtp
-      
+
       real(kind=kind_phys), intent(inout) :: dugwd(:), dvgwd(:)
 
       ! dtend only allocated only if ldiag3d is .true.
       real(kind=kind_phys), intent(inout), optional :: dtend(:,:,:)
       integer, intent(in) :: dtidx(:,:), index_of_temperature,          &
      &  index_of_x_wind, index_of_y_wind, index_of_process_orographic_gwd
-      
+
       character(len=*), intent(out) :: errmsg
       integer,          intent(out) :: errflg
 
@@ -45,7 +45,7 @@ contains
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       case_GWD_ten: select case (tend_opt_gwd)
         case (1) !immediately apply tendencies
                   !Current state = current state + dt*current tendency
@@ -99,7 +99,7 @@ contains
           errmsg = 'A tendency application control was outside of the acceptable range (1-4)'
           return
       end select case_GWD_ten
-      
+
       if (lssav) then
         dugwd(:) = dugwd(:) + dusfcg(:)*dtf
         dvgwd(:) = dvgwd(:) + dvsfcg(:)*dtf

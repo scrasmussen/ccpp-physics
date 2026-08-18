@@ -250,7 +250,7 @@
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
   kind = kind_phys
-  intent = inout 
+  intent = inout
 [rtg]
   standard_name = tendency_of_vertically_diffused_tracer_concentration
   long_name = tendency of the tracers due to vertical diffusion in PBL scheme

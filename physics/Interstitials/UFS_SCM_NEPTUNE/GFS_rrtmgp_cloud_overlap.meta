@@ -50,7 +50,7 @@
   units = days
   dimensions = ()
   type = real
-  kind = kind_phys  
+  kind = kind_phys
   intent = in
 [lat]
   standard_name = latitude
@@ -59,7 +59,7 @@
   dimensions = (horizontal_loop_extent)
   type = real
   intent = in
-  kind = kind_phys 
+  kind = kind_phys
 [deltaZc]
   standard_name = layer_thickness_from_layer_center
   long_name = layer_thickness
@@ -91,7 +91,7 @@
   units = J kg-1 K-1
   dimensions = ()
   type = real
-  kind = kind_phys      
+  kind = kind_phys
   intent = in
 [con_epsq]
   standard_name = minimum_value_of_specific_humidity

@@ -60,7 +60,7 @@
      &     dkt_can, dku_can,
      &     kinver,xkzm_m,xkzm_h,xkzm_s,dspfac,bl_upfr,bl_dnfr,
      &     rlmx,elmx,sfc_rlm,tc_pbl,use_lpt,
-     &     do_canopy, cplaqm, 
+     &     do_canopy, cplaqm,
      &     ntqv,dtend,dtidx,index_of_temperature,index_of_x_wind,
      &     index_of_y_wind,index_of_process_pbl,gen_tend,ldiag3d,
      &     errmsg,errflg)
@@ -96,7 +96,7 @@
       real(kind=kind_phys), intent(in) :: rlmx, elmx
 !PCC CANOPY------------------------------------
       logical, intent(in)  :: do_canopy, cplaqm
-      real(kind=kind_phys), optional, intent(in)  :: 
+      real(kind=kind_phys), optional, intent(in)  ::
      &                  dkt_can(:,:),      dku_can(:,:)
       !----------------------------------------------
       real(kind=kind_phys), intent(inout) :: dv(:,:),     du(:,:),
@@ -715,10 +715,10 @@
          flg(i) = .false.
          rbup(i) = rbsoil(i)
       enddo
-!>  - Given the thermal's properties and the critical Richardson number, 
-!! a loop is executed to find the first level above the surface (kpblx) where 
+!>  - Given the thermal's properties and the critical Richardson number,
+!! a loop is executed to find the first level above the surface (kpblx) where
 !! the modified Richardson number is greater than the critical Richardson
-!! number, using equation 10a from Troen and Mahrt (1996) \cite troen_and_mahrt_1986 
+!! number, using equation 10a from Troen and Mahrt (1996) \cite troen_and_mahrt_1986
 !! (also equation 8 from Hong and Pan (1996) \cite hong_and_pan_1996):
       do k = 1, kmpbl
       do i = 1, im
@@ -884,7 +884,7 @@
 !!    \f[
 !!    \zeta = Ri_{sfc}\frac{F_m^2}{F_h} = \frac{z}{L}
 !!    \f]
-!!    where \f$F_m\f$ and \f$F_h\f$ are surface Monin-Obukhov stability functions calculated in sfc_diff.f and 
+!!    where \f$F_m\f$ and \f$F_h\f$ are surface Monin-Obukhov stability functions calculated in sfc_diff.f and
 !!    \f$L\f$ is the Obukhov length.
       do i=1,im
          zol(i) = max(rbsoil(i)*fm(i)*fm(i)/fh(i),rimin)
@@ -929,7 +929,7 @@
 !!    w_s=(u_*^3+7\alpha\kappa w_*^3)^{1/3}
 !!    \f]
 !!    where \f$u_*\f$ (ustar) is the surface friction velocity,\f$\alpha\f$ is the ratio
-!!    of the surface layer height to the PBL height (specified as sfcfrac =0.1), 
+!!    of the surface layer height to the PBL height (specified as sfcfrac =0.1),
 !!    \f$\kappa =0.4\f$ is the von Karman constant, and \f$w_*\f$ is the convective velocity
 !!    scale defined as eqn23 of Han et al.(2019):
 !!    \f[
@@ -1086,7 +1086,7 @@
 !> ## Determine whether stratocumulus layers exist and compute quantities
 !!  - Starting at the PBL top and going downward, if the level is less than 2.5 km
 !!    and \f$q_l\geq q_{lcr}\f$ then set kcld = k (find the cloud top index in the PBL.
-!!    If no cloud water above the threshold is hound, \e scuflg is set to F. 
+!!    If no cloud water above the threshold is hound, \e scuflg is set to F.
       do i=1,im
          flg(i)  = scuflg(i)
       enddo
@@ -1116,7 +1116,7 @@
       enddo
 !>  - Starting at the PBL top and going downward, if the level is less
 !!    than the cloud top, find the level of the minimum radiative heating
-!!    rate wihin the cloud. If the level of the minimum is the lowest model 
+!!    rate wihin the cloud. If the level of the minimum is the lowest model
 !!    level or the minimum radiative heating rate is positive, then set
 !!    scuflg to F.
       do i = 1, im

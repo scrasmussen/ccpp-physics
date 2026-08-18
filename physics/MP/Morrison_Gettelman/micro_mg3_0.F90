@@ -535,7 +535,7 @@ subroutine micro_mg_tend (                                       &
   ! Microphysical processes.
   use micro_mg_utils, only: ice_deposition_sublimation,        &
                             sb2001v2_liq_autoconversion,       &
-                            sb2001v2_accre_cld_water_rain,     &       
+                            sb2001v2_accre_cld_water_rain,     &
                             kk2000_liq_autoconversion,         &
                             ice_autoconversion,                &
                             immersion_freezing,                &
@@ -604,8 +604,8 @@ subroutine micro_mg_tend (                                       &
   real(r8), intent(in) :: liqcldf(mgncol,nlev)    !< liquid cloud fraction (no units)
   real(r8), intent(in) :: icecldf(mgncol,nlev)    !< ice cloud fraction (no units)
   real(r8), intent(in) :: qsatfac(mgncol,nlev)    !< subgrid cloud water saturation scaling factor (no units)
-  logical, intent(in)  :: lprnt                   !< control flag for diagnostic print out 
-  integer, intent(in)  :: iccn                    !< flag for IN and CCN forcing for Morrison-Gettelman microphysics 
+  logical, intent(in)  :: lprnt                   !< control flag for diagnostic print out
+  integer, intent(in)  :: iccn                    !< flag for IN and CCN forcing for Morrison-Gettelman microphysics
 
 
   ! used for scavenging
@@ -619,7 +619,7 @@ subroutine micro_mg_tend (                                       &
   ! (For example, in CAM, the last dimension is always size 4.)
   real(r8), intent(in) :: rndst(mgncol,nlev,10)   !< radius of each dust bin, for contact freezing (from microp_aero_ts) (m)
   real(r8), intent(in) :: nacon(mgncol,nlev,10)   !< number in each dust bin, for contact freezing  (from microp_aero_ts) (1/m^3)
-  
+
   ! output arguments
 
   real(r8), intent(out) :: qcsinksum_rate1ord(mgncol,nlev) !< 1st order rate for
@@ -1389,7 +1389,7 @@ subroutine micro_mg_tend (                                       &
       ngic(i,k)   = zero
 !--ag
   !> - initialize precip fallspeeds to zero
-      ums(i,k)    = zero 
+      ums(i,k)    = zero
       uns(i,k)    = zero
       umr(i,k)    = zero
       unr(i,k)    = zero
@@ -1541,7 +1541,7 @@ subroutine micro_mg_tend (                                       &
         if (t(i,k) < icenuct) then
           ncai(i,k) = 0.005_r8*exp(0.304_r8*(273.15_r8-t(i,k))) * 1000._r8
           ncai(i,k) = min(ncai(i,k), 355.0e3_r8)
-          naai(i,k) = ncai(i,k)*rhoinv(i,k) 
+          naai(i,k) = ncai(i,k)*rhoinv(i,k)
         else
           naai(i,k) = zero
           ncai(i,k) = zero
@@ -1627,7 +1627,7 @@ subroutine micro_mg_tend (                                       &
         endif
 
      enddo
-  enddo 
+  enddo
 ! if (lprnt) write(0,*)' tlat1=',tlat(1,:)*deltat
 ! if (lprnt) write(0,*)' qg1=',qg(1,:)
 
@@ -1717,7 +1717,7 @@ subroutine micro_mg_tend (                                       &
            endif
         endif
      enddo
-  enddo 
+  enddo
 
 ! if (lprnt) then
 !  write(0,*)' tlat2=',tlat(1,:)*deltat
@@ -1864,20 +1864,20 @@ subroutine micro_mg_tend (                                       &
      ! taking root of negative later
 
        nric(i,k) = max(nric(i,k),zero)
-     enddo 
+     enddo
      ! Get size distribution parameters for cloud ice
 
      call size_dist_param_ice(mg_ice_props, qiic(:,k), niic(:,k),   &
           lami(:,k), mgncol, n0=n0i(:,k))
-  
-     ! Alternative autoconversion 
+
+     ! Alternative autoconversion
      if (do_sb_physics) then
-       if  (do_liq_liu) then 
+       if  (do_liq_liu) then
          call liu_liq_autoconversion(pgam(:,k),qcic(:,k),ncic(:,k),        &
               qric(:,k),rho(:,k),relvar(:,k),prc(:,k),nprc(:,k),nprc1(:,k),mgncol)
        else
          call sb2001v2_liq_autoconversion(pgam(:,k),qcic(:,k),ncic(:,k),   &
-              qric(:,k),rho(:,k),relvar(:,k),prc(:,k),nprc(:,k),nprc1(:,k), mgncol)     
+              qric(:,k),rho(:,k),relvar(:,k),prc(:,k),nprc(:,k),nprc1(:,k), mgncol)
        endif
      endif
 
@@ -2156,7 +2156,7 @@ subroutine micro_mg_tend (                                       &
 
      if (do_sb_physics) then
        call sb2001v2_accre_cld_water_rain(qcic(:,k), ncic(:,k), qric(:,k), &
-            rho(:,k), relvar(:,k), pra(:,k), npra(:,k), mgncol)     
+            rho(:,k), relvar(:,k), pra(:,k), npra(:,k), mgncol)
      else
        call accrete_cloud_water_rain(microp_uniform, qric(:,k), qcic(:,k), &
             ncic(:,k), relvar(:,k), accre_enhan(:,k), pra(:,k), npra(:,k), mgncol)
@@ -2455,7 +2455,7 @@ subroutine micro_mg_tend (                                       &
              if (one/lamr(i,k) < Dcs) then
                mnuccri(i,k) = mnuccr(i,k)
                nnuccri(i,k) = nnuccr(i,k)
-               mnuccr(i,k)  = zero 
+               mnuccr(i,k)  = zero
                nnuccr(i,k)  = zero
              endif
            endif
@@ -3282,7 +3282,7 @@ subroutine micro_mg_tend (                                       &
            ! particles (blend over 18-20 um)
            irad = (1.5_r8 * 1e6_r8) * tx3
            ifrac = min(one, max(zero, (irad-18._r8)*half))
- 
+
            if (ifrac < one) then
               tx1 = ajn(i,k) / lami(i,k)**bj
               vtrmi(i,k) = ifrac*vtrmi(i,k) +  (one-ifrac) * min(tx1*gamma_bj_plus4*oneo6, tx2)
@@ -4026,8 +4026,8 @@ subroutine micro_mg_tend (                                       &
                  tlat(i,k)   = tlat(i,k) + xlf*tx2
               endif
            endif
-        enddo 
-     enddo 
+        enddo
+     enddo
      ! remove any excess over-saturation, which is possible due to non-linearity when adding
      ! together all microphysical processes
      !-----------------------------------------------------------------
@@ -4073,8 +4073,8 @@ subroutine micro_mg_tend (                                       &
               qvres(i,k)    = -dum
               tlat(i,k)     = tlat(i,k) + dum*tx1
            endif
-        enddo 
-     enddo 
+        enddo
+     enddo
   endif
 
 ! if (lprnt) write(0,*)' tlat7=',tlat(1,:)*deltat
@@ -4358,7 +4358,7 @@ subroutine micro_mg_tend (                                       &
       else
          dsout(i,k)     = zero
          qsout2(i,k)    = zero
-         nsout2(i,k)    = zero 
+         nsout2(i,k)    = zero
          dsout2(i,k)    = zero
          freqs(i,k)     = zero
          reff_snow(i,k) = zero

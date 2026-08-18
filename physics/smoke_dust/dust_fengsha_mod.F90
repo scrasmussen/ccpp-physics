@@ -56,7 +56,7 @@ contains
     REAL(kind_phys), DIMENSION( ims:ime, 1, jms:jme,num_emis_dust),OPTIONAL, INTENT(INOUT) :: emis_dust
     REAL(kind_phys), DIMENSION( ims:ime, num_soil_layers, jms:jme ), INTENT(IN) :: smois, stemp
 
-    !0d input variables 
+    !0d input variables
     REAL(kind_phys), INTENT(IN) :: dt ! time step
     REAL(kind_phys), INTENT(IN) :: g  ! gravity (m/s**2)
 
@@ -68,7 +68,7 @@ contains
     real(kind_phys) :: airden ! air density
     REAL(kind_phys) :: airmas ! dry air mass
     real(kind_phys) :: dxy
-    real(kind_phys) :: conver,converi ! conversion values 
+    real(kind_phys) :: conver,converi ! conversion values
     real(kind_phys) :: R ! local drag partition
     real(kind_phys) :: ustar
     real(kind_phys), DIMENSION (num_emis_dust) :: tc
@@ -125,9 +125,9 @@ contains
 
 
              ! Total erodibility.
-             
+
              erodtot = ssm(i,j) ! SUM(erod(i,j,:))
-             
+
              ! Don't allow roughness lengths greater than 20 cm to be lofted.
              ! This kludge accounts for land use types like urban areas and
              ! forests which would otherwise show up as high dust emitters.
@@ -178,12 +178,12 @@ contains
                 endif
              endif
 
-             ! soil moisture correction factor 
-             moist_volumetric = dust_moist_correction * smois(i,2,j) 
+             ! soil moisture correction factor
+             moist_volumetric = dust_moist_correction * smois(i,2,j)
 
              ! Call dust emission routine.
-             
-             call source_dust(imx,jmx, lmx, nmx, dt, tc, ustar, massfrac, & 
+
+             call source_dust(imx,jmx, lmx, nmx, dt, tc, ustar, massfrac, &
                   erodtot, dxy, moist_volumetric, airden, airmas, bems, g, dust_alpha, dust_gamma, &
                   R, uthr(i,j))
 
@@ -235,7 +235,7 @@ contains
     ! *         UTHRES    FENGSHA Dry Threshold Velocities              (m/s)
     ! *
     ! *  Data:
-    ! *         MASSFRAC  Fraction of mass in each of 3 soil classes    (-) (clay silt sand) 
+    ! *         MASSFRAC  Fraction of mass in each of 3 soil classes    (-) (clay silt sand)
     ! *         DEN_DUST  Dust density                                  (kg/m3)
     ! *         DEN_SALT  Saltation particle density                    (kg/m3)
     ! *         REFF_SALT Reference saltation particle diameter         (m)
@@ -288,7 +288,7 @@ contains
 
     ! Local Variables
     REAL(kind_phys), INTENT(OUT)   :: bems(nmx)
-    
+
     REAL(kind_phys) :: dvol(nmx)
     REAL(kind_phys) :: distr_dust(nmx)
     REAL(kind_phys) :: dlndp(nmx)
@@ -317,7 +317,7 @@ contains
     REAL(kind_phys), PARAMETER :: RHOSOIL=2650.
 
 
-    ! calculate the total vertical dust flux 
+    ! calculate the total vertical dust flux
 
     emit = 0.0
 
@@ -358,13 +358,13 @@ contains
        ! Calculate total mass emitted
        dsrc = emit*distr_dust(n)*dxy*dt1  ! (kg)
        IF (dsrc < 0.0) dsrc = 0.0
-       
+
        ! Update dust mixing ratio at first model level.
        tc(n) = tc(n) + dsrc / airmas ! (kg/kg)
        !   bems(i,j,n) = dsrc  ! diagnostic
        !bems(i,j,n) = 1000.*dsrc/(dxy(j)*dt1) ! diagnostic (g/m2/s)
        bems(n) = 1.e+9*dsrc/(dxy*dt1) ! diagnostic (ug/m2/s) !lzhang
-       
+
     END DO
     tc(1)=tc(1)+0.286*tc(2)       ! This is just for RRFS-SD. DO NOT use in other models!!!
     tc(5)=0.714*tc(2)+tc(3)+tc(4) ! This is just for RRFS-SD. DO NOT use in other models!!!
@@ -398,10 +398,10 @@ contains
   subroutine DustEmissionFENGSHA(slc, clay, sand, silt,  &
                                   ssm, rdrag, airdens, ustar, uthrs, alpha, gamma, &
                                   kvhmax, grav, rhop, emissions)
-    
+
     ! !USES:
     implicit NONE
-    
+
 ! !INPUT PARAMETERS:
     REAL(kind_phys), intent(in) :: slc      ! liquid water content of soil layer, volumetric fraction [1]
     REAL(kind_phys), intent(in) :: clay     ! fractional clay content [1]
@@ -417,10 +417,10 @@ contains
     REAL(kind_phys), intent(in) :: kvhmax   ! max. vertical to horizontal mass flux ratio [1]
     REAL(kind_phys), intent(in) :: grav     ! gravity [m/sec^2]
     REAL(kind_phys), intent(in) :: rhop     ! soil class density [kg/m^3]
-    
+
     ! !OUTPUT PARAMETERS:
     REAL(kind_phys), intent(inout) :: emissions ! binned surface emissions [kg/(m^2 sec)]
-    
+
     ! !DESCRIPTION: Compute dust emissions using NOAA/ARL FENGSHA model
     !
     ! !REVISION HISTORY:
@@ -428,7 +428,7 @@ contains
     ! 22Feb2020 B.Baker/NOAA    - Original implementation
     ! 29Mar2021 R.Montuoro/NOAA - Refactored for process library
     ! 09Aug2022 B.Baker/NOAA    - Adapted for CCPP-Physics
-    
+
     ! !Local Variables
     real(kind_phys)                  :: alpha_grav
     real(kind_phys)                  :: h
@@ -437,7 +437,7 @@ contains
     real(kind_phys)                  :: rustar
     real(kind_phys)                  :: total_emissions
     real(kind_phys)                  :: u_sum, u_thresh
-    
+
 !EOP
 !-------------------------------------------------------------------------
 !  Begin
@@ -471,19 +471,19 @@ contains
       ! -------------------------
       h = moistureCorrectionFecan(slc, sand, clay)
    else
-      ! shao soil moisture correction 
+      ! shao soil moisture correction
       h = moistureCorrectionShao(slc)
    end if
    ! Adjust threshold
    ! ----------------
    u_thresh = uthrs * h
-   
+
    u_sum = rustar + u_thresh
-   
+
    ! Compute Horizontal Saltation Flux according to Eq (9) in Webb et al. (2020)
    ! ---------------------------------------------------------------------------
    q = max(0., rustar - u_thresh) * u_sum * u_sum
-   
+
    ! Distribute emissions to bins and convert to mass flux (kg s-1)
    ! --------------------------------------------------------------
    emissions = emissions * q
@@ -512,14 +512,14 @@ contains
 
 !  !CONSTANTS:
     REAL(kind_phys), parameter :: rhow = 1000.    ! density of water [kg m-3]
-    REAL(kind_phys), parameter :: rhop = 1700.    ! density of dry soil 
+    REAL(kind_phys), parameter :: rhop = 1700.    ! density of dry soil
 !EOP
 !-------------------------------------------------------------------------
 !  Begin...
 
 !  Saturated volumetric water content (sand-dependent) ! [m3 m-3]
-    vsat = 0.489 - 0.126 * sandfrac 
-    
+    vsat = 0.489 - 0.126 * sandfrac
+
 
 !  Gravimetric soil content
     soilMoistureConvertVol2Grav = 100.0 * (vsoil * rhow / rhop / ( 1. - vsat))
@@ -586,7 +586,7 @@ contains
 !  Begin...
 
     if (slc < 0.03) then
-       moistureCorrectionShao = exp(22.7 * slc) 
+       moistureCorrectionShao = exp(22.7 * slc)
     else
        moistureCorrectionShao = exp(95.3 * slc - 2.029)
     end if
@@ -624,5 +624,5 @@ contains
     end if
 
   end function DustFluxV2HRatioMB95
-  
+
 end module dust_fengsha_mod

@@ -59,19 +59,19 @@
 
       real(kind=kind_phys), dimension(:,:), intent(in) :: ten_t, ten_u, ten_v
       real(kind=kind_phys), dimension(:,:,:), intent(inout) :: ten_q
-      real(kind=kind_phys), dimension(:,:), intent(inout) :: dudt, dvdt, dtdt 
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: dudt, dvdt, dtdt
       real(kind=kind_phys), dimension(:,:,:), intent(inout) :: dqdt
       real(kind=kind_phys), intent(in) ::  delt
 
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       !ten_q(:,:,1) already has a value from the shallow convection scheme
       if (tracers_total > 0) then
         tracers = 2
         do n=2,ntrac
-          if ( otsptflag(n) ) then                                                   
+          if ( otsptflag(n) ) then
             tracers = tracers + 1
             ten_q(1:im,:,n) = dclw(1:im,:,tracers)
           endif
@@ -87,7 +87,7 @@
           ten_q(1:im,:,ntcw) = dclw(1:im,:,1) + dclw(1:im,:,2)
         endif   ! end if_ntiw
       endif   ! end if_ntcw
-      
+
       case_SCNV_ten: select case (tend_opt_scnv)
         case (1) !immediately apply tendencies
                   !Current state = current state + dt*current tendency

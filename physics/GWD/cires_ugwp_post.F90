@@ -49,12 +49,12 @@ contains
           tot_zmtb =  tot_zmtb + dtf *zmtb
           tot_zlwb =  tot_zlwb + dtf *zlwb
           tot_zogw =  tot_zogw + dtf *zogw
-    
+
           tot_tofd  = tot_tofd + dtf *tau_tofd
           tot_mtb   = tot_mtb +  dtf *tau_mtb
           tot_ogw   = tot_ogw +  dtf *tau_ogw
           tot_ngw   = tot_ngw +  dtf *tau_ngw
-    
+
           du3dt_mtb = du3dt_mtb + dtf *dudt_mtb
           du3dt_tms = du3dt_tms + dtf *dudt_tms
           du3dt_ogw = du3dt_ogw + dtf *dudt_ogw

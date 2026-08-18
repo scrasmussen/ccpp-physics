@@ -677,7 +677,7 @@
 [decfl]
   standard_name = deformed_CFL_factor
   long_name = deformed CFL factor
-  units = count 
+  units = count
   dimensions = ()
   type = integer
   intent = in

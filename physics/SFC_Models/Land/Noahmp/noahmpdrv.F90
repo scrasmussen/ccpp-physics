@@ -5,7 +5,7 @@
 !!  This file contains the NoahMP land surface scheme driver.
 
 !>\defgroup NoahMP_LSM NoahMP LSM Model
-!! \brief This is the NoahMP LSM driver module, with the functionality of 
+!! \brief This is the NoahMP LSM driver module, with the functionality of
 !! preparing variables to run the NoahMP LSM subroutine noahmp_sflx(), calling NoahMP LSM and post-processing
 !! variables for return to the parent model suite including unit conversion, as well
 !! as diagnotics calculation.
@@ -15,10 +15,10 @@
 
       use module_sf_noahmplsm
 
-! These hold and apply Land IAU increments for soil temperature 
+! These hold and apply Land IAU increments for soil temperature
 ! (possibly will extend to soil moisture increments)
       use land_iau_mod,  only: land_iau_control_type, land_iau_external_data_type, land_iau_state_type, &
-            land_iau_mod_init, land_iau_mod_getiauforcing, land_iau_mod_final, calculate_landinc_mask   
+            land_iau_mod_init, land_iau_mod_getiauforcing, land_iau_mod_final, calculate_landinc_mask
 
       implicit none
 
@@ -27,12 +27,12 @@
       private
 
       public :: noahmpdrv_init, noahmpdrv_run, &
-                noahmpdrv_timestep_init, noahmpdrv_final 
+                noahmpdrv_timestep_init, noahmpdrv_final
 
       contains
 
 !> \ingroup NoahMP_LSM
-!! \brief This subroutine is called during the CCPP initialization phase and calls set_soilveg() to 
+!! \brief This subroutine is called during the CCPP initialization phase and calls set_soilveg() to
 !! initialize soil and vegetation parameters for the chosen soil and vegetation data sources.
 !! \section arg_table_noahmpdrv_init Argument Table
 !! \htmlinclude noahmpdrv_init.html
@@ -50,7 +50,7 @@
 
         implicit none
         integer,              intent(in) :: lsm
-        integer,              intent(in) :: lsm_noahmp    
+        integer,              intent(in) :: lsm_noahmp
         integer,              intent(in)  :: me, isot, ivegsrc, nlunit
 
         real (kind=kind_phys), dimension(:), intent(out) :: pores, resid
@@ -62,15 +62,15 @@
         character(len=*),     intent(out) :: errmsg
         integer,              intent(out) :: errflg
 
-      ! Land iau mod DDTs ! made optional to allow NoahMP Component model call this function without having to deal with IAU 
-              
-      ! Land IAU Control holds settings' information, maily read from namelist 
+      ! Land iau mod DDTs ! made optional to allow NoahMP Component model call this function without having to deal with IAU
+
+      ! Land IAU Control holds settings' information, maily read from namelist
       ! (e.g., block of global domain that belongs to current process,
-      ! whether to do IAU increment at this time step, time step informatoin, etc)     
+      ! whether to do IAU increment at this time step, time step informatoin, etc)
         type(land_iau_control_type), intent(inout), optional :: Land_IAU_Control
 
         ! land iau state holds increment data read from file (before interpolation)
-        type(land_iau_state_type),  intent(inout), optional  :: Land_IAU_state     
+        type(land_iau_state_type),  intent(inout), optional  :: Land_IAU_state
 
         ! Land IAU Data holds spatially and temporally interpolated increments per time step
         type(land_iau_external_data_type), intent(inout), optional :: Land_IAU_Data   ! arry of (number of blocks):each proc holds nblks
@@ -116,7 +116,7 @@
         call read_mp_table_parameters(errmsg, errflg)
         if(errflg/=0) return
 
-        ! initialize psih and psim 
+        ! initialize psih and psim
         if ( do_mynnsfclay ) then
           call psi_init(psi_opt,errmsg,errflg)
           if(errflg/=0) return
@@ -124,40 +124,40 @@
 
         pores (:) = maxsmc (:)
         resid (:) = drysmc (:)
-        
-        if (present(Land_IAU_Control) .and. present(Land_IAU_Data) .and. present(Land_IAU_State)) then 
+
+        if (present(Land_IAU_Control) .and. present(Land_IAU_Data) .and. present(Land_IAU_State)) then
 
           ! Initialize IAU for land--land_iau_control was set by host model
           if (.not. Land_IAU_Control%do_land_iau) return
-          call land_iau_mod_init (Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg) 
+          call land_iau_mod_init (Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg)
 
         endif
 
       end subroutine noahmpdrv_init
 
 !> \ingroup NoahMP_LSM
-!! \brief This subroutine is called before noahmpdrv_run 
+!! \brief This subroutine is called before noahmpdrv_run
 !!  to update states with iau increments, if available
 !! \section arg_table_noahmpdrv_timestep_init Argument Table
 !! \htmlinclude noahmpdrv_timestep_init.html
 !!
-subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &      
+subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
                                     isot, ivegsrc, soiltyp, vegtype, weasd, &
                                     land_iau_control, land_iau_data, land_iau_state, &
-                                    stc, slc, smc, errmsg, errflg,   &      
-                                    con_g, con_t0c, con_hfus)  
-   
-  use machine,                 only: kind_phys  
+                                    stc, slc, smc, errmsg, errflg,   &
+                                    con_g, con_t0c, con_hfus)
+
+  use machine,                 only: kind_phys
   use namelist_soilveg
   ! use set_soilveg_snippet_mod, only: set_soilveg_noahmp
   use noahmp_tables
 
   implicit none
 
-  integer                                   , intent(in) :: itime      !current forecast iteration      
+  integer                                   , intent(in) :: itime      !current forecast iteration
   real(kind=kind_phys)                      , intent(in) :: fhour      !current forecast time (hr)
-  real(kind=kind_phys)                      , intent(in) :: delt       ! time interval [s]       
-  integer                                   , intent(in) :: km         !vertical soil layer dimension 
+  real(kind=kind_phys)                      , intent(in) :: delt       ! time interval [s]
+  integer                                   , intent(in) :: km         !vertical soil layer dimension
   integer,                                    intent(in) :: ncols
   integer, intent(in)                                    :: isot
   integer, intent(in)                                    :: ivegsrc
@@ -165,11 +165,11 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
   integer             , dimension(:)     , intent(in)    :: soiltyp    ! soil type (integer index)
   integer             , dimension(:)     , intent(in)    :: vegtype    ! vegetation type (integer index)
   real(kind=kind_phys), dimension(:)     , intent(inout) :: weasd      ! water equivalent accumulated snow depth [mm]
-  
+
   type(land_iau_control_type)            , intent(inout) :: Land_IAU_Control
   type(land_iau_external_data_type)      , intent(inout) :: Land_IAU_Data
   type(land_iau_state_type)              , intent(inout) :: Land_IAU_State
-  real(kind=kind_phys), dimension(:,:)   , intent(inout) :: stc        ! soiltemp [K] 
+  real(kind=kind_phys), dimension(:,:)   , intent(inout) :: stc        ! soiltemp [K]
   real(kind=kind_phys), dimension(:,:)   , intent(inout) :: slc        !liquid soil moisture [m3/m3]'
   real(kind=kind_phys), dimension(:,:)   , intent(inout) :: smc        !
   character(len=*),                          intent(out) :: errmsg
@@ -178,10 +178,10 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
   real(kind=kind_phys), intent(in)                       :: con_t0c     ! tfreez
   real(kind=kind_phys), intent(in)                       :: con_hfus    ! hfus
 
-  ! IAU update  
+  ! IAU update
   real(kind=kind_phys),allocatable, dimension(:,:)       :: stc_inc_flat, slc_inc_flat
   real(kind=kind_phys), dimension(km)                    :: dz ! layer thickness
-  
+
 !TODO: This is hard-coded in noahmpdrv
   real(kind=kind_phys)          :: zsoil(4) = (/ -0.1, -0.4, -1.0, -2.0 /)   !zsoil(km)
 
@@ -195,21 +195,21 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
   integer                  :: i, j, ij, l, k, ib
   integer                  :: lensfc
 
-  real(kind=kind_phys)                     :: smp !< for computing supercooled water 
+  real(kind=kind_phys)                     :: smp !< for computing supercooled water
   real(kind=kind_phys)                     :: hc_incr
   real(kind=kind_phys), parameter :: tfreez_noahmp=273.16 ! tfreez used in NoahMP to determine frozen ground
 
   !  --- Initialize CCPP error handling variables
   errmsg = ''
   errflg = 0
- 
+
   if (.not. Land_IAU_Control%do_land_iau) return
 
-  !> update current forecast hour     
-  Land_IAU_Control%fhour=fhour    
+  !> update current forecast hour
+  Land_IAU_Control%fhour=fhour
 
-  !> read iau increments 
-  call land_iau_mod_getiauforcing(Land_IAU_Control, Land_IAU_Data, Land_IAU_state, errmsg, errflg)  
+  !> read iau increments
+  call land_iau_mod_getiauforcing(Land_IAU_Control, Land_IAU_Data, Land_IAU_state, errmsg, errflg)
   if (errflg .ne. 0) then
     return
   endif
@@ -219,7 +219,7 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
     return
   endif
 
-  if(Land_IAU_Control%me == Land_IAU_Control%mpi_root) then 
+  if(Land_IAU_Control%me == Land_IAU_Control%mpi_root) then
     print*, "adding land iau increments"
   endif
 
@@ -232,33 +232,33 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
   ! local variable to copy blocked data Land_IAU_Data%stc_inc
   allocate(stc_inc_flat(Land_IAU_Control%nx * Land_IAU_Control%ny, km))  !GFS_Control%ncols
   allocate(slc_inc_flat(Land_IAU_Control%nx * Land_IAU_Control%ny, km))  !GFS_Control%ncols
-  allocate(stc_updated(Land_IAU_Control%nx * Land_IAU_Control%ny)) 
+  allocate(stc_updated(Land_IAU_Control%nx * Land_IAU_Control%ny))
 
   !copy background stc
   stc_updated = 0
   ib = 1
-  do j = 1, Land_IAU_Control%ny   
-    do k = 1, km    
-      stc_inc_flat(ib:ib+Land_IAU_Control%nx-1, k) = Land_IAU_Data%stc_inc(:,j, k)  
-      slc_inc_flat(ib:ib+Land_IAU_Control%nx-1, k) = Land_IAU_Data%slc_inc(:,j, k) 
+  do j = 1, Land_IAU_Control%ny
+    do k = 1, km
+      stc_inc_flat(ib:ib+Land_IAU_Control%nx-1, k) = Land_IAU_Data%stc_inc(:,j, k)
+      slc_inc_flat(ib:ib+Land_IAU_Control%nx-1, k) = Land_IAU_Data%slc_inc(:,j, k)
     enddo
-    ib = ib + Land_IAU_Control%nx  
+    ib = ib + Land_IAU_Control%nx
   enddo
 
-  if ((Land_IAU_Control%dtp - delt) > 0.0001) then 
-    if(Land_IAU_Control%me == Land_IAU_Control%mpi_root) then 
+  if ((Land_IAU_Control%dtp - delt) > 0.0001) then
+    if(Land_IAU_Control%me == Land_IAU_Control%mpi_root) then
       print*, "Warning! noahmpdrv_timestep_init delt ",delt," different from Land_IAU_Control%dtp ",Land_IAU_Control%dtp
     endif
   endif
-      
-  lsoil_incr = Land_IAU_Control%lsoil_incr 
-  lensfc = Land_IAU_Control%nx * Land_IAU_Control%ny   
+
+  lsoil_incr = Land_IAU_Control%lsoil_incr
+  lensfc = Land_IAU_Control%nx * Land_IAU_Control%ny
 
   if(Land_IAU_Control%me == Land_IAU_Control%mpi_root) print*,' adjusting first ', lsoil_incr, ' surface layers only, delt ', delt
 
   allocate(mask_tile(lensfc))
-  call calculate_landinc_mask(weasd, vegtype, soiltyp, lensfc, isice_table, mask_tile)  
-                              
+  call calculate_landinc_mask(weasd, vegtype, soiltyp, lensfc, isice_table, mask_tile)
+
   dz(1) = -zsoil(1)
   do k = 2, km
         dz(k) = -zsoil(k) + zsoil(k-1)
@@ -267,7 +267,7 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
   ij_loop : do ij = 1, lensfc
     ! mask: 1  - soil, 2 - snow, 0 - land-ice, -1 - not land
     if (mask_tile(ij) == 1) then
-     
+
       soil_freeze=.false.
       soil_ice=.false.
       do k = 1, lsoil_incr
@@ -282,17 +282,17 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
         ! do not do SLC updates if this layer or any above is frozen
         if ( (.not. soil_freeze ) .and. (.not. soil_ice ) ) then
           if (Land_IAU_Control%upd_slc) then
-            ! if soil moisture is <0.1 mm in layer, prevent DA from further reducing it 
+            ! if soil moisture is <0.1 mm in layer, prevent DA from further reducing it
             slc(ij,k) = max(slc(ij,k) + slc_inc_flat(ij,k)*delt, min(0.0001/dz(k), slc(ij,k)))
             smc(ij,k) = max(smc(ij,k) + slc_inc_flat(ij,k)*delt, min(0.0001/dz(k), smc(ij,k)))
           endif
-        endif       
+        endif
       enddo
     endif ! if soil/snow point
   enddo ij_loop
 
- !!do moisture/temperature adjustment for consistency after increment add 
-  call read_mp_table_parameters(errmsg, errflg)          
+ !!do moisture/temperature adjustment for consistency after increment add
+  call read_mp_table_parameters(errmsg, errflg)
   if (errflg .ne. 0) then
         errmsg = 'FATAL ERROR in noahmpdrv_timestep_init: problem in set_soilveg_noahmp'
         return
@@ -321,25 +321,25 @@ subroutine noahmpdrv_timestep_init (itime, fhour, delt, km,  ncols,         &
               endif
             enddo
         endif
-      enddo    
-    endif 
+      enddo
+    endif
 
   endif
   deallocate(stc_inc_flat, slc_inc_flat, stc_updated)
   deallocate(mask_tile)
-    
+
 
 end subroutine noahmpdrv_timestep_init
 
    !> \ingroup NoahMP_LSM
-!! \brief This subroutine mirrors noahmpdrv_init  
-!!  it calls land_iau_final which frees up allocated memory by IAU_init (in noahmdrv_init)  
+!! \brief This subroutine mirrors noahmpdrv_init
+!!  it calls land_iau_final which frees up allocated memory by IAU_init (in noahmdrv_init)
 !! \section arg_table_noahmpdrv_final Argument Table
 !! \htmlinclude noahmpdrv_final.html
 !!
-  subroutine noahmpdrv_final (Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg)          
-   
-    use machine,          only: kind_phys 
+  subroutine noahmpdrv_final (Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg)
+
+    use machine,          only: kind_phys
     implicit none
     type(land_iau_control_type)            , intent(in   ) :: Land_IAU_Control
     type(land_iau_external_data_type)      , intent(inout) :: Land_IAU_Data
@@ -349,10 +349,10 @@ end subroutine noahmpdrv_timestep_init
     integer :: j, k, ib
     !  --- Initialize CCPP error handling variables
     errmsg = ''
-    errflg = 0    
+    errflg = 0
 
     if (.not. Land_IAU_Control%do_land_iau) return
-    call land_iau_mod_final(Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg)    
+    call land_iau_mod_final(Land_IAU_Control, Land_IAU_Data, Land_IAU_State, errmsg, errflg)
 
   end subroutine noahmpdrv_final
 
@@ -365,12 +365,12 @@ end subroutine noahmpdrv_timestep_init
 !!  @{
 !!    - Initialize CCPP error handling variables.
 !!    - Set a flag to only continue with each grid cell if the fraction of land is non-zero.
-!!    - This driver may be called as part of an iterative loop. If called as the first "guess" run, 
+!!    - This driver may be called as part of an iterative loop. If called as the first "guess" run,
 !!        save land-related prognostic fields to restore.
 !!    - Initialize output variables to zero and prepare variables for input into the NoahMP LSM.
 !!    - Call transfer_mp_parameters() to fill a derived datatype for input into the NoahMP LSM.
 !!    - Call noahmp_options() to set module-level scheme options for the NoahMP LSM.
-!!    - If the vegetation type is ice for the grid cell, call noahmp_options_glacier() to set 
+!!    - If the vegetation type is ice for the grid cell, call noahmp_options_glacier() to set
 !!        module-level scheme options for NoahMP Glacier and call noahmp_glacier().
 !!    - For other vegetation types, call noahmp_sflx(), the entry point of the NoahMP LSM.
 !!    - Set output variables from the output of noahmp_glacier() and/or noahmp_sflx().
@@ -461,13 +461,13 @@ end subroutine noahmpdrv_timestep_init
   use noahmp_tables
 
   implicit none
-      
+
   real(kind=kind_phys), parameter  :: a2      = 17.2693882
   real(kind=kind_phys), parameter  :: a3      = 273.16
   real(kind=kind_phys), parameter  :: a4      = 35.86
   real(kind=kind_phys), parameter  :: a23m4   = a2*(a3-a4)
-  real(kind=kind_phys), intent(in) :: con_g 
-      
+  real(kind=kind_phys), intent(in) :: con_g
+
   real, parameter                  :: undefined  =  9.99e20_kind_phys
 
   integer, parameter               :: nsoil   = 4   ! hardwired to Noah
@@ -552,10 +552,10 @@ end subroutine noahmpdrv_timestep_init
   real(kind=kind_phys), dimension(:)     , intent(in)    :: ice_mp     ! microphysics ice/hail [mm]
   real(kind=kind_phys), dimension(:)     , intent(in)    :: rhonewsn1  ! precipitation ice density (kg/m^3)
   real(kind=kind_phys)                   , intent(in)    :: con_hvap   ! latent heat condensation [J/kg]
-  real(kind=kind_phys)                   , intent(in)    :: con_cp     ! specific heat air [J/kg/K] 
+  real(kind=kind_phys)                   , intent(in)    :: con_cp     ! specific heat air [J/kg/K]
   real(kind=kind_phys)                   , intent(in)    :: con_jcal   ! joules per calorie (not used)
   real(kind=kind_phys)                   , intent(in)    :: rhoh2o     ! density of water [kg/m^3]
-  real(kind=kind_phys)                   , intent(in)    :: con_eps    ! Rd/Rv 
+  real(kind=kind_phys)                   , intent(in)    :: con_eps    ! Rd/Rv
   real(kind=kind_phys)                   , intent(in)    :: con_epsm1  ! Rd/Rv - 1
   real(kind=kind_phys)                   , intent(in)    :: con_fvirt  ! Rv/Rd - 1
   real(kind=kind_phys)                   , intent(in)    :: con_rd     ! gas constant air [J/kg/K]
@@ -639,9 +639,9 @@ end subroutine noahmpdrv_timestep_init
   real(kind=kind_phys), dimension(:)     , intent(out)   :: evbs       ! direct soil evaporation [m/s]
   real(kind=kind_phys), dimension(:)     , intent(out)   :: evcw       ! canopy water evaporation [m/s]
   real(kind=kind_phys), dimension(:)     , intent(out)   :: sbsno      ! sublimation/deposit from snopack [W/m2]
-  real(kind=kind_phys), dimension(:)     , intent(out)   :: pah        ! precipitation advected heat - total (w/m2) 
+  real(kind=kind_phys), dimension(:)     , intent(out)   :: pah        ! precipitation advected heat - total (w/m2)
   real(kind=kind_phys), dimension(:)     , intent(out)   :: ecan       ! evaporation of intercepted water (mm/s)
-  real(kind=kind_phys), dimension(:)     , intent(out)   :: etran      ! transpiration rate (mm/s) 
+  real(kind=kind_phys), dimension(:)     , intent(out)   :: etran      ! transpiration rate (mm/s)
   real(kind=kind_phys), dimension(:)     , intent(out)   :: edir       ! soil surface evaporation rate (mm/s)
   real(kind=kind_phys), dimension(:)     , intent(out)   :: snowc      ! fractional snow cover [-]
   real(kind=kind_phys), dimension(:)     , intent(out)   :: stm        ! total soil column moisture content [mm]
@@ -651,7 +651,7 @@ end subroutine noahmpdrv_timestep_init
   real(kind=kind_phys), dimension(:)     , intent(out)   :: wet1       ! normalized surface soil saturated fraction
   real(kind=kind_phys), dimension(:)     , intent(out)   :: t2mmp      ! combined T2m from tiles
   real(kind=kind_phys), dimension(:)     , intent(out)   :: q2mp       ! combined q2m from tiles
-  real(kind=kind_phys), dimension(:)     , intent(out)   :: zvfun      ! 
+  real(kind=kind_phys), dimension(:)     , intent(out)   :: zvfun      !
   real(kind=kind_phys), dimension(:)     , intent(out)   :: ztmax      ! thermal roughness length
   real(kind=kind_phys), dimension(:)     , intent(out)   :: rca        ! total canopy/stomatal resistance (s/m)
 
@@ -727,7 +727,7 @@ end subroutine noahmpdrv_timestep_init
   real (kind=kind_phys), dimension(       1:nsoil) :: soil_interface_depth  ! in    | soil layer-bottom depth from surface [m]
   integer                                          :: max_snow_levels       ! in    | maximum number of snow levels
   real (kind=kind_phys)                            :: vegetation_frac       ! in    | vegetation fraction [0.0-1.0]
-  real (kind=kind_phys)                            :: area_grid             ! in    | 
+  real (kind=kind_phys)                            :: area_grid             ! in    |
   real (kind=kind_phys)                            :: max_vegetation_frac   ! in    | annual maximum vegetation fraction [0.0-1.0]
   integer                                          :: vegetation_category   ! in    | vegetation category
   integer                                          :: ice_flag              ! in    | ice flag (1->ice)
@@ -822,7 +822,7 @@ end subroutine noahmpdrv_timestep_init
   real (kind=kind_phys)                            :: temperature_bare_2m   !   out | bare ground 2-m air temperature [K]
   real (kind=kind_phys)                            :: spec_humidity_veg_2m  !   out | vegetated 2-m air specific humidity [K]
   real (kind=kind_phys)                            :: spec_humidity_bare_2m !   out | bare ground 2-m air specfic humidity [K]
-  real (kind=kind_phys)                            :: runoff_surface        !   out | surface runoff [mm/s] 
+  real (kind=kind_phys)                            :: runoff_surface        !   out | surface runoff [mm/s]
   real (kind=kind_phys)                            :: runoff_baseflow       !   out | baseflow runoff [mm/s]
   real (kind=kind_phys)                            :: par_absorbed          !   out | absorbed photosynthesis active radiation [W/m2]
   real (kind=kind_phys)                            :: photosynthesis        !   out | total photosynthesis [umol CO2/m2/s] [+ out]
@@ -878,7 +878,7 @@ end subroutine noahmpdrv_timestep_init
   real (kind=kind_phys)                            :: canopy_heat_storage   !   out | within-canopy heat [W/m2]
   real (kind=kind_phys)                            :: spec_humid_sfc_veg    !   out | surface specific humidty over vegetation [kg/kg]
   real (kind=kind_phys)                            :: spec_humid_sfc_bare   !   out | surface specific humidty over bare soil [kg/kg]
-  
+
   real (kind=kind_phys)                            :: ustarx                !  inout |surface friction velocity
   real (kind=kind_phys)                            :: prslkix               !  in exner function
   real (kind=kind_phys)                            :: prsik1x               !  in exner function
@@ -914,7 +914,7 @@ end subroutine noahmpdrv_timestep_init
   real (kind=kind_phys) :: penman_radiation       ! used for penman calculation
   real (kind=kind_phys) :: dqsdt                  ! used for penman calculation
   real (kind=kind_phys) :: precip_freeze_frac_in  ! used for penman calculation
- 
+
   real (kind=kind_phys) :: virtfac1               ! virtual factor
   real (kind=kind_phys) :: tflux                  ! surface flux temp
   real (kind=kind_phys) :: tvs1                   ! surface virtual temp
@@ -926,16 +926,16 @@ end subroutine noahmpdrv_timestep_init
   logical               :: is_snowing             ! used for penman calculation
   logical               :: is_freeze_rain         ! used for penman calculation
   integer :: i, k
-      
+
 !
 !  --- local derived constants:
 !
-      
+
   type(noahmp_parameters) :: parameters
 
 !
 !  --- end declaration
-!     
+!
 
 !
 !  --- Initialize CCPP error handling variables
@@ -960,7 +960,7 @@ end subroutine noahmpdrv_timestep_init
         if(weasd(i) < 0.1) then
           weasd(i)  = 0.1
         end if
-      end if                                       
+      end if
 
 !
 !  --- noah-mp input variables (except snow_ice_frac_old done later)
@@ -986,7 +986,7 @@ end subroutine noahmpdrv_timestep_init
       surface_type          = 1
       crop_type             = 0
       eq_soil_water_vol     = smoiseq(i,:) ! only need for run=5
-      temperature_forcing   = t1(i) 
+      temperature_forcing   = t1(i)
       air_pressure_surface  = ps(i)
       air_pressure_forcing  = prsl1(i)
       uwind_forcing         = u1(i)
@@ -1011,7 +1011,7 @@ end subroutine noahmpdrv_timestep_init
       cloud_water_forcing   = -9999.0
       sw_radiation_forcing  = dswsfc(i)
       radiation_lw_forcing  = dlwflx(i)
-      precipitation_forcing = 1000.0 * tprcp(i) / delt 
+      precipitation_forcing = 1000.0 * tprcp(i) / delt
       precip_convective     = rainc_mp(i)
       precip_non_convective = rainn_mp(i)
       precip_sh_convective  = 0.
@@ -1022,7 +1022,7 @@ end subroutine noahmpdrv_timestep_init
       co2_air               = co2_table * air_pressure_forcing
       o2_air                = o2_table  * air_pressure_forcing
       foliage_nitrogen      = 1.0
-      
+
 !
 !  --- noah-mp inout variables
 !
@@ -1074,21 +1074,21 @@ end subroutine noahmpdrv_timestep_init
       soil_moisture_wtd            = smcwtdxy(i)
       deep_recharge                = deeprechxy(i)
       recharge                     = rechxy(i)
-      
+
       ustarx                       = ustar1(i)
 
       snow_ice_frac_old = 0.0
       do k = snow_levels+1, 0
         if(snow_level_ice(k) > 0.0 ) &
-          snow_ice_frac_old(k) = snow_level_ice(k) /(snow_level_ice(k)+snow_level_liquid(k)) 
+          snow_ice_frac_old(k) = snow_level_ice(k) /(snow_level_ice(k)+snow_level_liquid(k))
       end do
 
 
        if (snow_depth .gt. 0.1 .or. vegetation_category  == isice_table ) then
          mnice = 1
-       else    
+       else
          mnice = 0
-       endif   
+       endif
 
 !
 !  --- some outputs for atm model?
@@ -1212,7 +1212,7 @@ end subroutine noahmpdrv_timestep_init
 
       else  ! not glacier
 
-        ice_flag = 0 
+        ice_flag = 0
 
         call noahmp_sflx (parameters                                          , &
           i_location            ,j_location            ,latitude              , &
@@ -1281,7 +1281,7 @@ end subroutine noahmpdrv_timestep_init
 #else
           spec_humid_sfc_veg    ,spec_humid_sfc_bare   )
 #endif
-        
+
 #ifdef CCPP
         if (errflg /= 0) return
 #endif
@@ -1289,7 +1289,7 @@ end subroutine noahmpdrv_timestep_init
         latent_heat_total  = latent_heat_canopy + latent_heat_ground + transpiration_heat
 
         t2mmp(i)  = temperature_veg_2m   * vegetation_fraction + &
-                   temperature_bare_2m   * (1-vegetation_fraction) 
+                   temperature_bare_2m   * (1-vegetation_fraction)
          q2mp(i)  = spec_humidity_veg_2m * vegetation_fraction + &
                    spec_humidity_bare_2m * (1-vegetation_fraction)
 
@@ -1317,8 +1317,8 @@ end subroutine noahmpdrv_timestep_init
       cmxy      (i)   = cm_noahmp
       chxy      (i)   = ch_noahmp
       zorl      (i)   = z0_total * 100.0  ! convert to cm
-      ztmax     (i)   = z0h_total 
-      
+      ztmax     (i)   = z0h_total
+
       !LAI-scale canopy resistance based on weighted sunlit shaded fraction
       if(rs_sunlit .le. 0.0 .or. rs_shaded .le. 0.0 .or. &
           lai_sunlit .eq. 0.0 .or. lai_shaded .eq. 0.0) then
@@ -1328,7 +1328,7 @@ end subroutine noahmpdrv_timestep_init
                  ((1.0/(rs_shaded+leaf_air_resistance))*lai_shaded))
         rca(i) = max((1.0/rca(i)),parameters%rsmin) !resistance
       end if
-      
+
       smc       (i,:) = soil_moisture_vol
       slc       (i,:) = soil_liquid_vol
       snowxy    (i)   = float(snow_levels)
@@ -1469,7 +1469,7 @@ end subroutine noahmpdrv_timestep_init
        if ( iopt_sfc .ne. 4 ) then   !GFS sfcdiff
 
       call       gfs_stability                                                               &
-        (zf(i), zvfun(i), gdx, virtual_temperature, vptemp,wind(i), z0_total, z0h_total, & 
+        (zf(i), zvfun(i), gdx, virtual_temperature, vptemp,wind(i), z0_total, z0h_total, &
          tvs1, con_g, thsfc_loc,                                                         &
          rb1(i), fm1(i), fh1(i), fm101(i), fh21(i), cm(i), ch(i), stress1(i), ustar1(i))
 
@@ -1519,7 +1519,7 @@ end subroutine noahmpdrv_timestep_init
       snwdph    (i)   = snow_depth * 1000.0       ! convert from m to mm; wait after the stability call
 !     qsurf     (i)   = q1(i) + evap(i)/(con_hvap*density*ch(i)*wind(i))
 
-!      
+!
 !  --- change units for output
 !
       hflx(i) = hflx(i) / density / con_cp
@@ -1534,13 +1534,13 @@ end subroutine noahmpdrv_timestep_init
       dqsdt                 = spec_humidity_sat * a23m4/(temperature_forcing-a4)**2
 
       precip_freeze_frac_in = srflag(i)
-      is_snowing            = .false.          
+      is_snowing            = .false.
       is_freeze_rain        = .false.
       if (precipitation_forcing > 0.0) then
         if (precip_freeze_frac_in > 0.0) then                   ! rain/snow flag, one condition is enough?
           is_snowing = .true.
         else
-          if (temperature_forcing <= 275.15) is_freeze_rain = .true.  
+          if (temperature_forcing <= 275.15) is_freeze_rain = .true.
         end if
       end if
 
@@ -1548,7 +1548,7 @@ end subroutine noahmpdrv_timestep_init
 ! using new combined ch output to compute ep
 !
       ch_noahmp = chxy(i) * wind(i)
-      
+
       call penman (temperature_forcing, air_pressure_forcing , ch_noahmp            , &
                    virtual_temperature, potential_temperature, precipitation_forcing, &
                    penman_radiation   , ground_heat_total    , spec_humidity_forcing, &
@@ -1573,43 +1573,43 @@ end subroutine noahmpdrv_timestep_init
 !! from the module \ref noahmp_tables.
       subroutine transfer_mp_parameters (vegtype,soiltype,slopetype,    &
                                        soilcolor,croptype,parameters)
-     
+
         use noahmp_tables
         use module_sf_noahmplsm
-      
+
         implicit none
-      
+
         integer, intent(in)    :: vegtype
         integer, intent(in)    :: soiltype(4)
         integer, intent(in)    :: slopetype
         integer, intent(in)    :: soilcolor
         integer, intent(in)    :: croptype
-          
+
         type (noahmp_parameters), intent(out) :: parameters
-          
+
         real    :: refdk
         real    :: refkdt
         real    :: frzk
         real    :: frzfact
         integer :: isoil
-      
+
         parameters%iswater   =  iswater_table
         parameters%isbarren  =  isbarren_table
         parameters%isice     =  isice_table
         parameters%iscrop    =  iscrop_table
         parameters%eblforest =  eblforest_table
-      
+
 !-----------------------------------------------------------------------&
         parameters%urban_flag = .false.
         if( vegtype == isurban_table .or. vegtype == 31                 &
      &         .or.vegtype  == 32 .or. vegtype == 33) then
            parameters%urban_flag = .true.
         endif
-      
+
 !------------------------------------------------------------------------------------------!
 ! transfer veg parameters
 !------------------------------------------------------------------------------------------!
-      
+
         parameters%ch2op  =  ch2op_table(vegtype)       !maximum intercepted h2o per unit lai+sai (mm)
         parameters%dleaf  =  dleaf_table(vegtype)       !characteristic leaf dimension (m)
         parameters%z0mvt  =  z0mvt_table(vegtype)       !momentum roughness length (m)
@@ -1626,9 +1626,9 @@ end subroutine noahmpdrv_timestep_init
         parameters%sla    =    sla_table(vegtype)       !single-side leaf area per kg [m2/kg]
         parameters%dilefc = dilefc_table(vegtype)       !coeficient for leaf stress death [1/s]
         parameters%dilefw = dilefw_table(vegtype)       !coeficient for leaf stress death [1/s]
-        parameters%fragr  =  fragr_table(vegtype)       !fraction of growth respiration  !original was 0.3 
+        parameters%fragr  =  fragr_table(vegtype)       !fraction of growth respiration  !original was 0.3
         parameters%ltovrc = ltovrc_table(vegtype)       !leaf turnover [1/s]
-      
+
         parameters%c3psn  =  c3psn_table(vegtype)       !photosynthetic pathway: 0. = c4, 1. = c3
         parameters%kc25   =   kc25_table(vegtype)       !co2 michaelis-menten constant at 25c (pa)
         parameters%akc    =    akc_table(vegtype)       !q10 for kc25
@@ -1646,40 +1646,40 @@ end subroutine noahmpdrv_timestep_init
         parameters%arm    =    arm_table(vegtype)       !q10 for maintenance respiration
         parameters%folnmx = folnmx_table(vegtype)       !foliage nitrogen concentration when f(n)=1 (%)
         parameters%tmin   =   tmin_table(vegtype)       !minimum temperature for photosynthesis (k)
-      
+
         parameters%xl     =     xl_table(vegtype)       !leaf/stem orientation index
         parameters%rhol   =   rhol_table(vegtype,:)     !leaf reflectance: 1=vis, 2=nir
         parameters%rhos   =   rhos_table(vegtype,:)     !stem reflectance: 1=vis, 2=nir
         parameters%taul   =   taul_table(vegtype,:)     !leaf transmittance: 1=vis, 2=nir
         parameters%taus   =   taus_table(vegtype,:)     !stem transmittance: 1=vis, 2=nir
-      
+
         parameters%mrp    =    mrp_table(vegtype)       !microbial respiration parameter (umol co2 /kg c/ s)
         parameters%cwpvt  =  cwpvt_table(vegtype)       !empirical canopy wind parameter
-      
+
         parameters%wrrat  =  wrrat_table(vegtype)       !wood to non-wood ratio
         parameters%wdpool = wdpool_table(vegtype)       !wood pool (switch 1 or 0) depending on woody or not [-]
         parameters%tdlef  =  tdlef_table(vegtype)       !characteristic t for leaf freezing [k]
-      
+
         parameters%nroot  =  nroot_table(vegtype)       !number of soil layers with root present
         parameters%rgl    =    rgl_table(vegtype)       !parameter used in radiation stress function
         parameters%rsmin  =     rs_table(vegtype)       !minimum stomatal resistance [s m-1]
         parameters%hs     =     hs_table(vegtype)       !parameter used in vapor pressure deficit function
         parameters%topt   =   topt_table(vegtype)       !optimum transpiration air temperature [k]
         parameters%rsmax  =  rsmax_table(vegtype)       !maximal stomatal resistance [s m-1]
-      
+
 !------------------------------------------------------------------------------------------!
 ! transfer rad parameters
 !------------------------------------------------------------------------------------------!
-      
+
          parameters%albsat    = albsat_table(soilcolor,:)
          parameters%albdry    = albdry_table(soilcolor,:)
          parameters%albice    = albice_table
-         parameters%alblak    = alblak_table               
+         parameters%alblak    = alblak_table
          parameters%omegas    = omegas_table
          parameters%betads    = betads_table
          parameters%betais    = betais_table
          parameters%eg        = eg_table
-      
+
 !------------------------------------------------------------------------------------------!
 ! Transfer crop parameters
 !------------------------------------------------------------------------------------------!
@@ -1692,12 +1692,12 @@ end subroutine noahmpdrv_timestep_init
         parameters%gddtbase  =  gddtbase_table(croptype)    ! base temperature for gdd accumulation [c]
         parameters%gddtcut   =   gddtcut_table(croptype)    ! upper temperature for gdd accumulation [c]
         parameters%gdds1     =     gdds1_table(croptype)    ! gdd from seeding to emergence
-        parameters%gdds2     =     gdds2_table(croptype)    ! gdd from seeding to initial vegetative 
-        parameters%gdds3     =     gdds3_table(croptype)    ! gdd from seeding to post vegetative 
+        parameters%gdds2     =     gdds2_table(croptype)    ! gdd from seeding to initial vegetative
+        parameters%gdds3     =     gdds3_table(croptype)    ! gdd from seeding to post vegetative
         parameters%gdds4     =     gdds4_table(croptype)    ! gdd from seeding to intial reproductive
-        parameters%gdds5     =     gdds5_table(croptype)    ! gdd from seeding to pysical maturity 
+        parameters%gdds5     =     gdds5_table(croptype)    ! gdd from seeding to pysical maturity
         parameters%c3c4      =      c3c4_table(croptype)    ! photosynthetic pathway:  1. = c3 2. = c4
-        parameters%aref      =      aref_table(croptype)    ! reference maximum co2 assimulation rate 
+        parameters%aref      =      aref_table(croptype)    ! reference maximum co2 assimulation rate
         parameters%psnrf     =     psnrf_table(croptype)    ! co2 assimulation reduction factor(0-1) (e.g.pests, weeds)
         parameters%i2par     =     i2par_table(croptype)    ! fraction of incoming solar radiation to photosynthetically active radiation
         parameters%tassim0   =   tassim0_table(croptype)    ! minimum temperature for co2 assimulation [c]
@@ -1728,7 +1728,7 @@ end subroutine noahmpdrv_timestep_init
 !------------------------------------------------------------------------------------------!
 ! transfer global parameters
 !------------------------------------------------------------------------------------------!
-      
+
          parameters%co2          =          co2_table
          parameters%o2           =           o2_table
          parameters%timean       =       timean_table
@@ -1751,11 +1751,11 @@ end subroutine noahmpdrv_timestep_init
          parameters%rsurf_snow   =   rsurf_snow_table
          parameters%rsurf_exp    =    rsurf_exp_table
          parameters%snow_emis    =    snow_emis_table
-      
+
 ! ----------------------------------------------------------------------
 !  transfer soil parameters
 ! ----------------------------------------------------------------------
-      
+
       do isoil = 1, size(soiltype)
         parameters%bexp(isoil)   = bexp_table   (soiltype(isoil))
         parameters%dksat(isoil)  = dksat_table  (soiltype(isoil))
@@ -1767,7 +1767,7 @@ end subroutine noahmpdrv_timestep_init
         parameters%smcref(isoil) = smcref_table (soiltype(isoil))
         parameters%smcwlt(isoil) = smcwlt_table (soiltype(isoil))
       end do
-          
+
       parameters%f1     = f1_table(soiltype(1))
       parameters%refdk  = refdk_table
       parameters%refkdt = refkdt_table
@@ -1778,27 +1778,27 @@ end subroutine noahmpdrv_timestep_init
           parameters%csoil  = csoil_table
           parameters%zbot   = zbot_table
           parameters%czil   = czil_table
-      
+
           frzk   = frzk_table
           parameters%kdt    = parameters%refkdt * parameters%dksat(1) / parameters%refdk
           parameters%slope  = slope_table(slopetype)
-      
+
           if(parameters%urban_flag)then  ! hardcoding some urban parameters for soil
-             parameters%smcmax = 0.45 
-             parameters%smcref = 0.42 
-             parameters%smcwlt = 0.40 
-             parameters%smcdry = 0.40 
+             parameters%smcmax = 0.45
+             parameters%smcref = 0.42
+             parameters%smcwlt = 0.40
+             parameters%smcdry = 0.40
              parameters%csoil  = 3.e6
           endif
-      
+
       ! adjust frzk parameter to actual soil type: frzk * frzfact
-      
+
 !-----------------------------------------------------------------------&
           if(soiltype(1) /= 14) then
             frzfact = (parameters%smcmax(1) / parameters%smcref(1)) * (0.412 / 0.468)
             parameters%frzx = frzk * frzfact
           end if
-      
+
        end subroutine transfer_mp_parameters
 
 !> \ingroup NoahMP_LSM
@@ -1807,14 +1807,14 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
 
   use module_sf_noahmplsm
   use noahmp_tables
-        
+
   implicit none
-        
+
   integer,                    intent(in   ) :: nsoil     ! number of soil layers
   real, dimension( 1:nsoil ), intent(inout) :: sand
   real, dimension( 1:nsoil ), intent(inout) :: clay
   real, dimension( 1:nsoil ), intent(inout) :: orgm
-    
+
   real, dimension( 1:nsoil ) :: theta_1500t
   real, dimension( 1:nsoil ) :: theta_1500
   real, dimension( 1:nsoil ) :: theta_33t
@@ -1823,7 +1823,7 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
   real, dimension( 1:nsoil ) :: theta_s33
   real, dimension( 1:nsoil ) :: psi_et
   real, dimension( 1:nsoil ) :: psi_e
-    
+
   type(noahmp_parameters), intent(inout) :: parameters
   integer :: k
 
@@ -1834,7 +1834,7 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
     end if
     if(orgm(k) <= 0 ) orgm(k) = 0.0
   end do
-        
+
   theta_1500t =   sr2006_theta_1500t_a*sand       &
                 + sr2006_theta_1500t_b*clay       &
                 + sr2006_theta_1500t_c*orgm       &
@@ -1879,12 +1879,12 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
                 + sr2006_psi_et_e*clay*theta_s33 &
                 + sr2006_psi_et_f*sand*clay      &
                 + sr2006_psi_et_g
- 
+
   psi_e       =   psi_et                        &
                 + sr2006_psi_e_a*psi_et*psi_et  &
                 + sr2006_psi_e_b*psi_et         &
                 + sr2006_psi_e_c
-    
+
   parameters%smcwlt = theta_1500
   parameters%smcref = theta_33
   parameters%smcmax =   theta_33    &
@@ -1896,17 +1896,17 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
   parameters%psisat = psi_e
   parameters%dksat  = 1930.0 * (parameters%smcmax - theta_33) ** (3.0 - 1.0/parameters%bexp)
   parameters%quartz = sand
-    
+
 ! Units conversion
-    
+
   parameters%psisat = max(0.1,parameters%psisat)     ! arbitrarily impose a limit of 0.1kpa
   parameters%psisat = 0.101997 * parameters%psisat   ! convert kpa to m
   parameters%dksat  = parameters%dksat / 3600000.0   ! convert mm/h to m/s
   parameters%dwsat  = parameters%dksat * parameters%psisat *parameters%bexp / parameters%smcmax  ! units should be m*m/s
   parameters%smcdry = parameters%smcwlt
-  
+
 ! Introducing somewhat arbitrary limits (based on SOILPARM) to prevent bad things
-  
+
   parameters%smcmax = max(0.32 ,min(parameters%smcmax,             0.50 ))
   parameters%smcref = max(0.17 ,min(parameters%smcref,parameters%smcmax ))
   parameters%smcwlt = max(0.01 ,min(parameters%smcwlt,parameters%smcref ))
@@ -1916,7 +1916,7 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
   parameters%dksat  = max(5.e-7,min(parameters%dksat,              1.e-5))
   parameters%dwsat  = max(1.e-6,min(parameters%dwsat,              3.e-5))
   parameters%quartz = max(0.05 ,min(parameters%quartz,             0.95 ))
-    
+
  END SUBROUTINE PEDOTRANSFER_SR2006
 
 !-----------------------------------------------------------------------&
@@ -1928,7 +1928,7 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
       subroutine penman (sfctmp,sfcprs,ch,t2v,th2,prcp,fdown,ssoil,     &
      &                   q2,q2sat,etp,snowng,frzgra,ffrozp,             &
      &                   dqsdt2,emissi_in,sncovr)
- 
+
 ! etp is calcuated right after ssoil
 
 ! ----------------------------------------------------------------------
@@ -1946,7 +1946,7 @@ SUBROUTINE PEDOTRANSFER_SR2006(nsoil,sand,clay,orgm,parameters)
 
       real(kind=kind_phys), parameter :: elcp = 2.4888e+3, lsubc = 2.501000e+6,cp = 1004.6
       real(kind=kind_phys), parameter :: lsubs = 2.83e+6, rd = 287.05, cph2o = 4.1855e+3
-      real(kind=kind_phys), parameter :: cpice = 2.106e+3, lsubf   = 3.335e5  
+      real(kind=kind_phys), parameter :: cpice = 2.106e+3, lsubf   = 3.335e5
       real(kind=kind_phys), parameter :: sigma = 5.6704e-8
 
 ! ----------------------------------------------------------------------

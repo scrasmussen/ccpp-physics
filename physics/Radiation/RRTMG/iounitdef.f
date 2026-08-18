@@ -48,7 +48,7 @@
 !!!!!  ==========================================================  !!!!!
 
 !========================================!
-!> this module defines fortran unit numbers for input/output data 
+!> this module defines fortran unit numbers for input/output data
 !! files for the ncep gfs model.
       module module_iounitdef            !
 !........................................!

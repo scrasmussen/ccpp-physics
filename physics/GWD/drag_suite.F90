@@ -27,7 +27,7 @@
           & drag is different from drag_suite scheme"
         errflg = 1
         return
-      end if        
+      end if
       end subroutine drag_suite_init
 
 !> This subroutine includes orographic drag, mountain
@@ -220,7 +220,7 @@
      &           flag_for_gwd_generic_tend,                             &
      &           dtend, dtidx, index_of_process_orographic_gwd,         &
      &           index_of_temperature, index_of_x_wind,                 &
-     &           index_of_y_wind, ldiag3d, ldiag_ugwp, ugwp_seq_update, & 
+     &           index_of_y_wind, ldiag3d, ldiag_ugwp, ugwp_seq_update, &
      &           spp_wts_gwd, spp_gwd, errmsg, errflg)
 
 !   ********************************************************************
@@ -292,7 +292,7 @@
 !        deltim  time step    secs
 !        del(km)  positive increment of pressure across layer (pa)
 !        KPBL(IM) is the index of the top layer of the PBL
-!        ipr & lprnt for diagnostics 
+!        ipr & lprnt for diagnostics
 !
 !  output
 !        dudt, dvdt    wind tendency due to gwdo
@@ -537,12 +537,12 @@
    udtend = -1
    vdtend = -1
    Tdtend = -1
-   
+
    dudt(:,:)  = 0.
    dvdt(:,:)  = 0.
    dtdt(:,:)  = 0.
    dqdt(:,:,:)= 0.
-   
+
    if(ldiag3d .and. .not. flag_for_gwd_generic_tend) then
       udtend = dtidx(index_of_x_wind,index_of_process_orographic_gwd)
       vdtend = dtidx(index_of_y_wind,index_of_process_orographic_gwd)
@@ -1023,7 +1023,7 @@ IF ( (do_gsl_drag_ls_bl).and.(gwd_opt_ms) ) THEN
 
 ENDIF  ! (do_gsl_drag_ls_bl).and.(gwd_opt_ms)
 !===============================================================
-!COMPUTE BLOCKING COMPONENT                                     
+!COMPUTE BLOCKING COMPONENT
 !===============================================================
 IF ( do_gsl_drag_ls_bl .and. gwd_opt_bl ) THEN
 
@@ -1081,7 +1081,7 @@ IF ( do_gsl_drag_ls_bl .and. gwd_opt_bl ) THEN
 ENDIF   ! IF ( do_gsl_drag_ls_bl .and. gwd_opt_bl )
 !===========================================================
 IF ( (do_gsl_drag_ls_bl) .and.                                       &
-     (gwd_opt_ms .OR. gwd_opt_bl) ) THEN 
+     (gwd_opt_ms .OR. gwd_opt_bl) ) THEN
 
    do i=its,im
 
@@ -1139,7 +1139,7 @@ IF ( (do_gsl_drag_ls_bl) .and.                                       &
             dtauxb = taud_bl(i,k) * xn(i)
             dtauyb = taud_bl(i,k) * yn(i)
 
-            !add blocking and mesoscale contributions to tendencies 
+            !add blocking and mesoscale contributions to tendencies
             tmp1 = dtaux + dtauxb
             tmp2 = dtauy + dtauyb
             dudt(i,k)  = tmp1 + dudt(i,k)
@@ -1248,7 +1248,7 @@ IF ( do_gsl_drag_ss ) THEN
          enddo
          if((xland(i)-1.5).le.0. .and. 2.*varss_stoch(i).le.hpbl(i))then
             if(br1(i).gt.0. .and. thvx(i,kpbl2)-thvx(i,kts) > 0.)then
-              ! Modify xlinv to represent wave number of "typical" small-scale topography 
+              ! Modify xlinv to represent wave number of "typical" small-scale topography
 !              cleff_ss    = 3. * max(dx(i),cleff_ss)
 !              cleff_ss    = 10. * max(dxmax_ss,cleff_ss)
 !               cleff_ss    = 0.1 * 12000.
@@ -1468,7 +1468,7 @@ endif
 !                    topographic form drag of Beljaars et al. (2004, QJRMS)
 !           Activation of each component is done by specifying the integer-parameters
 !           (defined below) to 0: inactive or 1: active
-!                    gwd_opt_ls = 0 or 1: large-scale  
+!                    gwd_opt_ls = 0 or 1: large-scale
 !                    gwd_opt_bl = 0 or 1: blocking drag
 !                    gwd_opt_ss = 0 or 1: small-scale gravity wave drag
 !                    gwd_opt_fd = 0 or 1: topographic form drag
@@ -1510,7 +1510,7 @@ endif
 !        deltim  time step    secs
 !        del(km)  positive increment of pressure across layer (pa)
 !        KPBL(IM) is the index of the top layer of the PBL
-!        ipr & lprnt for diagnostics 
+!        ipr & lprnt for diagnostics
 !
 !  output
 !        dudt, dvdt    wind tendency due to gwdo
@@ -1656,9 +1656,9 @@ endif
    real(kind=kind_phys)                 :: H_efold
    real(kind=kind_phys), parameter      :: coeff_fd = 6.325e-3
 
-! multification factor of standard deviation : ! larger drag with larger value 
+! multification factor of standard deviation : ! larger drag with larger value
 !!!   real(kind=kind_phys), parameter       :: psl_gwd_dx_factor     = 6.0
-   real(kind=kind_phys), intent(in)      :: psl_gwd_dx_factor 
+   real(kind=kind_phys), intent(in)      :: psl_gwd_dx_factor
 
 ! critical richardson number for wave breaking : ! larger drag with larger value
    real(kind=kind_phys), parameter       ::  ric     = 0.25
@@ -1762,11 +1762,11 @@ endif
    udtend = -1
    vdtend = -1
    Tdtend = -1
-   
+
    dudt(:,:)  = 0.
    dvdt(:,:)  = 0.
    dtdt(:,:)  = 0.
-   
+
    if(ldiag3d .and. .not. flag_for_gwd_generic_tend) then
       udtend = dtidx(index_of_x_wind,index_of_process_orographic_gwd)
       vdtend = dtidx(index_of_y_wind,index_of_process_orographic_gwd)
@@ -1952,7 +1952,7 @@ endif
 !  determine reference level: maximum of 2*var and pbl heights
 !
    do i = its,im
-     if(vtype(i)==15) then   
+     if(vtype(i)==15) then
        zlowtop(i) = 1.0 * var_stoch(i)  !!! reduce drag over land ice
      else
        zlowtop(i) = 2.0 * var_stoch(i)
@@ -1973,7 +1973,7 @@ endif
    enddo
 !
 !  determine the maximum height level
-!  note taht elvmax and zl are the heights from the model surface whereas 
+!  note taht elvmax and zl are the heights from the model surface whereas
 !  oro (mean orography) is the height from the sea level
 !
    do i = its,im
@@ -2014,11 +2014,11 @@ endif
    do i = its,im
 !!!     kbl(i)   = max(kpbl(i), klowtop(i))    ! do not use pbl height for the time being...
      kbl(i)   = max(komax(i), klowtop(i))
-     kbl(i)   = max(kbl(i), kpbl(i))    
+     kbl(i)   = max(kbl(i), kpbl(i))
      kbl(i)   = max(min(kbl(i),kpblmax),kpblmin)
    enddo
 !
-!  compute low level averages below reference level 
+!  compute low level averages below reference level
 !
    do i = its,im
      delks(i)  = 1.0 / (prsi(i,1) - prsi(i,kbl(i)))
@@ -2458,7 +2458,7 @@ IF ( (do_gsl_drag_ls_bl).and.(gwd_opt_ls .EQ. 1) ) THEN
 
 ENDIF  ! (do_gsl_drag_ls_bl).and.(gwd_opt_ls .EQ. 1)
 !===============================================================
-!COMPUTE BLOCKING COMPONENT                                     
+!COMPUTE BLOCKING COMPONENT
 !===============================================================
 IF ( (do_gsl_drag_ls_bl) .and. (gwd_opt_bl .EQ. 1) ) THEN
    do i = its,im
@@ -2522,7 +2522,7 @@ IF ( (do_gsl_drag_ls_bl) .and. (gwd_opt_bl .EQ. 1) ) THEN
 ENDIF   ! IF ( (do_gsl_drag_ls_bl) .and. (gwd_opt_bl .EQ. 1) )
 !===========================================================
 IF ( (do_gsl_drag_ls_bl) .and.                                       &
-     (gwd_opt_ls .EQ. 1 .OR. gwd_opt_bl .EQ. 1) ) THEN 
+     (gwd_opt_ls .EQ. 1 .OR. gwd_opt_bl .EQ. 1) ) THEN
 
    do i=its,im
 
@@ -2550,7 +2550,7 @@ IF ( (do_gsl_drag_ls_bl) .and.                                       &
 !  Note: 'sigma' = prsi(k)/prsi(k=1), where prsi(k=1) is the surface pressure
 !
          do k = kts,kpblmax-1
-            if (prsi(i,k).ge.sgmalolev*prsi(i,1)) then 
+            if (prsi(i,k).ge.sgmalolev*prsi(i,1)) then
                if ((taud_ls(i,k)+taud_bl(i,k)).ne.0.)                   &
                   dtfac(i) = min(dtfac(i),abs(velco(i,k)                &
                        /(deltim*rcs*(taud_ls(i,k)+taud_bl(i,k)))))
@@ -2565,13 +2565,13 @@ IF ( (do_gsl_drag_ls_bl) .and.                                       &
             ! velocity tendency due to mesoscale GWD to prevent sudden reversal of
             ! wind direction (similar to above)
             dtfac_meso = 1.0
-            if (prsl(i,k).le.plolevmeso) then 
+            if (prsl(i,k).le.plolevmeso) then
                if (taud_ls(i,k).ne.0.)                                          &
                   dtfac_meso = min(dtfac_meso,facmeso*abs(velco(i,min(k,km-1))  &
                      /(deltim*rcs*taud_ls(i,k))))
             end if
 
-            taud_ls(i,k)  = taud_ls(i,k)*dtfac(i)*dtfac_meso*           &    
+            taud_ls(i,k)  = taud_ls(i,k)*dtfac(i)*dtfac_meso*           &
                                ls_taper(i) *(1.-rstoch(i))
             taud_bl(i,k)  = taud_bl(i,k)*dtfac(i)* ls_taper(i) *(1.-rstoch(i))
 
@@ -2580,7 +2580,7 @@ IF ( (do_gsl_drag_ls_bl) .and.                                       &
             dtauxb = taud_bl(i,k) * xn(i)
             dtauyb = taud_bl(i,k) * yn(i)
 
-            !add blocking and large-scale contributions to tendencies 
+            !add blocking and large-scale contributions to tendencies
             dudt(i,k)  = dtaux + dtauxb + dudt(i,k)
             dvdt(i,k)  = dtauy + dtauyb + dvdt(i,k)
 

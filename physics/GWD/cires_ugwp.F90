@@ -59,7 +59,7 @@ contains
     real(kind=kind_phys), intent (in) :: con_p0
     integer,              intent(in)  :: gwd_opt
     logical,              intent (in) :: do_ugwp
-    
+
     character(len=*), intent (in) :: fn_nml2
     !character(len=*), parameter   :: fn_nml='input.nml'
 
@@ -248,9 +248,9 @@ contains
 
     logical, intent(in) :: lprnt
     integer, intent(in) :: ipr
-    
+
     real(kind=kind_phys), intent(out) :: ten_q(:,:,:)
-    
+
     character(len=*),        intent(out) :: errmsg
     integer,                 intent(out) :: errflg
 
@@ -272,7 +272,7 @@ contains
     ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
-    
+
     ten_q = 0.0
 
     ! 1) ORO stationary GWs

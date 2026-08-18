@@ -9,7 +9,7 @@
       use samfcnv_aerosols, only : samfdeepcnv_aerosols
       use progsigma, only : progsigma_calc
       use progomega, only : progomega_calc
-      
+
       contains
 
       subroutine samfdeepcnv_init(imfdeepcnv,imfdeepcnv_samf,            &
@@ -100,7 +100,7 @@
      &   fv, grav, hvap, rd, rv, t0c
       real(kind=kind_phys), intent(in) ::  delt, cscale
       real(kind=kind_phys), intent(in) :: psp(:), delp(:,:),            &
-     &   prslp(:,:),  garea(:), hpbl(:), dot(:,:), phil(:,:) 
+     &   prslp(:,:),  garea(:), hpbl(:), dot(:,:), phil(:,:)
       real(kind=kind_phys), dimension(:), intent(in) :: fscav
       logical, intent(in)  :: first_time_step,restart,hwrf_samfdeep,    &
      &     progsigma,progomega,do_mynnedmf,sigmab_coldstart
@@ -119,7 +119,7 @@
       ! DH* TODO - check dimensions of qtr, ntr+2 correct?  *DH
       real(kind=kind_phys), intent(inout) :: cnvw(:,:),  cnvc(:,:),     &
      &                                       tkeh(:,:)
-      
+
       real(kind=kind_phys), intent(in) :: qtr(:,:,:), q1(:,:)
       real(kind=kind_phys), intent(in) :: t1(:,:), u1(:,:), v1(:,:)
 
@@ -220,7 +220,7 @@ cj
       real(kind=kind_phys) omega_u(im,km),zdqca(im,km),tmfq(im,km),
      &     omegac(im),zeta(im,km),dbyo1(im,km),sigmab(im),qadv(im,km)
       real(kind=kind_phys) gravinv,invdelt,sigmind,sigminm,sigmins,
-     &     wc_min, wc_eff 
+     &     wc_min, wc_eff
       logical flag_shallow, flag_mid
 c  physical parameters
 !     parameter(grav=grav,asolfac=0.958)
@@ -323,8 +323,8 @@ c    &            .743,.813,.886,.947,1.138,1.377,1.896/
       ten_q = 0._kind_phys
       dqtr  = 0._kind_phys
 
-      new_t1 = t1 
-      new_u1 = u1 
+      new_t1 = t1
+      new_u1 = u1
       new_v1 = v1
       new_q1 = q1
       new_qtr = qtr
@@ -376,7 +376,7 @@ c-----------------------------------------------------------------------
             wc_min = 0.2
          endif
       endif
-      
+
       km1 = km - 1
 !>  - Initialize column-integrated and other single-value-per-column variable arrays.
 c
@@ -1736,7 +1736,7 @@ c
 !             aa2(i) = aa2(i) +
 !!   &                 dz1 * eta(i,k) * grav * fv *
 !    &                 dz1 * grav * fv *
-!    &                 max(val,(qeso(i,k) - qo(i,k)))        
+!    &                 max(val,(qeso(i,k) - qo(i,k)))
 !NRL MNM: Limit overshooting not to be deeper than half the actual cloud              
               tem  = 0.5 * (zi(i,ktcon(i))-zi(i,kbcon(i)))
               tem1 = zi(i,k)-zi(i,ktcon(i))
@@ -1798,7 +1798,7 @@ c
 !  compute updraft velocity square(wu2)
 !> - Calculate diagnostic updraft velocity square(wu2) according to Han et al.'s (2017) \cite han_et_al_2017 equation 7.
 !> - if progomega = true, calculate prognostic updraft velocity (Pa/s) according to progomega routine.
-      
+
       if (hwrf_samfdeep) then
          do i = 1, im
             if (cnvflg(i)) then
@@ -1813,7 +1813,7 @@ c
             endif
          enddo
       endif
-!                  
+!
       if (progomega) then
          call progomega_calc(first_time_step,restart,im,km,
      &        kbcon1,ktcon,omegain,delt,del,zi,cnvflg,omegaout,
@@ -1866,7 +1866,7 @@ c
          enddo
 
       endif                     !progomega
-     
+
 !
 !  compute updraft velocity average over the whole cumulus
 !> - Calculate the mean updraft velocity within the cloud (wc).
@@ -1896,7 +1896,7 @@ c
           val = 1.e-4
           if (wc(i) < val) cnvflg(i)=.false.
         endif
-      enddo      
+      enddo
 c
 !> - For progsigma = T, calculate the mean updraft velocity within the cloud (omegac),cast in pressure coordinates.                                                                                                                                  
       if(progsigma)then
@@ -1944,7 +1944,7 @@ c
                endif
             enddo
          enddo
-      
+
 
       endif !if progsigma
 
@@ -2949,7 +2949,7 @@ c
             if (.not. hwrf_samfdeep) then
                tfac = 1. + gdx(i) / 75000.
                dtconv(i) = tfac * dtconv(i)
-            endif  
+            endif
          !bounds
             dtconv(i) = max(dtconv(i), dtmin)
             dtconv(i) = min(dtconv(i), dtmax)
@@ -2984,11 +2984,11 @@ c
            advfac(i) = min(cat_adj_deep*advfac(i), 1.)
         endif
       enddo
-      
+
 !> - From Bengtsson et al. (2022) \cite Bengtsson_2022 prognostic closure scheme, equation 8, call progsigma_calc() to compute updraft area fraction based on a moisture budget
       if(progsigma)then
 !Initial computations, dynamic q-tendency                                                                                                                                               
-         if(first_time_step .and. (.not.restart 
+         if(first_time_step .and. (.not.restart
      &           .or. sigmab_coldstart))then
             do k = 1,km
                do i = 1,im
@@ -3002,7 +3002,7 @@ c
                enddo
             enddo
          endif
-         
+
          do k = 1,km
             do i = 1,im
                tmfq(i,k)=tmf(i,k,1)
@@ -3506,7 +3506,7 @@ c
                if (k >= kbcon(i) .and. k < ktcon(i)) then
                   cnvw(i,k) = cnvwt(i,k) * xmb(i) * dt2
                   if(progsigma)then
-                     cnvw(i,k) = cnvw(i,k) * cscale 
+                     cnvw(i,k) = cnvw(i,k) * cscale
                   else
                      cnvw(i,k) = cnvw(i,k) * cscale
                   endif
@@ -3703,7 +3703,7 @@ c
 
       ten_t = (new_t1 - t1)/delt
       ten_q(:,:,1) = (new_q1 - q1)/delt
-      ten_u = (new_u1 - u1)/delt 
+      ten_u = (new_u1 - u1)/delt
       ten_v = (new_v1 - v1)/delt
       dqtr  = (new_qtr - qtr)/delt
 

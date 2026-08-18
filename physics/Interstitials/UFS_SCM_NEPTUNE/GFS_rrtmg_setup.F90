@@ -2,7 +2,7 @@
 !! This file contains
 
 !> \defgroup GFS_rrtmg_setup_mod GFS RRTMG Scheme Setup
-!! This subroutine initializes RRTMG. 
+!! This subroutine initializes RRTMG.
 !> @{
 module GFS_rrtmg_setup
 
@@ -176,7 +176,7 @@ module GFS_rrtmg_setup
       ! Initialize the CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       if (do_RRTMGP) then
         write(errmsg,'(*(a))') "Logic error: do_RRTMGP must be set to .false."
         errflg = 1
@@ -186,7 +186,7 @@ module GFS_rrtmg_setup
       if ( ictm==0 .or. ictm==-2 ) then
         iaerflg = mod(iaer, 100)        ! no volcanic aerosols for clim hindcast
       else
-        iaerflg = mod(iaer, 1000)   
+        iaerflg = mod(iaer, 1000)
       endif
       iaermdl = iaer/1000               ! control flag for aerosol scheme selection
 

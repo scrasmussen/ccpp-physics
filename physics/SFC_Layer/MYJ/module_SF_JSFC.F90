@@ -459,7 +459,7 @@
      &                 ,IDS,IDE,JDS,JDE,KDS,KDE                        &
      &                 ,IMS,IME,JMS,JME,KMS,KME                        &
      &                 ,ITS,ITE,JTS,JTE,KTS,LM,I,J,ZSFC,RIB            & ! Added Bulk Richardson No.
-     &                 ,errmsg, errflg) 
+     &                 ,errmsg, errflg)
 !     ****************************************************************
 !     *                                                              *
 !     *                       SURFACE LAYER                          *

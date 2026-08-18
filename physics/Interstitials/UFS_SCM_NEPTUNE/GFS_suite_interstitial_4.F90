@@ -23,7 +23,7 @@
       use module_mp_tempo_utils_v2, only: &
            make_IceNumber_tempo => make_IceNumber, &
            make_DropletNumber_tempo => make_DropletNumber
-    
+
       implicit none
 
       ! interface variables
@@ -69,17 +69,17 @@
       real(kind=kind_phys), dimension(im,levs) :: qi_mp !< kg kg-1 (dry mixing ratio)
       real(kind=kind_phys), dimension(im,levs) :: nc_mp !< kg-1 (dry mixing ratio)
       real(kind=kind_phys), dimension(im,levs) :: ni_mp !< kg-1 (dry mixing ratio)
-      
+
       real(kind=kind_phys), dimension(im,levs) :: new_lnc, new_inc
 
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       if (ntlnc > 0) new_lnc = gq0(:,:,ntlnc)
       if (ntinc > 0) new_inc = gq0(:,:,ntinc)
       !clw is not updated after SCNV, only the whole tracer array;
-      
+
       if(ldiag3d) then
          if(ntk>0 .and. ntk<=size(clw,3)) then
             idtend=dtidx(100+ntke,index_of_process_conv_trans)
@@ -160,7 +160,7 @@
 !             n /= nthl  .and. n /= nthnc .and. n /= ntgv    .and. &
 !             n /= nthv .and. n /= ntccn  &
 !                                                               ) then
-           IF ( otsptflag(n) ) THEN                                                    
+           IF ( otsptflag(n) ) THEN
               tracers = tracers + 1
             if(n/=ntk .and. n/=ntlnc .and. n/=ntinc .and. n /= ntcw .and. n /= ntiw) then
                idtend=dtidx(100+n,index_of_process_conv_trans)
@@ -196,7 +196,7 @@
                  ELSE
                    xccn = Max(0.0, qccn - gq0(i,k,ntlnc))
                  ENDIF
-                 
+
                  IF ( gq0(i,k,ntlnc) > 0.0 .and. save_qc(i,k) > 0.0 ) THEN
                     xcwmas = Max( liqm, gq0(i,k,ntcw)/gq0(i,k,ntlnc) )
                  ELSE
@@ -208,7 +208,7 @@
                  ELSE
                     xcimas = icem
                  ENDIF
-                   
+
                  IF ( xccn > 0.0 ) THEN
                  xccw = Min( xccn, max(0.0, (gq0(i,k,ntcw)-save_qc(i,k))) / xcwmas )
                  new_lnc(i,k) = new_lnc(i,k) + xccw
@@ -255,7 +255,7 @@
                   !> - Convert moist mixing ratio to dry mixing ratio
                   qi_mp(i,k) = (gq0(i,k,ntiw)-save_qi(i,k)) / (one-spechum(i,k))
                   !> - Convert number concentration from moist to dry
-                  ni_mp(i,k) = gq0(i,k,ntinc) / (one-spechum(i,k)) 
+                  ni_mp(i,k) = gq0(i,k,ntinc) / (one-spechum(i,k))
                   if (imp_physics == imp_physics_thompson) then
                     ni_mp(i,k) = max(zero, ni_mp(i,k) + make_IceNumber_thompson(qi_mp(i,k) * rho, save_tcp(i,k)) * orho)
                   else
@@ -296,7 +296,7 @@
             enddo
           end if if_convert_dry_rho
         endif !Thompson MP
-        
+
         if(ldiag3d .and. qdiag3d) then
           if (ntlnc > 0) then
             idtend = dtidx(100+ntlnc,index_of_process_conv_trans)
@@ -311,10 +311,10 @@
             endif
           endif
         endif
-        
+
         if (ntlnc > 0) gq0(:,:,ntlnc) = new_lnc(:,:)
         if (ntinc > 0) gq0(:,:,ntinc) = new_inc(:,:)
-        
+
       endif   ! end if_ntcw and if_ntiw
 
     end subroutine GFS_suite_interstitial_4_run

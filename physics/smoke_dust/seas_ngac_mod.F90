@@ -87,7 +87,7 @@ CONTAINS
    real(kind=kind_phys),    intent(inout)        :: nemissions      ! Number Emissions Flux [# m-2 s-1]
    integer, intent(out)          :: rc              ! Error return code:
                                                     !  0 - all is well
-                                                    !  1 - 
+                                                    !  1 -
 ! !Local Variables
    integer       :: ir
    real(kind=kind_phys)          :: w                               ! Intermediary wind speed [m s-1]
@@ -152,7 +152,7 @@ CONTAINS
 !   Number emissions flux (# m-2 s-1)
     nemissions = nemissions + SeasaltEmissionGong( rwet, drwet, w, scalefac, aFac, bFac, rpow, exppow, wpow )
 !   Mass emissions flux (kg m-2 s-1)
-    scalefac = scalefac * 4./3.*pi*rhop*r**3.*1.e-18 
+    scalefac = scalefac * 4./3.*pi*rhop*r**3.*1.e-18
     memissions = memissions + SeasaltEmissionGong( rwet, drwet, w, scalefac, aFac, bFac, rpow, exppow, wpow )
 
     r = r + dr

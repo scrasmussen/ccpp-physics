@@ -266,7 +266,7 @@
   units = flag
   dimensions = ()
   type = integer
-  intent = in  
+  intent = in
 [imp_physics_wsm6]
   standard_name = identifier_for_wsm6_microphysics_scheme
   long_name = choice of WSM6 microphysics scheme
@@ -308,7 +308,7 @@
   units = flag
   dimensions = ()
   type = logical
-  intent = in  
+  intent = in
 [mraerosol]
   standard_name = do_merra2_aerosol_awareness
   long_name = flag for merra2 aerosol-aware physics for example the thompson microphysics

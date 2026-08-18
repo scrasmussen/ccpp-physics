@@ -1,5 +1,5 @@
 !> \file GFS_rrtmgp_cloud_overlap.F90
-!! This file contains EMC's interface to the different assumptions of vertical cloud 
+!! This file contains EMC's interface to the different assumptions of vertical cloud
 !! structuce, cloud overlap, used by McICA for cloud sampling in the RRTMGP longwave
 !! and shortwave schemes.
 !!
@@ -10,7 +10,7 @@ module GFS_rrtmgp_cloud_overlap
 
   public GFS_rrtmgp_cloud_overlap_run
 
-contains  
+contains
 
 !> \section arg_table_GFS_rrtmgp_cloud_overlap_run Argument Table
 !! \htmlinclude GFS_rrtmgp_cloud_overlap_run.html
@@ -28,8 +28,8 @@ contains
        imfdeepcnv, imfdeepcnv_gf, imfdeepcnv_samf, de_lgth, cloud_overlap_param,         &
        cnv_cloud_overlap_param, precip_overlap_param, errmsg, errflg)
     implicit none
-    
-    ! Inputs   
+
+    ! Inputs
     integer, intent(in)     :: &
          nCol,                 & !< Number of horizontal grid points
          nLev,                 & !< Number of vertical layers
@@ -45,28 +45,28 @@ contains
          idcor,                & !< Choice of method for decorrelation length computation
          idcor_con,            & !< Flag for decorrelation-length. Use constant value
          idcor_hogan,          & !< Flag for decorrelation-length. (https://rmets.onlinelibrary.wiley.com/doi/full/10.1002/qj.647)
-         idcor_oreopoulos        !< Flag for decorrelation-length. (10.5194/acp-12-9097-2012) 
+         idcor_oreopoulos        !< Flag for decorrelation-length. (10.5194/acp-12-9097-2012)
     logical, intent(in)     :: &
          top_at_1,             & !< Vertical ordering flag
     	 doSWrad,              & !< Call SW radiation?
     	 doLWrad                 !< Call LW radiation
     real(kind_phys), intent(in) :: &
-         julian,               & !< Julian day 
+         julian,               & !< Julian day
          con_pi,               & !< Physical constant: pi
          con_g,                & !< Physical constant: gravitational constant
          con_rd,               & !< Physical constant: gas-constant for dry air
          con_epsq,             & !< Physical constant: Minimum value for specific humidity
          dcorr_con               !< Decorrelation-length (used if idcor = idcor_con)
     real(kind_phys), dimension(:), intent(in) :: &
-         lat                     !< Latitude             
+         lat                     !< Latitude
     real(kind_phys), dimension(:,:), intent(in) :: &
          cld_frac                !< Total cloud fraction
     real(kind_phys), dimension(:,:), intent(in), optional :: &
          cld_cnv_frac            !< Convective cloud-fraction
     real(kind_phys), dimension(:,:), intent(in), optional :: &
          deltaZc                 !< Layer thickness (from layer-centers)(m)
-    
-    ! Outputs     
+
+    ! Outputs
     real(kind_phys), dimension(:),intent(out) :: &
          de_lgth                   !< Decorrelation length
     real(kind_phys), dimension(:,:),intent(out), optional :: &
@@ -77,7 +77,7 @@ contains
          errmsg                    !< Error message
     integer, intent(out) :: &
          errflg                    !< Error flag
-    
+
     ! Local variables
     integer :: iCol,iLay
 
@@ -121,10 +121,10 @@ contains
        endif
     endif
 
-    ! 
+    !
     ! Compute precipitation overlap parameter (Hack. Using same as cloud for now)
     !
-    precip_overlap_param = cloud_overlap_param    
-    
+    precip_overlap_param = cloud_overlap_param
+
   end subroutine GFS_rrtmgp_cloud_overlap_run
 end module GFS_rrtmgp_cloud_overlap

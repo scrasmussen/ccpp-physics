@@ -131,7 +131,7 @@ contains
         ! iindx2(j),' ci_lon=',ci_lon(iindx1(j)),               &
         ! ci_lon(iindx2(j)),' ddx=',ddx(j)
       ENDDO
- 
+
       RETURN
       END SUBROUTINE setindxci
 !
@@ -148,7 +148,7 @@ contains
       integer   i1,i2, iday,j,j1,j2,l,npts,nc,n1,n2,lev,k,i
       real(kind=kind_phys) fhour,temj, tx1, tx2,temi
 !
- 
+
       integer  JINDX1(npts), JINDX2(npts),iINDX1(npts),iINDX2(npts)
       integer  me,idate(4)
       integer  IDAT(8),JDAT(8)
@@ -202,23 +202,23 @@ contains
           I1  = IINDX1(J)
           I2  = IINDX2(J)
           TEMI = 1.0 - DDX(J)
-          cipm(j,L) =                                                           & 
+          cipm(j,L) =                                                           &
             tx1*(TEMI*TEMJ*ciplin(I1,J1,L,n1)+DDX(j)*DDY(J)*ciplin(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ciplin(I1,J2,L,n1)+DDX(j)*TEMJ*ciplin(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ciplin(I1,J2,L,n1)+DDX(j)*TEMJ*ciplin(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ciplin(I1,J1,L,n2)+DDX(j)*DDY(J)*ciplin(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ciplin(I1,J2,L,n2)+DDX(j)*TEMJ*ciplin(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ciplin(I1,J2,L,n2)+DDX(j)*TEMJ*ciplin(I2,J1,L,n2))
 
-          ccnpm(j,L) =                                                           & 
+          ccnpm(j,L) =                                                           &
             tx1*(TEMI*TEMJ*ccnin(I1,J1,L,n1)+DDX(j)*DDY(J)*ccnin(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ccnin(I1,J2,L,n1)+DDX(j)*TEMJ*ccnin(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ccnin(I1,J2,L,n1)+DDX(j)*TEMJ*ccnin(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ccnin(I1,J1,L,n2)+DDX(j)*DDY(J)*ccnin(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ccnin(I1,J2,L,n2)+DDX(j)*TEMJ*ccnin(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ccnin(I1,J2,L,n2)+DDX(j)*TEMJ*ccnin(I2,J1,L,n2))
 
-          cipres(j,L) =                                                          & 
+          cipres(j,L) =                                                          &
             tx1*(TEMI*TEMJ*ci_pres(I1,J1,L,n1)+DDX(j)*DDY(J)*ci_pres(I2,J2,L,n1)  &
-                +TEMI*DDY(j)*ci_pres(I1,J2,L,n1)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n1)) & 
+                +TEMI*DDY(j)*ci_pres(I1,J2,L,n1)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n1)) &
           + tx2*(TEMI*TEMJ*ci_pres(I1,J1,L,n2)+DDX(j)*DDY(J)*ci_pres(I2,J2,L,n2)  &
-                +TEMI*DDY(j)*ci_pres(I1,J2,L,n2)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n2)) 
+                +TEMI*DDY(j)*ci_pres(I1,J2,L,n2)+DDX(j)*TEMJ*ci_pres(I2,J1,L,n2))
         ENDDO
       ENDDO
 

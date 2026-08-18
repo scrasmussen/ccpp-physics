@@ -2,7 +2,7 @@
   name = GFS_surface_composites_pre
   type = scheme
   dependencies = ../../hooks/machine.F
-  
+
 ########################################################################
 [ccpp-arg-table]
   name = GFS_surface_composites_pre_run

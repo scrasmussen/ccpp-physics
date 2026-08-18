@@ -36,8 +36,8 @@ module mp_nssl
                               imp_physics, imp_physics_nssl,              &
                               nssl_cccn, nssl_alphah, nssl_alphahl,       &
                               nssl_alphar, nssl_ehw0, nssl_ehlw0,         &
-                              nssl_ccn_on, nssl_hail_on, nssl_invertccn, nssl_3moment ) 
-                              
+                              nssl_ccn_on, nssl_hail_on, nssl_invertccn, nssl_3moment )
+
 
         use module_mp_nssl_2mom, only: nssl_2mom_init, nssl_2mom_init_const
         use mpi_f08
@@ -73,8 +73,8 @@ module mp_nssl
          real(kind_phys),           intent(inout) :: crw(:,:) !(1:ncol,1:nlev)
          real(kind_phys),           intent(inout) :: cci(:,:) !(1:ncol,1:nlev)
          real(kind_phys),           intent(inout) :: csw(:,:) !(1:ncol,1:nlev)
-         real(kind_phys),           intent(inout) :: chw(:,:) !(1:ncol,1:nlev) graupel number 
-         real(kind_phys),           intent(inout) :: vh (:,:) !(1:ncol,1:nlev) graupel volume 
+         real(kind_phys),           intent(inout) :: chw(:,:) !(1:ncol,1:nlev) graupel number
+         real(kind_phys),           intent(inout) :: vh (:,:) !(1:ncol,1:nlev) graupel volume
 
          ! Local variables: dimensions used in nssl_init
          integer               :: ims,ime, jms,jme, kms,kme, nx, nz, i,k
@@ -101,7 +101,7 @@ module mp_nssl
             write(6,*) ' --- CCPP NSSL MP scheme init ---'
             write(6,*) ' ----------------------------------------------------------------------------------------------------------------'
          end if
-        
+
 ! update this when ccn_flag is active?
          if ( imp_physics /= imp_physics_nssl ) then
             write(errmsg,'(*(a))') "Logic error: namelist choice of microphysics is different from NSSL"
@@ -112,8 +112,8 @@ module mp_nssl
          ! set some physical constants in NSSL microphysics to be consistent with parent model
          call nssl_2mom_init_const(  &
            con_g, con_rd, con_cp, con_rv, con_t0c, con_cliq, con_csol, con_eps )
-         
-         
+
+
          ! Set internal dimensions
          ims = 1
          ime = ncol
@@ -136,18 +136,18 @@ module mp_nssl
          nssl_params(8)  = 500. ! nssl_rho_qh
          nssl_params(9)  = 800. ! nssl_rho_qhl
          nssl_params(10) = 100. ! nssl_rho_qs
-         
+
          nssl_qccn = nssl_cccn/1.225
       !   if (mpirank==mpiroot) then
       !    write(*,*) 'nssl_init: nssl_qccn = ',nssl_qccn
       !   endif
-         
+
          IF ( nssl_hail_on ) THEN
            ihailv = 1
          ELSE
            ihailv = -1
          ENDIF
-         
+
          IF ( nssl_3moment ) THEN
            ipc = 8
          ELSE
@@ -176,7 +176,7 @@ module mp_nssl
           IF ( .not. missing_vars .and. Any( qs > qmin .and. csw == 0.0 ) ) missing_vars = .true.
           IF ( .not. missing_vars .and. Any( qr > qmin .and. crw == 0.0 ) ) missing_vars = .true.
           IF ( .not. missing_vars .and. Any( qh > qmin .and. (chw == 0.0 .or. vh == 0.0) ) ) missing_vars = .true.
-          
+
           call MPI_Allreduce(missing_vars, missing_vars_global, 1, MPI_LOGICAL, MPI_LOR, mpicomm, ierr)
 
            is_initialized = .true.
@@ -188,7 +188,7 @@ module mp_nssl
          is_initialized = .true.
 
          ENDIF ! .not. is_initialized
-         
+
          return
 
     end subroutine mp_nssl_init
@@ -239,9 +239,9 @@ module mp_nssl
          real(kind_phys),           intent(in   ) :: crw(:,:) !(1:ncol,1:nlev)
          real(kind_phys),           intent(in   ) :: cci(:,:) !(1:ncol,1:nlev)
          real(kind_phys),           intent(in   ) :: csw(:,:) !(1:ncol,1:nlev)
-         real(kind_phys),           intent(in   ) :: chw(:,:) !(1:ncol,1:nlev) graupel number 
+         real(kind_phys),           intent(in   ) :: chw(:,:) !(1:ncol,1:nlev) graupel number
          real(kind_phys),           intent(in   ), optional :: chl(:,:) !(1:ncol,1:nlev) hail number
-         real(kind_phys),           intent(in   ) :: vh (:,:) !(1:ncol,1:nlev) graupel volume 
+         real(kind_phys),           intent(in   ) :: vh (:,:) !(1:ncol,1:nlev) graupel volume
          real(kind_phys),           intent(in   ), optional :: vhl(:,:) !(1:ncol,1:nlev) hail volume
          real(kind_phys),           intent(in   ), optional :: zrw(:,:) !(1:ncol,1:nlev) rain reflectivity
          real(kind_phys),           intent(in   ), optional :: zhw(:,:) !(1:ncol,1:nlev) graupel reflectivity
@@ -274,7 +274,7 @@ module mp_nssl
          integer,                   intent(in)    :: imp_physics_nssl
          logical,                   intent(in)    :: nssl_ccn_on, nssl_hail_on, nssl_invertccn, nssl_3moment
          integer,                   intent(in)    :: ntccn, ntccna
-         
+
          real(kind_phys),           intent(  out) :: ten_t(:,:)
          real(kind_phys),           intent(  out) :: ten_qv(:,:)
          real(kind_phys),           intent(  out) :: ten_qc(:,:)
@@ -295,7 +295,7 @@ module mp_nssl
          real(kind_phys),           intent(  out), optional :: ten_zrw(:,:)
          real(kind_phys),           intent(  out), optional :: ten_zhw(:,:)
          real(kind_phys),           intent(  out), optional :: ten_zhl(:,:)
-     
+
         integer,          intent(out)   :: errflg
         character(len=*), intent(out)   :: errmsg
 
@@ -319,10 +319,10 @@ module mp_nssl
          real(kind_phys) :: ns_mp(1:ncol,1:nlev)            !< snow num. conc.
          real(kind_phys) :: nh_mp(1:ncol,1:nlev)            !< graupel num. conc.
          real(kind_phys) :: nhl_mp(1:ncol,1:nlev)           !< hail num. conc.
-         real(kind_phys) :: cn_mp(1:ncol,1:nlev) 
-         real(kind_phys) :: cna_mp(1:ncol,1:nlev) 
-         real(kind_phys) :: cccn_mp(1:ncol,1:nlev) 
-         real(kind_phys) :: cccna_mp(1:ncol,1:nlev) 
+         real(kind_phys) :: cn_mp(1:ncol,1:nlev)
+         real(kind_phys) :: cna_mp(1:ncol,1:nlev)
+         real(kind_phys) :: cccn_mp(1:ncol,1:nlev)
+         real(kind_phys) :: cccna_mp(1:ncol,1:nlev)
          real(kind_phys) :: vh_mp(1:ncol,1:nlev)           !< m3 kg-1 (volume mixing ratio)
          ! create temporaries for hail in case it does not exist
          !real(kind_phys) :: chl_mp(1:ncol,1:nlev)           !< kg-1 (number mixing ratio)
@@ -377,12 +377,12 @@ module mp_nssl
          integer, parameter :: ndebug = 0
          logical :: invertccn
          real(kind_phys) :: cwmas
-         
+
          real(kind_phys), allocatable :: an(:,:,:,:) ! temporary scalar array
 
         errflg = 0
         errmsg = ''
-        
+
         ten_t = 0.0
         ten_qv = 0.0
         ten_qc = 0.0
@@ -409,7 +409,7 @@ module mp_nssl
             ten_zhl = 0.0
           end if
         end if
-        
+
         new_t = tgrs
 
 !            write(0,*) 'nssl_run: nlev,ncol,rank = ',nlev,ncol,mpirank
@@ -423,7 +423,7 @@ module mp_nssl
             errflg = 1
             return
          end if
-         
+
          invertccn = nssl_invertccn
 
          !> - Convert specific humidity/moist mixing ratios to dry mixing ratios
@@ -435,7 +435,7 @@ module mp_nssl
          qi_mp = qi/(1.0_kind_phys-spechum)
          qs_mp = qs/(1.0_kind_phys-spechum)
          qh_mp = qh/(1.0_kind_phys-spechum)
-         
+
          IF ( nssl_ccn_on ) cccn_mp = cccn/(1.0_kind_phys-spechum)
 !         cccna_mp = cccna/(1.0_kind_phys-spechum)
          nc_mp = ccw/(1.0_kind_phys-spechum)
@@ -483,9 +483,9 @@ module mp_nssl
              zhl_mp = zhl
            ENDIF
          ENDIF
-         
+
          ENDIF
-         
+
          IF ( nssl_hail_on ) THEN
 !           nhl_mp = chl
 !           vhl_mp = vhl
@@ -513,7 +513,7 @@ module mp_nssl
      !       write(0,*) 'mp_nssl_run: ni,ns,nh maxval: ',maxval(ni_mp),maxval(ns_mp),maxval(nh_mp)
      !     ENDIF
 
-         
+
          !> - Density of air in kg m-3
          rho = prsl/(con_rd*tgrs)
 
@@ -631,7 +631,7 @@ module mp_nssl
         ELSE
           itimestep = 2
         ENDIF
-         
+
         IF ( .false. ) THEN ! disable for now, as logic in the NSSL driver does this, but may switch back to here
          ! incoming droplet field may have some inconsistent number concentrations (e.g., from PBL)
          ! so check for that, otherwise mass may be zapped into vapor
@@ -639,7 +639,7 @@ module mp_nssl
          an(:,:,:,:) = 0.0 ! needed for workspace in routine
 
          cwmas = 1000.*0.523599*(2.*9.e-6)**3
-         
+
          call calcnfromq(nx=ncol,ny=1,nz=nlev,an=an,na=na,nor=0,norz=0,dn=rho, &
      &    qcw=qc_mp,qci=qi_mp, &
      &    ccw=nc_mp,cci=ni_mp,  &
@@ -661,13 +661,13 @@ module mp_nssl
 
          deallocate( an )
         ENDIF
-         
+
        IF ( nssl_ccn_on ) THEN
          IF ( invertccn ) THEN
-            ! cn_mp = Max(0.0, nssl_qccn - Max(0.0,cccn_mp)) 
-           ! Flip CCN concentrations from 'activated' to 'unactivated' (allows BC condition to be zero) 
+            ! cn_mp = Max(0.0, nssl_qccn - Max(0.0,cccn_mp))
+           ! Flip CCN concentrations from 'activated' to 'unactivated' (allows BC condition to be zero)
                cn_mp = nssl_qccn - cccn_mp
-               cn_mp = Max(0.0_kind_phys, cn_mp) 
+               cn_mp = Max(0.0_kind_phys, cn_mp)
 
          ELSE
             cn_mp = cccn_mp
@@ -675,14 +675,14 @@ module mp_nssl
           IF ( ntccna > 0 ) THEN
             ! not in use yet
 !         cna_mp = cccna
-          ELSE 
+          ELSE
             cna_mp = 0
           ENDIF
         ENDIF
-       
+
        IF ( .true. ) THEN
         DO n = 1,ntmul
-        
+
         itimestep = itimestep + 1
 
 
@@ -818,7 +818,7 @@ module mp_nssl
            ENDIF
 !           cccna = cna_mp ! cna not in use yet for ccpp
           ENDIF
-          
+
 ! test code
 !          IF ( ntccna > 1 .and. do_effective_radii ) THEN
 !            cccna = re_ice_mp*1.0E6_kind_phys
@@ -854,7 +854,7 @@ module mp_nssl
            ENDIF
          ENDIF
 
-         
+
          ten_t = (new_t - tgrs)/dtp
          !> - Convert dry mixing ratios to specific humidity/moist mixing ratios
          ten_qv = (qv_mp/(1.0_kind_phys+qv_mp) - spechum)/dtp
@@ -911,14 +911,14 @@ module mp_nssl
            ten_zhl = (zhl_mp - zhl)/dtp
           ENDIF
          ENDIF
-         
+
          ENDIF
 
 !        write(0,*) 'mp_nssl: done q'
 
          !> - Convert rainfall deltas from mm to m (on physics timestep); add to inout variables
          ! "rain" in NSSL MP refers to precipitation (total of liquid rainfall+snow+graupel+ice)
-         
+
          prcp    = max(0.0, delta_rain_mp/1000.0_kind_phys)
          graupel = max(0.0, delta_graupel_mp/1000.0_kind_phys)
          ice     = max(0.0, delta_ice_mp/1000.0_kind_phys)

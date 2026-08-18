@@ -317,19 +317,19 @@
   standard_name = land_surface_perturbation_variables
   long_name = variables to be perturbed for landperts
   units = none
-  dimensions =  (number_of_perturbed_land_surface_variables) 
+  dimensions =  (number_of_perturbed_land_surface_variables)
   type = character
   kind = len=3
-  intent = in 
+  intent = in
   optional = True
 [lndp_prt_list]
   standard_name =land_surface_perturbation_magnitudes
   long_name = magnitude of perturbations for landperts
   units = variable
-  dimensions = (number_of_perturbed_land_surface_variables) 
+  dimensions = (number_of_perturbed_land_surface_variables)
   type = real
   kind = kind_phys
-  intent = in 
+  intent = in
   optional = True
 [z01d]
   standard_name = perturbation_of_momentum_roughness_length
@@ -375,7 +375,7 @@
   standard_name = magnitude_of_perturbation_of_vegetation_fraction
   long_name = magnitude of perturbation of vegetation fraction
   units = frac
-  dimensions = () 
+  dimensions = ()
   type = real
   kind = kind_phys
   intent = out

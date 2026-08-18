@@ -16,29 +16,29 @@ module rrtmgp_lw_cloud_optics
 
   implicit none
 
-  type(ty_cloud_optics) :: lw_cloud_props   
+  type(ty_cloud_optics) :: lw_cloud_props
   integer :: &
        nrghice_fromfileLW, nBandLW, nSize_liqLW, nSize_iceLW, nSizeRegLW, &
        nCoeff_extLW, nCoeff_ssa_gLW, nBoundLW, npairsLW
   real(wp), dimension(:,:), allocatable :: &
-       lut_extliqLW,          & !< LUT shortwave liquid extinction coefficient  
-       lut_ssaliqLW,          & !< LUT shortwave liquid single scattering albedo   
-       lut_asyliqLW,          & !< LUT shortwave liquid asymmetry parameter  
-       band_limsCLDLW           !< Beginning and ending wavenumber [cm -1] for each band                           
+       lut_extliqLW,          & !< LUT shortwave liquid extinction coefficient
+       lut_ssaliqLW,          & !< LUT shortwave liquid single scattering albedo
+       lut_asyliqLW,          & !< LUT shortwave liquid asymmetry parameter
+       band_limsCLDLW           !< Beginning and ending wavenumber [cm -1] for each band
   real(wp), dimension(:,:,:), allocatable :: &
        lut_exticeLW,          & !< LUT shortwave ice extinction coefficient
        lut_ssaiceLW,          & !< LUT shortwave ice single scattering albedo
        lut_asyiceLW             !< LUT shortwave ice asymmetry parameter
-  
+
   ! Parameters used for rain and snow(+groupel) RRTMGP cloud-optics
   real(wp), parameter :: &
        absrain  = 0.33e-3, & !< Rain drop absorption coefficient m2/g .
        abssnow0 = 1.5,     & !< Snow flake absorption coefficient (micron), fu coeff
        abssnow1 = 2.34e-3    !< Snow flake absorption coefficient m2/g, ncar coef
   real(wp) :: &
-       radliq_lwrLW,         & !< Liquid particle size lower bound for LUT interpolation   
+       radliq_lwrLW,         & !< Liquid particle size lower bound for LUT interpolation
        radliq_uprLW,         & !< Liquid particle size upper bound for LUT interpolation
-       radice_lwrLW,         & !< Ice particle size upper bound for LUT interpolation  
+       radice_lwrLW,         & !< Ice particle size upper bound for LUT interpolation
        radice_uprLW            !< Ice particle size lower bound for LUT interpolation
 
 contains
@@ -59,7 +59,7 @@ contains
          nrghice               !< Number of ice-roughness categories
     type(MPI_Comm), intent(in) :: &
          mpicomm               !< MPI communicator
-    integer, intent(in) :: & 
+    integer, intent(in) :: &
          mpirank,            & !< Current MPI rank
          mpiroot               !< Master MPI rank
 
@@ -95,7 +95,7 @@ contains
 
        ! Open file
        status = nf90_open(trim(lw_cloud_props_file), NF90_NOWRITE, ncid)
-       
+
        ! Read dimensions
        status = nf90_inq_dimid(ncid, 'nband', dimid)
        status = nf90_inquire_dimension(ncid, dimid, len=nBandLW)
@@ -154,11 +154,11 @@ contains
     if (.not. allocated(lut_ssaiceLW))   allocate(lut_ssaiceLW(nSize_iceLW, nBandLW, nrghice_fromfileLW))
     if (.not. allocated(lut_asyiceLW))   allocate(lut_asyiceLW(nSize_iceLW, nBandLW, nrghice_fromfileLW))
     if (.not. allocated(band_limsCLDLW)) allocate(band_limsCLDLW(2,nBandLW))
-       
+
     ! #######################################################################################
     !
     ! Read in data ...
-    ! (ONLY master processor(0), if MPI enabled) 
+    ! (ONLY master processor(0), if MPI enabled)
     !
     ! #######################################################################################
     if (mpirank .eq. mpiroot) then
@@ -186,9 +186,9 @@ contains
        status = nf90_get_var(ncid,varID,lut_asyiceLW)
        status = nf90_inq_varid(ncid,'bnd_limits_wavenumber',varID)
        status = nf90_get_var(ncid,varID,band_limsCLDLW)
-          
+
        ! Close file
-       status = nf90_close(ncid)       
+       status = nf90_close(ncid)
     endif ! Master process
 
     ! Other processors waiting...
@@ -196,7 +196,7 @@ contains
 
     ! #######################################################################################
     !
-    ! Broadcast data... 
+    ! Broadcast data...
     ! (ALL processors)
     !
     ! #######################################################################################
@@ -234,7 +234,7 @@ contains
 #endif
 
     ! #######################################################################################
-    !   
+    !
     ! Initialize RRTMGP DDT's...
     !
     ! #######################################################################################

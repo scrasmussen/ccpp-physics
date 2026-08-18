@@ -1,6 +1,6 @@
 !> \file mynnedmf_wrapper.F90
-!!  This file contains all of the code related to running the MYNN 
-!! eddy-diffusivity mass-flux scheme. 
+!!  This file contains all of the code related to running the MYNN
+!! eddy-diffusivity mass-flux scheme.
 
 !> The following references best describe the code within
 !!    Olson et al. (2019, NOAA Technical Memorandum)
@@ -62,8 +62,8 @@
         cice   = con_cice
         karman = con_karman
         t0c    = con_t0c
-       
-        xls    = xlv+xlf      != 2.85E6 (J/kg) sublimation                                      
+
+        xls    = xlv+xlf      != 2.85E6 (J/kg) sublimation
         rvovrd = r_v/r_d      != 1.608
         ep_3   = 1.-ep_2      != 0.378
         gtr    = grav/tref
@@ -83,7 +83,7 @@
 
       end subroutine mynnedmf_wrapper_init
 
-!>\defgroup gp_mynnedmf MYNN-EDMF PBL and Shallow Convection Module  
+!>\defgroup gp_mynnedmf MYNN-EDMF PBL and Shallow Convection Module
 !> This scheme (1) performs pre-mynnedmf work, (2) runs the mynnedmf, and (3) performs post-mynnedmf work
 !> \section arg_table_mynnedmf_wrapper_run Argument Table
 !! \htmlinclude mynnedmf_wrapper_run.html
@@ -170,9 +170,9 @@ SUBROUTINE mynnedmf_wrapper_run(        &
          xlv, xlvcp, xlscp, p608
      use module_bl_mynn, only: mynn_bl_driver
 
-!------------------------------------------------------------------- 
+!-------------------------------------------------------------------
      implicit none
-!------------------------------------------------------------------- 
+!-------------------------------------------------------------------
 
      real(kind_phys),  intent(in)  :: huge
      character(len=*), intent(out) :: errmsg
@@ -248,15 +248,15 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       real(kind_phys), dimension(:,:), intent(out) ::                    &
      &        dtdt, dudt, dvdt, dqdt_water_vapor, dqdt_liquid_cloud,     &
      &        dqdt_ice, dqdt_snow, dqdt_ozone
-      real(kind_phys), dimension(:,:,:), intent(out) :: dqdt_all       
+      real(kind_phys), dimension(:,:,:), intent(out) :: dqdt_all
       real(kind_phys), dimension(:,:), intent(out), optional ::          &
      &        dqdt_cloud_droplet_num_conc, dqdt_ice_num_conc,            &
-     &        dqdt_water_aer_num_conc, dqdt_ice_aer_num_conc, dqdt_cccn      
+     &        dqdt_water_aer_num_conc, dqdt_ice_aer_num_conc, dqdt_cccn
       real(kind_phys), dimension(:,:), intent(inout) :: qke,             &
      &        EL_PBL, Sh3D, Sm3D, qc_bl, qi_bl, cldfra_bl
       real(kind_phys), dimension(:,:), intent(inout) ::                  &
      &        qke_adv
-      real(kind_phys), dimension(:,:,:), intent(out) :: tmf  
+      real(kind_phys), dimension(:,:,:), intent(out) :: tmf
      !These 10 arrays are only allocated when bl_mynn_output > 0
       real(kind_phys), dimension(:,:), intent(inout), optional ::        &
      &        edmf_a,edmf_w,edmf_qt,                                     &
@@ -264,7 +264,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
      &        sub_thl,sub_sqv,det_thl,det_sqv
       real(kind_phys), dimension(:,:), intent(in) ::                     &
      &        t3d,qgrs_water_vapor, qgrs_liquid_cloud, qgrs_ice,         &
-     &        qgrs_snow       
+     &        qgrs_snow
       real(kind_phys), dimension(:,:), intent(in) ::                     &
      &        qgrs_cloud_ice_num_conc,                                   &
      &        u,v,omega,                                                 &
@@ -341,7 +341,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       dtdt = 0.0
       dudt = 0.0
       dvdt = 0.0
@@ -366,9 +366,9 @@ SUBROUTINE mynnedmf_wrapper_run(        &
         dqdt_ice_num_conc = 0.0
         if (nssl_ccn_on) dqdt_cccn = 0.0
       end if
-      adj_t = t3d 
-      
-      
+      adj_t = t3d
+
+
       if (lprnt) then
          write(0,*)"=============================================="
          write(0,*)"in mynn wrapper..."
@@ -580,8 +580,8 @@ SUBROUTINE mynnedmf_wrapper_run(        &
              tmf(i,k,1)=0.
           enddo
        enddo
-       
-       
+
+
   ! Check incoming moist species to ensure non-negative values
   ! First, create height difference (dz)
       do k=1,levs
@@ -603,7 +603,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                               sqi(i,:),  kzero(:),   &
                               adj_t(i,:)             )
       enddo
-      
+
       do k=1,levs
          do i=1,im
             th(i,k)=adj_t(i,k)/exner(i,k)
@@ -611,7 +611,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
             w(i,k) = -omega(i,k)/(rho(i,k)*grav)
          enddo
       enddo
-      
+
       !intialize more variables
       do i=1,im
          if (slmsk(i)==1. .or. slmsk(i)==2.) then !sea/land/ice mask (=0/1/2) in FV3
@@ -956,7 +956,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                  dqdt_ice(i,k)                     = RQIBLTEN(i,k) !/(1.0 + qv(i,k))
                  dqdt_ice_num_conc(i,k)            = RQNIBLTEN(i,k)
                  dqdt_snow(i,k)                    = RQSBLTEN(i,k) !/(1.0 + qv(i,k))
-                 IF ( nssl_ccn_on ) THEN ! 
+                 IF ( nssl_ccn_on ) THEN !
                    dqdt_cccn(i,k)      = RQNWFABLTEN(i,k)
                  ENDIF
                enddo
@@ -1007,7 +1007,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
              call dtend_helper(100+ntiw,RQIBLTEN)
            endif
        endif
-       
+
        if (lprnt) then
           print*
           print*,"===Finished with mynn_bl_driver; output:"
@@ -1066,7 +1066,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
              enddo
           enddo
        endif
-       
+
   CONTAINS
 
     SUBROUTINE dtend_helper(itracer,field,mult)
@@ -1074,7 +1074,7 @@ SUBROUTINE mynnedmf_wrapper_run(        &
       real(kind_phys), intent(in), optional :: mult(im,levs)
       integer, intent(in) :: itracer
       integer :: idtend
-      
+
       idtend=dtidx(itracer,index_of_process_pbl)
       if(idtend>=1) then
         if(present(mult)) then
@@ -1090,10 +1090,10 @@ SUBROUTINE mynnedmf_wrapper_run(        &
                              qv, qc, qi, qs, th    )
   !
   ! If qc < qcmin, qi < qimin, or qv < qvmin happens in any layer,
-  ! force them to be larger than minimum value by (1) condensating 
-  ! water vapor into liquid or ice, and (2) by transporting water vapor 
+  ! force them to be larger than minimum value by (1) condensating
+  ! water vapor into liquid or ice, and (2) by transporting water vapor
   ! from the very lower layer.
-  ! 
+  !
   ! We then update the final state variables and tendencies associated
   ! with this correction. If any condensation happens, update theta/temperature too.
   ! Note that (qv,qc,qi,th) are the final state variables after

@@ -65,9 +65,9 @@ module dust_data_mod
 
   ! -- FENGSHA uses precalculated drag partition
   integer, parameter :: dust_calcdrag = 1
-  ! -- FENGSHA dust moisture parameterization 1:fecan  -  2:shao 
+  ! -- FENGSHA dust moisture parameterization 1:fecan  -  2:shao
   integer :: dust_moist_opt = 1
-  
+
   real(kind_phys) :: dust_alpha = 1.0
   real(kind_phys) :: dust_gamma = 1.0
   real(kind_phys) :: dust_moist_correction = 1.0

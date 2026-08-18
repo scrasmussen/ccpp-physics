@@ -195,14 +195,14 @@ module mp_fer_hires
       ! Initialize the CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       new_t = t
       new_qv = q
       new_ql = qc
       new_qr = qr
       new_qi = qi
       new_qg = qg
-      
+
       ten_t = 0.0
       ten_q = 0.0 !set tendency of entire tracer array to zero to make sure that those tracers not affected by this scheme do not change when tendencies are applied
       ten_qv = 0.0
@@ -210,7 +210,7 @@ module mp_fer_hires
       ten_qr = 0.0
       ten_qi = 0.0
       ten_qg = 0.0
-      
+
       ! Check initialization state
       if (.not. is_initialized) then
          write(errmsg, fmt='((a))') 'mp_fer_hires_run called before mp_fer_hires_init'

@@ -6,7 +6,7 @@
 !! aerosol, IN&CCN and surface properties updates.
    module GFS_phys_time_vary
       use mpi_f08
-     
+
       use machine, only : kind_phys, kind_dbl_prec, kind_sngl_prec
 
       use mersenne_twister, only: random_setseed, random_number
@@ -393,9 +393,9 @@
              tsnoxy (:,:)  = missing_value
              smoiseq(:,:)  = missing_value
              zsnsoxy(:,:)  = missing_value
-             
+
              imn          = idate(2)
-             
+
              do ix=1,im
                if (landfrac(ix) >= drythresh) then
                  tvxy(ix)     = tsfcl(ix)
@@ -803,7 +803,7 @@
                                jindx1_tau, jindx2_tau,       &
                                ddy_j1tau, ddy_j2tau, tau_amf)
          endif
-         
+
 !> - Call aerinterpol() to make aerosol interpolation
          if (iaerclm) then
            ! aerinterpol is using threading inside, don't

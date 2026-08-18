@@ -142,8 +142,8 @@
 !! For liquid water clouds, cloud radiative property coefficients are
 !! derived from \cite hu_and_stamnes_1993.
 !! For ice clouds, there are various choices for model applications,
-!! including data tables derived from 
-!! \cite ebert_and_curry_1992, from the Streamer scheme 
+!! including data tables derived from
+!! \cite ebert_and_curry_1992, from the Streamer scheme
 !! \cite key_2002, or from \cite fu_1996 . Components of
 !! snow particles and rain droplets are not parameterized in the
 !! operational NEMS/GSM cloud microphysics scheme, and their radiative
@@ -2820,7 +2820,7 @@
       end module module_radsw_sflux      !
 !========================================!
 
-!>\ingroup module_radsw_main 
+!>\ingroup module_radsw_main
 !> This module sets up absorption coefficients for band 16: 2600-3250
 !! cm-1 (low - h2o, ch4; high - ch4)
       module module_radsw_kgb16          !

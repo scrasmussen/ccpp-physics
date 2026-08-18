@@ -38,38 +38,38 @@
 !! in the 1987 implementation.  This choice was meant to encompass a thick
 !! low layer for vertical averages of the environmental (large scale) flow
 !! quantities.  The vertical momentum flux or gravity wave stress in a
-!! grid box due to a single mountain is given as in Pierrehumbert(1986) 
+!! grid box due to a single mountain is given as in Pierrehumbert(1986)
 !! \cite pierrehumbert_1986 :
 !! \f[
-!! \tau =  \frac {\rho \: U^{3}\: G(F_{r})} {\Delta X \; N } 
+!! \tau =  \frac {\rho \: U^{3}\: G(F_{r})} {\Delta X \; N }
 !! \f]
 !! where \f$ \Delta X \f$ is a grid increment, N is the Brunt Viasala frequency
 !! \f[
 !!  N(\sigma) = \frac{-g \: \sigma \:
-!!  \frac{\partial\Theta}{\partial\sigma}}{\Theta \:R \:T} 
+!!  \frac{\partial\Theta}{\partial\sigma}}{\Theta \:R \:T}
 !! \f]
 !! The environmental variables are calculated from a mass weighted vertical
 !! average over a base layer.  \f$G(F_{r})\f$ is a monotonically increasing
 !! function of Froude number :
 !! \f[
-!!  F_{r} = \frac{N h^{'}}{U} 
+!!  F_{r} = \frac{N h^{'}}{U}
 !! \f]
 !! where \f$U\f$ is the wind speed calculated as a mass weighted vertical average in
 !! the base layer, and  \f$h^{'}\f$, is the vertical displacement caused by the orography
 !! variance.  An effective mountain length for the gravity wave processes:
 !! \f[
-!!  l^{*} =  \frac{\Delta X}{m} 
+!!  l^{*} =  \frac{\Delta X}{m}
 !! \f]
 !! where \f$m\f$ is the number of mountains in a grid box, can then
 !! be defined to obtain the form of the base level stress
 !! \f[
-!!  \tau =  \frac {\rho \: U^{3} \: G(F_{r})} {N \;l^{*}} 
+!!  \tau =  \frac {\rho \: U^{3} \: G(F_{r})} {N \;l^{*}}
 !! \f]
 !! giving the stress induced from the surface in a model grid box.
-!! Pierrehumbert(1986) \cite pierrehumbert_1986 gives the form 
+!! Pierrehumbert(1986) \cite pierrehumbert_1986 gives the form
 !! for the function \f$G(F_{r})\f$ as
 !! \f[
-!!  G(F_{r}) = \bar{G}\frac{F^{2}_{r}}{F^{2}_{r}\: + \:a^{2}} 
+!!  G(F_{r}) = \bar{G}\frac{F^{2}_{r}}{F^{2}_{r}\: + \:a^{2}}
 !! \f]
 !! Where \f$ \bar{G}  \f$  is an order unity non-dimensional saturation
 !! flux set to 1  and \f$a\f$ is a function of the mountain aspect ratio also
@@ -87,16 +87,16 @@
 !!  The E ranges from no enhancement to an upper limit of 3, E=E(OA)[1-3],
 !!  and is a function of OA, the Orographic Asymmetry defined in Kim and Arakawa (1995) 
 !! \cite kim_and_arakawa_1995 as
-!! Orographic Asymmetry (OA): 
+!! Orographic Asymmetry (OA):
 !! \f[
 !!  OA=\frac{ \bar{x} \; - \;
-!!  \sum\limits_{j=1}^{N_{b}} x_{j} \; n_{j} }{\sigma_{x}} 
+!!  \sum\limits_{j=1}^{N_{b}} x_{j} \; n_{j} }{\sigma_{x}}
 !! \f]
 !! where \f$N_{b}\f$ is the total number of bottom blocks in the mountain barrier,
 !! \f$ \sigma_{x} \f$ is the standard deviation of the horizontal distance defined by
 !!\f[
 !!  \sigma_{x} = \sqrt{ \frac{\sum\limits_{j=1}^{N_{b}}
-!! \; (x_{j} \; - \; \bar{x} )^2}{N_{x}} } 
+!! \; (x_{j} \; - \; \bar{x} )^2}{N_{x}} }
 !!\f]
 !! where \f$N_{x}\f$ is the number of grid intervals for the large scale domain being
 !! considered. So the term, E(OA)m'/  \f$ \Delta X \f$ in Kim's scheme represents
@@ -107,7 +107,7 @@
 !!  model for a large number of cases:
 !! \f[
 !!  m^{'} = C_{m} \Delta X \left[  \frac{1 \; + \;
-!!  \sum\limits_{x} L_{h} }{\Delta X}  \right]^{OA+1} 
+!!  \sum\limits_{x} L_{h} }{\Delta X}  \right]^{OA+1}
 !! \f]
 !! Where, according to Kim,  \f$ \sum \frac{L_{h}}{\Delta X} \f$  is
 !! the fractional area covered by the subgrid-scale orography higher than
@@ -116,20 +116,20 @@
 !! \f$ \Delta X \f$.  Each \f$ L_{n}\f$  is the width of a segment of
 !! orography intersection at the critical height:
 !! \f[
-!! Fr_{0} = \frac{N_{0} \; h^{'}}{U_{0}} 
+!! Fr_{0} = \frac{N_{0} \; h^{'}}{U_{0}}
 !! \f]
 !! \f[
-!! G^{'}(OC,Fr_{0}) = \frac{Fr_{0}^{2}}{Fr_{0}^{2} \; + \; a^{2}} 
+!! G^{'}(OC,Fr_{0}) = \frac{Fr_{0}^{2}}{Fr_{0}^{2} \; + \; a^{2}}
 !! \f]
 !! \f[
-!! a^{2} = \frac{C_{G}}{OC} 
+!! a^{2} = \frac{C_{G}}{OC}
 !! \f]
 !! \f[
-!!  E(OA, Fr_{0}) = (OA \; + \; 2)^{\delta} 
-!! \f] 
-!! and 
-!! \f[  
-!! \delta \; = \; \frac{C_{E} \; Fr_{0}}{Fr_{c}}  
+!!  E(OA, Fr_{0}) = (OA \; + \; 2)^{\delta}
+!! \f]
+!! and
+!! \f[
+!! \delta \; = \; \frac{C_{E} \; Fr_{0}}{Fr_{c}}
 !! \f]
 !! where \f$ Fr_{c} \f$ is as in Alpert.
 !!
@@ -140,15 +140,15 @@
 !! to the presence of convective mixing assumed to occur when the
 !! minimum Richardson number:
 !!
-!! Orographic Convexity (OC) = 
-!! \f[  
+!! Orographic Convexity (OC) =
+!! \f[
 !! OC=\frac{ \sum\limits_{j=1}^{N_{x}}
-!!  \; (h_{j} \; - \; \bar{h})^4 }{N_{x} \;\sigma_{h}^4} 
+!!  \; (h_{j} \; - \; \bar{h})^4 }{N_{x} \;\sigma_{h}^4}
 !! \f]
-!!  and where 
+!!  and where
 !!  \f[
 !!  \sigma_{h} = \sqrt{ \frac{\sum\limits_{j=1}^{N_{x}}
-!!  \; (h_{j} \; - \; \bar{h} )^2}{N_{x}} } 
+!!  \; (h_{j} \; - \; \bar{h} )^2}{N_{x}} }
 !!  \f]
 !! This represents a closed scheme, somewhat empirical adjustments
 !! to the original scheme to calculate the surface stress.
@@ -157,7 +157,7 @@
 !!  to the presence of convective mixing assumed to occur when
 !!  the minimum Richardson number:
 !! \f[
-!!  Ri_{m} = \frac{Ri(1 \; - \; Fr)}{(1 \; + \; \sqrt{Ri}Fr)^2} 
+!!  Ri_{m} = \frac{Ri(1 \; - \; Fr)}{(1 \; + \; \sqrt{Ri}Fr)^2}
 !! \f]
 !! Is less than 1/4  Or if critical layers are encountered in a layer
 !! the the momentum flux will vanish.  The critical layer is defined
@@ -168,7 +168,7 @@
 !!  value by the saturation hypothesis (Lindzen).  This is done through
 !!  eq 1 which can be written as
 !! \f[
-!! \tau = \rho U N k h^{'2} 
+!! \tau = \rho U N k h^{'2}
 !! \f]
 !! For small Froude number this is discretized in the vertical so at each
 !!  level the stress is reduced by ratio of the Froude or truncated Scorer
@@ -187,7 +187,7 @@
 !!  forces.  Improved integration between how the GWD is calculated and
 !! the mountain blocking of wind flow around sub-grid scale orography
 !! is underway at NCEP.  The GFS already has convectively forced GWD
-!!  an independent process. 
+!!  an independent process.
 !!
 !> \section det_gwdps GFS Orographic GWD Scheme Detailed Algorithm
 !> @{
@@ -415,7 +415,7 @@
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       A = 0.0
       B = 0.0
       C = 0.0
@@ -453,9 +453,9 @@
       LCAP   = KM
       LCAPP1 = LCAP + 1
 !
-      RDXZB(:)  = 0 
+      RDXZB(:)  = 0
 !
-      IF ( NMTVR == 14) then 
+      IF ( NMTVR == 14) then
 ! ----  for lm and gwd calculation points
         ipt = 0
         npt = 0
@@ -477,10 +477,10 @@
 !
         do i=1,npt
           iwklm(i)  = 2
-          IDXZB(i)  = 0 
+          IDXZB(i)  = 0
 !         kreflm(i) = 0
         enddo
-!       if (lprnt) 
+!       if (lprnt)
 !    &  print *,' in gwdps_lm.f npt,IM,IY,km,me=',npt,IM,IY,km,me
 !
 !
@@ -516,9 +516,9 @@
             if (ELVMAX(j) <=  pkp1log .and. ELVMAX(j) >=  pklog) THEN
 
 !     print *,' in gwdps_lm.f 1  =',k,ELVMAX(j),pklog,pkp1log,me
-! ---        wk for diags but can be saved and reused.  
+! ---        wk for diags but can be saved and reused.
                wk(i)    = G * ELVMAX(j) / (phil(j,k+1) - phil(j,k))
-               iwklm(I) =  MAX(iwklm(I), k+1) 
+               iwklm(I) =  MAX(iwklm(I), k+1)
 !     print *,' in gwdps_lm.f 2 npt=',npt,i,j,wk(i),iwklm(i),me
             endif
 !
@@ -543,7 +543,7 @@
 !        enddo
 !     print *, ' mb: kdt,max(iwklm),jhit,phil,me=',
 !    &          kdt,ihit,jhit,phil(jhit,ihit),me
-         
+
         klevm1 = KMLL - 1
         DO K = 1, klevm1
           kp1 = k + 1
@@ -589,7 +589,7 @@
 ! ---  make averages, guess dividing stream (DS) line layer.
 ! ---  This is not used in the first cut except for testing and
 ! --- is the vert ave of quantities from the surface to mtn top.
-!   
+!
         DO I = 1, npt
           DO K = 1, iwklm(i)-1
             J          = ipt(i)
@@ -759,7 +759,7 @@
 !         if(lprnt) print *,' @K=1,ZLEN,DBTMP=',K,ZLEN,DBTMP
           endif
         ENDDO
-! 
+!
 !.............................
 !.............................
 ! end  mtn blocking section
@@ -940,7 +940,7 @@
         ULOW (I)  = 0.0
         DTFAC(I)  = 1.0
         ICRILV(I) = .FALSE. ! INITIALIZE CRITICAL LEVEL CONTROL VECTOR
-        
+
 !
 !----COMPUTE THE "LOW LEVEL" WIND MAGNITUDE (M/S)
 !
@@ -960,7 +960,7 @@
 !         ENDIF
         ENDDO
       ENDDO
-!      
+!
 !
 !   find the interface level of the projected wind where
 !   low levels & upper levels meet above pbl
@@ -1057,7 +1057,7 @@
         SCOR(I)  = BNV2(I,K) / TEM  ! Scorer parameter below ref level
       ENDDO
 !     if(lprnt) print *,' taub=',taub
-!                                                                       
+!
 !----SET UP BOTTOM VALUES OF STRESS
 !
       DO K = 1, KBPS

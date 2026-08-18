@@ -1,7 +1,7 @@
        module canopy_utils_mod
-        
-        use machine, only : kind_phys 
-        
+
+        use machine, only : kind_phys
+
         implicit none
 
        contains

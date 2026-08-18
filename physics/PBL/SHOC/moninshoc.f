@@ -26,7 +26,7 @@
         write(errmsg,'(*(a))') 'Logic error: do_shoc = .false.'
        return
       end if
- 
+
       end subroutine moninshoc_init
 
 !!!!!  ==========================================================  !!!!!
@@ -82,7 +82,7 @@
       integer,              dimension(:,:),     intent(in)    :: dtidx
       integer, intent(in) :: index_of_temperature, index_of_x_wind,
      &  index_of_y_wind, index_of_process_pbl, ntqv
-      logical,                                  intent(in) :: ldiag3d, 
+      logical,                                  intent(in) :: ldiag3d,
      &  gen_tend
 
       integer, dimension(:),                    intent(out) :: kpbl
@@ -90,7 +90,7 @@
      &  dvsfc, dtsfc, dqsfc, hpbl
       real(kind=kind_phys), dimension(:,:),     intent(out) :: prnum
       real(kind=kind_phys), dimension(:,:),     intent(out) :: dkt
-      real(kind=kind_phys), dimension(:,:,),    intent(out) :: ten_t, 
+      real(kind=kind_phys), dimension(:,:,),    intent(out) :: ten_t,
      &  ten_u, ten_v
       character(len=*),                         intent(out) :: errmsg
       integer,                                  intent(out) :: errflg

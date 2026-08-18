@@ -56,8 +56,8 @@ module mp_tempo_condensation
 
          real(kind_phys) :: qv(is:ie, js:je, 1:km)
          real(kind_phys) :: qc_mixing_ratio(is:ie, js:je, 1:km)
-         real(kind_phys) :: nc3d(is:ie, js:je, 1:km)                  
-         real(kind_phys) :: qvs(is:ie, js:je, 1:km)         
+         real(kind_phys) :: nc3d(is:ie, js:je, 1:km)
+         real(kind_phys) :: qvs(is:ie, js:je, 1:km)
          real(kind_phys) :: rho(is:ie, js:je, 1:km)
          real(kind_phys) :: temp(is:ie, js:je, 1:km)
          real(kind_phys) :: satw(1:km)
@@ -66,23 +66,23 @@ module mp_tempo_condensation
          real(kind_phys) :: tcond(1:km)
          real(kind_phys) :: diffu(1:km)
          real(kind_phys) :: ocp(1:km)
-         real(kind_phys) :: lvt2(1:km)                                             
+         real(kind_phys) :: lvt2(1:km)
          real(kind_phys) :: rc(1:km)
          real(kind_phys) :: nc(1:km)
          real(kind_dbl_prec) :: ilamc(1:km)
          real(kind_phys) :: mvd_c(1:km)
          real(kind_phys) :: qcten(1:km)
          real(kind_phys) :: ncten(1:km)
-         logical         :: l_qc(1:km)                                                                        
-         real(kind_phys) :: condensation(is:ie, js:je, 1:km)         
+         logical         :: l_qc(1:km)
+         real(kind_phys) :: condensation(is:ie, js:je, 1:km)
          real(kind_phys) :: orho, clap, fcd, dfcd, xrc, odt
-         
+
          ! CCPP error handling
          character(len=*),          intent(  out) :: errmsg
          integer,                   intent(  out) :: errflg
          integer :: i, j, k, n
          logical, save :: need_tempo_params = .true.
-        
+
          ! Initialize the CCPP error handling variables
          errmsg = ''
          errflg = 0
@@ -107,7 +107,7 @@ module mp_tempo_condensation
             enddo
          enddo
 
-         condensation = 0.         
+         condensation = 0.
          do j = js, je
             do i = is, ie
                l_qc = .false.
@@ -121,7 +121,7 @@ module mp_tempo_condensation
                ! returns cloud mass concentration
                call cloud_check_and_update(dt=real(mdt,kind=kind_phys), odt=odt, rho=rho(i,j,:), l_qc=l_qc, &
                     qc1d=qc_mixing_ratio(i,j,:), nc1d=nc3d(i,j,:), rc=rc, nc=nc, qcten=qcten, ncten=ncten, ilamc=ilamc, mvd_c=mvd_c)
-                
+
                do k = 1, km
                   satw(k) = qv(i,j,k)/qvs(i,j,k)
                   ssatw(k) = satw(k) - 1.
@@ -129,9 +129,9 @@ module mp_tempo_condensation
                   lvap(k) = 2.5e6 + (2106.0 - 4218.0)*(temp(i,j,k)-t0)
                   tcond(k) = (5.69 + 0.0168*(temp(i,j,k)-t0))*1.0e-5 * 418.936
                   diffu(k) = 2.11e-5*(temp(i,j,k)/t0)**1.94 * (101325./exp(prsl(i,k,j)))
-                  ocp(k) = 1./(cp*(1.+0.887*qv(i,j,k)))         
+                  ocp(k) = 1./(cp*(1.+0.887*qv(i,j,k)))
                   lvt2(k) = lvap(k)*lvap(k)*ocp(k)*(1./rv)*(1./temp(i,j,k))*(1./temp(i,j,k))
-                  
+
                   if (abs(ssatw(k)) >= eps) then
                      orho = 1./rho(i,j,k)
                      clap = (qv(i,j,k)-qvs(i,j,k))/(1. + lvt2(k)*qvs(i,j,k))
@@ -141,10 +141,10 @@ module mp_tempo_condensation
                         clap = clap - fcd/dfcd
                      enddo
                      xrc = rc(k) + clap*rho(i,j,k)
-                     
+
                      if (xrc > r1) then
                         condensation(i,j,k) = clap / mdt
-                        
+
                         if (l_qc(k) .and. ssatw(k) < -1.e-6 .and. clap < -eps) then ! evaporation
                            condensation(i,j,k) = max(-rc(k)*0.99*orho/mdt, condensation(i,j,k))
                         endif
@@ -152,7 +152,7 @@ module mp_tempo_condensation
                         condensation(i,j,k) = -rc(k)*orho/mdt
                      endif
                   endif
-                  
+
                   qv(i,j,k) = qv(i,j,k) - condensation(i,j,k)*mdt
                   qc_mixing_ratio(i,j,k) = qc_mixing_ratio(i,j,k) + condensation(i,j,k)*mdt
                   temp(i,j,k) = temp(i,j,k) + lvap(k)*ocp(k)*condensation(i,j,k)*mdt
@@ -172,7 +172,7 @@ module mp_tempo_condensation
                enddo
             enddo
          enddo
-         
+
       end subroutine mp_tempo_condensation_run
 
 !> \section arg_table_mp_tempo_condensation_final Argument Table

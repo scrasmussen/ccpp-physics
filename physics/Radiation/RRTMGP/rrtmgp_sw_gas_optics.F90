@@ -38,7 +38,7 @@ module rrtmgp_sw_gas_optics
        press_ref_tropSW,                  & !< Reference pressure separating the lower and upper atmosphere [Pa]
        temp_ref_pSW,                      & !< Standard spectroscopic reference pressure [Pa]
        temp_ref_tSW,                      & !< Standard spectroscopic reference temperature [K]
-       tsi_defaultSW,                     & !< 
+       tsi_defaultSW,                     & !<
        mg_defaultSW,                      & !< Mean value of Mg2 index over the average solar cycle from the NRLSSI2 model of solar variability
        sb_defaultSW                         !< Mean value of sunspot index over the average solar cycle from the NRLSSI2 model of solar variability
   real(wp), dimension(:), allocatable :: &
@@ -77,7 +77,7 @@ contains
 !> \section arg_table_rrtmgp_sw_gas_optics_init Argument Table
 !! \htmlinclude rrtmgp_sw_gas_optics.html
 !!
-!! RRTMGP relies heavility on derived-data-types, which contain type-bound procedures 
+!! RRTMGP relies heavility on derived-data-types, which contain type-bound procedures
 !! that are referenced frequently throughout the RRTMGP shortwave scheme. The data needed
 !! for the correlated k-distribution is also contained within this type. Within this module,
 !! the full k-distribution data is read in, reduced by the "active gases" provided, and
@@ -249,7 +249,7 @@ contains
     if (.not. allocated(solar_quietSW)) &
          allocate(solar_quietSW(ngptsSW))
     if (.not. allocated(solar_facularSW)) &
-         allocate(solar_facularSW(ngptsSW))	
+         allocate(solar_facularSW(ngptsSW))
     if (.not. allocated(solar_sunspotSW)) &
          allocate(solar_sunspotSW(ngptsSW))
     if (.not. allocated(temp1)) &
@@ -264,43 +264,43 @@ contains
     ! #######################################################################################
     !
     ! Read in data ...
-    ! (ONLY master processor(0), if MPI enabled) 
+    ! (ONLY master processor(0), if MPI enabled)
     !
     ! #######################################################################################
     if (mpirank .eq. mpiroot) then
        write (*,*) 'Reading RRTMGP shortwave k-distribution data ... '
        status = nf90_inq_varid(ncid, 'gas_names', varID)
-       status = nf90_get_var(  ncid, varID, gas_namesSW)       
+       status = nf90_get_var(  ncid, varID, gas_namesSW)
        status = nf90_inq_varid(ncid, 'scaling_gas_lower', varID)
-       status = nf90_get_var(  ncid, varID, scaling_gas_lowerSW)       
+       status = nf90_get_var(  ncid, varID, scaling_gas_lowerSW)
        status = nf90_inq_varid(ncid, 'scaling_gas_upper', varID)
-       status = nf90_get_var(  ncid, varID, scaling_gas_upperSW)       
+       status = nf90_get_var(  ncid, varID, scaling_gas_upperSW)
        status = nf90_inq_varid(ncid, 'gas_minor', varID)
-       status = nf90_get_var(  ncid, varID, gas_minorSW)       
+       status = nf90_get_var(  ncid, varID, gas_minorSW)
        status = nf90_inq_varid(ncid, 'identifier_minor', varID)
-       status = nf90_get_var(  ncid, varID, identifier_minorSW)       
+       status = nf90_get_var(  ncid, varID, identifier_minorSW)
        status = nf90_inq_varid(ncid, 'minor_gases_lower', varID)
-       status = nf90_get_var(  ncid, varID, minor_gases_lowerSW)       
+       status = nf90_get_var(  ncid, varID, minor_gases_lowerSW)
        status = nf90_inq_varid(ncid, 'minor_gases_upper', varID)
-       status = nf90_get_var(  ncid, varID, minor_gases_upperSW)       
+       status = nf90_get_var(  ncid, varID, minor_gases_upperSW)
        status = nf90_inq_varid(ncid, 'minor_limits_gpt_lower', varID)
-       status = nf90_get_var(  ncid, varID, minor_limits_gpt_lowerSW)       
+       status = nf90_get_var(  ncid, varID, minor_limits_gpt_lowerSW)
        status = nf90_inq_varid(ncid, 'minor_limits_gpt_upper', varID)
-       status = nf90_get_var(  ncid, varID, minor_limits_gpt_upperSW)       
+       status = nf90_get_var(  ncid, varID, minor_limits_gpt_upperSW)
        status = nf90_inq_varid(ncid, 'bnd_limits_gpt', varID)
-       status = nf90_get_var(  ncid, varID, band2gptSW)       
+       status = nf90_get_var(  ncid, varID, band2gptSW)
        status = nf90_inq_varid(ncid, 'key_species', varID)
-       status = nf90_get_var(  ncid, varID, key_speciesSW)       
+       status = nf90_get_var(  ncid, varID, key_speciesSW)
        status = nf90_inq_varid(ncid,'bnd_limits_wavenumber', varID)
-       status = nf90_get_var(  ncid, varID, band_limsSW)       
+       status = nf90_get_var(  ncid, varID, band_limsSW)
        status = nf90_inq_varid(ncid, 'press_ref', varID)
-       status = nf90_get_var(  ncid, varID, press_refSW)       
+       status = nf90_get_var(  ncid, varID, press_refSW)
        status = nf90_inq_varid(ncid, 'temp_ref', varID)
-       status = nf90_get_var(  ncid, varID, temp_refSW)       
+       status = nf90_get_var(  ncid, varID, temp_refSW)
        status = nf90_inq_varid(ncid, 'absorption_coefficient_ref_P', varID)
        status = nf90_get_var(  ncid, varID, temp_ref_pSW)
        status = nf90_inq_varid(ncid, 'absorption_coefficient_ref_T', varID)
-       status = nf90_get_var(  ncid, varID, temp_ref_tSW) 
+       status = nf90_get_var(  ncid, varID, temp_ref_tSW)
        status = nf90_inq_varid(ncid, 'tsi_default', varID)
        if (status .eq. 0) then
           status = nf90_get_var(  ncid, varID, tsi_defaultSW)
@@ -320,25 +320,25 @@ contains
           sb_defaultSW = sb_default
        endif
        status = nf90_inq_varid(ncid, 'press_ref_trop', varID)
-       status = nf90_get_var(  ncid, varID, press_ref_tropSW)       
+       status = nf90_get_var(  ncid, varID, press_ref_tropSW)
        status = nf90_inq_varid(ncid, 'kminor_lower', varID)
-       status = nf90_get_var(  ncid, varID, kminor_lowerSW)       
+       status = nf90_get_var(  ncid, varID, kminor_lowerSW)
        status = nf90_inq_varid(ncid, 'kminor_upper', varID)
-       status = nf90_get_var(  ncid, varID, kminor_upperSW)       
+       status = nf90_get_var(  ncid, varID, kminor_upperSW)
        status = nf90_inq_varid(ncid, 'vmr_ref', varID)
-       status = nf90_get_var(  ncid, varID, vmr_refSW)       
+       status = nf90_get_var(  ncid, varID, vmr_refSW)
        status = nf90_inq_varid(ncid, 'kmajor', varID)
-       status = nf90_get_var(  ncid, varID, kmajorSW)      
+       status = nf90_get_var(  ncid, varID, kmajorSW)
        status = nf90_inq_varid(ncid, 'kminor_start_lower', varID)
-       status = nf90_get_var(  ncid, varID, kminor_start_lowerSW)       
+       status = nf90_get_var(  ncid, varID, kminor_start_lowerSW)
        status = nf90_inq_varid(ncid, 'kminor_start_upper', varID)
-       status = nf90_get_var(  ncid, varID, kminor_start_upperSW)       
+       status = nf90_get_var(  ncid, varID, kminor_start_upperSW)
        status = nf90_inq_varid(ncid, 'solar_source_quiet', varID)
        status = nf90_get_var(  ncid, varID, solar_quietSW)
        status = nf90_inq_varid(ncid, 'solar_source_facular', varID)
        status = nf90_get_var(  ncid, varID, solar_facularSW)
        status = nf90_inq_varid(ncid, 'solar_source_sunspot', varID)
-       status = nf90_get_var(  ncid, varID, solar_sunspotSW)       
+       status = nf90_get_var(  ncid, varID, solar_sunspotSW)
        status = nf90_inq_varid(ncid, 'rayl_lower', varID)
        status = nf90_get_var(  ncid, varID, rayl_lowerSW)
        status = nf90_inq_varid(ncid, 'rayl_upper', varID)
@@ -356,12 +356,12 @@ contains
        status = nf90_inq_varid(ncid,'scale_by_complement_lower', varID)
        status = nf90_get_var(  ncid, varID,temp3)
        scale_by_complement_lowerSW(:) = .false.
-       where(temp3 .eq. 1) scale_by_complement_lowerSW(:) = .true.       
+       where(temp3 .eq. 1) scale_by_complement_lowerSW(:) = .true.
        status = nf90_inq_varid(ncid,'scale_by_complement_upper', varID)
        status = nf90_get_var(  ncid, varID,temp4)
        scale_by_complement_upperSW(:) = .false.
        where(temp4 .eq. 1) scale_by_complement_upperSW(:) = .true.
-       
+
        ! Close
        status = nf90_close(ncid)
     endif ! Master process
@@ -371,7 +371,7 @@ contains
 
     ! #######################################################################################
     !
-    ! Broadcast data... 
+    ! Broadcast data...
     ! (ALL processors)
     !
     ! #######################################################################################
@@ -406,7 +406,7 @@ contains
          size(minor_limits_gpt_upperSW),          MPI_INTEGER,          mpiroot, mpicomm, mpierr)
     call mpi_bcast(key_speciesSW,                      &
          size(key_speciesSW),                     MPI_INTEGER,          mpiroot, mpicomm, mpierr)
-    
+
     ! Real arrays
 #ifdef RTE_USE_SP
     call mpi_bcast(press_refSW,                        &
@@ -483,7 +483,7 @@ contains
        call mpi_bcast(scaling_gas_upperSW(iChar),      &
             len(scaling_gas_upperSW(iChar)),      MPI_CHARACTER,        mpiroot, mpicomm, mpierr)
     enddo
-    
+
     ! Logicals
     call mpi_bcast(minor_scales_with_density_lowerSW,  &
          size(minor_scales_with_density_lowerSW), MPI_LOGICAL,          mpiroot, mpicomm, mpierr)
@@ -497,7 +497,7 @@ contains
     call mpi_barrier(mpicomm, mpierr)
 
     ! #######################################################################################
-    !   
+    !
     ! Initialize RRTMGP DDT's...
     !
     ! #######################################################################################
@@ -517,4 +517,3 @@ contains
 
   end subroutine rrtmgp_sw_gas_optics_init
 end module rrtmgp_sw_gas_optics
- 

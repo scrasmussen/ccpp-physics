@@ -825,7 +825,7 @@
 !!  -   eirfwv(NWVTIR):   ir flux(273k) for each individual wavenumber
 !!                        (\f$W/m^2\f$)
 !!
-!> -  outputs: (CCPP error-handling) 
+!> -  outputs: (CCPP error-handling)
 !!  -   errflg:           CCPP error flag
 !!  -   errmsg:           CCPP error message
 !                                                                      !
@@ -1184,7 +1184,7 @@
         do m = 1, 12
           read (NIAERCM,12) cline
   12      format(a80/)
-        
+
           do j = 1, JMXAE
             do i = 1, IMXAE
               read(NIAERCM,*) id
@@ -1902,7 +1902,7 @@
 !   aeros_file   - external aerosol data file name                     !
 !                                                                      !
 !  outputs: (module variables)                                         !
-! 
+!
 !  outputs: (CCPP error-handling)                                      !
 !   errmsg  - Error message                                            !
 !   errflg  - Error flag                                               !
@@ -1951,7 +1951,7 @@
 
       if ( mpirank==mpiroot ) then
         inquire (file=aeros_file, exist=file_exist)
-        
+
         if ( file_exist ) then
           close(NIAERCM)
           open (unit=NIAERCM,file=aeros_file,status='OLD',                &
@@ -2035,7 +2035,7 @@
             close (NIAERCM)
             exit  Lab_do_12mon
           endif     ! end if_m_block
-        
+
         enddo  Lab_do_12mon
       endif read_and_broadcast
 
@@ -3912,7 +3912,7 @@
 
 !-----------------------------
 !>   read GMAO pre-tabultaed aerosol optical data for dust, seasalt,    !
-!!   sulfate, black carbon, and organic carbon aerosols 
+!!   sulfate, black carbon, and organic carbon aerosols
       subroutine rd_gocart_luts
 !.............................
 !  ---  inputs:  (in scope variables, module variables)
@@ -4112,10 +4112,10 @@
 !-----------------------------------
 
 !--------------------------------
-!>   compute mean aerosol optical properties over each sw radiation     
-!!   spectral band for each of the species components.  This program    
-!!   follows optavg routine (in turn follows gfdl's approach for thick  
-!!   cloud opertical property in sw radiation scheme (2000).           
+!>   compute mean aerosol optical properties over each sw radiation
+!!   spectral band for each of the species components.  This program
+!!   follows optavg routine (in turn follows gfdl's approach for thick
+!!   cloud opertical property in sw radiation scheme (2000).
       subroutine optavg_gocart
 !................................
 !  ---  inputs:  (in-scope variables, module variables)

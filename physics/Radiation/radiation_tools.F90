@@ -69,7 +69,7 @@ contains
            tem2db(iCol,1)    = log(p_lev(iCol,1))
            tem2db(iCol,iTOA) = log(max(minP, p_lev(iCol,iTOA)) )
        enddo
- 
+
        t_lev(1:NCOL,1)      = tsfc(1:NCOL)
        do iLay = 1, iTOA-1
           do iCol = 1, nCol
@@ -87,12 +87,12 @@ contains
   subroutine check_error_msg(routine_name, error_msg)
     character(len=*), intent(in) :: &
          error_msg, routine_name
-    
+
     if(error_msg /= "") then
        print*,"ERROR("//trim(routine_name)//"): "
        print*,trim(error_msg)
        return
     end if
-  end subroutine check_error_msg  
+  end subroutine check_error_msg
 
 end module radiation_tools

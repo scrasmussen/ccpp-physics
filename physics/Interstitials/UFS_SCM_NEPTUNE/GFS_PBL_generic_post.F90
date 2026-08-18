@@ -41,7 +41,7 @@
       logical, intent(in) :: ltaerosol, cplflx, cplaqm, cplchm, cplcat, lssav, ldiag3d, lsidea, use_med_flux, mraerosol, lthailaware
       logical, intent(in) :: hybedmf, do_shoc, satmedmf, shinhong, do_ysu
 
-      logical, intent(in) :: flag_for_pbl_generic_tend      
+      logical, intent(in) :: flag_for_pbl_generic_tend
 
       real(kind=kind_phys), intent(in) :: dtf, dtp
       real(kind=kind_phys), intent(in) :: rd, cp, fvirt, hvap, huge
@@ -91,7 +91,7 @@
       integer :: i, k, kk, k1, n
       real(kind=kind_phys) :: tem, rho
       integer :: idtend
-      
+
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
@@ -145,7 +145,7 @@
           enddo
 
         elseif (imp_physics == imp_physics_fer_hires) then
-  ! Ferrier-Aligo 
+  ! Ferrier-Aligo
           do k=1,levs
             do i=1,im
               ten_q(i,k,ntqv)    = dvdftra(i,k,1)
@@ -294,22 +294,22 @@
             IF ( nssl_hail_on ) THEN
             do k=1,levs
               do i=1,im
-               ten_q(i,k,ntqv) = dvdftra(i,k,1)  
-               ten_q(i,k,ntcw) = dvdftra(i,k,2)  
-               ten_q(i,k,ntiw) = dvdftra(i,k,3)  
-               ten_q(i,k,ntrw) = dvdftra(i,k,4)  
-               ten_q(i,k,ntsw) = dvdftra(i,k,5)  
-               ten_q(i,k,ntgl) = dvdftra(i,k,6)  
-               ten_q(i,k,nthl) = dvdftra(i,k,7)  
-               ten_q(i,k,ntlnc) = dvdftra(i,k,8) 
-               ten_q(i,k,ntinc) = dvdftra(i,k,9) 
+               ten_q(i,k,ntqv) = dvdftra(i,k,1)
+               ten_q(i,k,ntcw) = dvdftra(i,k,2)
+               ten_q(i,k,ntiw) = dvdftra(i,k,3)
+               ten_q(i,k,ntrw) = dvdftra(i,k,4)
+               ten_q(i,k,ntsw) = dvdftra(i,k,5)
+               ten_q(i,k,ntgl) = dvdftra(i,k,6)
+               ten_q(i,k,nthl) = dvdftra(i,k,7)
+               ten_q(i,k,ntlnc) = dvdftra(i,k,8)
+               ten_q(i,k,ntinc) = dvdftra(i,k,9)
                ten_q(i,k,ntrnc) = dvdftra(i,k,10)
                ten_q(i,k,ntsnc) = dvdftra(i,k,11)
                ten_q(i,k,ntgnc) = dvdftra(i,k,12)
                ten_q(i,k,nthnc) = dvdftra(i,k,13)
-               ten_q(i,k,ntgv) = dvdftra(i,k,14) 
-               ten_q(i,k,nthv) = dvdftra(i,k,15) 
-               ten_q(i,k,ntoz) = dvdftra(i,k,16) 
+               ten_q(i,k,ntgv) = dvdftra(i,k,14)
+               ten_q(i,k,nthv) = dvdftra(i,k,15)
+               ten_q(i,k,ntoz) = dvdftra(i,k,16)
                n = 16
                IF ( nssl_ccn_on ) THEN
                  ten_q(i,k,ntccn) = dvdftra(i,k,n+1)
@@ -323,23 +323,23 @@
                ENDIF
               enddo
             enddo
-            
+
             ELSE
-            
+
             do k=1,levs
               do i=1,im
-               ten_q(i,k,ntqv) = dvdftra(i,k,1)  
-               ten_q(i,k,ntcw) = dvdftra(i,k,2)  
-               ten_q(i,k,ntiw) = dvdftra(i,k,3)  
-               ten_q(i,k,ntrw) = dvdftra(i,k,4)  
-               ten_q(i,k,ntsw) = dvdftra(i,k,5)  
-               ten_q(i,k,ntgl) = dvdftra(i,k,6)  
-               ten_q(i,k,ntlnc) = dvdftra(i,k,7) 
-               ten_q(i,k,ntinc) = dvdftra(i,k,8) 
+               ten_q(i,k,ntqv) = dvdftra(i,k,1)
+               ten_q(i,k,ntcw) = dvdftra(i,k,2)
+               ten_q(i,k,ntiw) = dvdftra(i,k,3)
+               ten_q(i,k,ntrw) = dvdftra(i,k,4)
+               ten_q(i,k,ntsw) = dvdftra(i,k,5)
+               ten_q(i,k,ntgl) = dvdftra(i,k,6)
+               ten_q(i,k,ntlnc) = dvdftra(i,k,7)
+               ten_q(i,k,ntinc) = dvdftra(i,k,8)
                ten_q(i,k,ntrnc) = dvdftra(i,k,9)
                ten_q(i,k,ntsnc) = dvdftra(i,k,10)
                ten_q(i,k,ntgnc) = dvdftra(i,k,11)
-               ten_q(i,k,ntgv) = dvdftra(i,k,12) 
+               ten_q(i,k,ntgv) = dvdftra(i,k,12)
                ten_q(i,k,ntoz) = dvdftra(i,k,13)
                n = 13
                IF ( nssl_ccn_on ) THEN
@@ -353,13 +353,13 @@
                ENDIF
               enddo
             enddo
-            
+
             ENDIF
         endif
 
       endif ! nvdiff == ntrac
 
-      
+
 
       case_PBL_ten: select case (tend_opt_pbl)
         case (1) !immediately apply tendencies

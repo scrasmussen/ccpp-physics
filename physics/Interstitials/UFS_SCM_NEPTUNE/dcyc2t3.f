@@ -50,11 +50,11 @@
 !            adjdnnbmd,adjdnndfd,adjdnvbmd,adjdnvdfd)                   !
 !                                                                       !
 !                                                                       !
-!                                                                       
-!  inputs:                                                              
-!     solhr        - real, forecast time in 24-hour form (hr)           
-!     slag         - real, equation of time in radians                  
-!     sdec, cdec   - real, sin and cos of the solar declination angle   
+!
+!  inputs:
+!     solhr        - real, forecast time in 24-hour form (hr)
+!     slag         - real, equation of time in radians
+!     sdec, cdec   - real, sin and cos of the solar declination angle
 !     sinlat(im), coslat(im):                                           !
 !                  - real, sin and cos of latitude                      !
 !     xlon   (im)  - real, longitude in radians                         !
@@ -212,7 +212,7 @@
 !     logical lprnt
       logical, dimension(:), intent(in) :: dry, icy, wet
       logical, intent(in) :: use_LW_jacobian, damp_LW_fluxadj,          &
-     &     pert_radtend, use_med_flux 
+     &     pert_radtend, use_med_flux
       logical, intent(in) :: do_sppt,ca_global,lssav,ldiag3d,lsidea
       real(kind=kind_phys),   intent(in) :: solhr, slag, cdec, sdec,    &
      &     deltim, delt, fhswr, lfnc_k, lfnc_p0
@@ -292,14 +292,14 @@
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       ten_t = 0.0
       ten_u = 0.0
       ten_v = 0.0
       ten_q = 0.0
-      
+
 !     Vertical ordering?
-      if (p_lev(1,1) .lt.  p_lev(1, levs)) then 
+      if (p_lev(1,1) .lt.  p_lev(1, levs)) then
          iSFC = levs + 1
          iTOA = 1
       else
@@ -325,7 +325,7 @@
         enddo
       else
         rstl = one / float(nstl)
-        solang = pid12 * (solhr - hour12)         
+        solang = pid12 * (solhr - hour12)
         anginc = pid12 * deltim * f3600 * rstl
         do i = 1, im
           xcosz(i)  = zero
@@ -351,7 +351,7 @@
          tem1 = tf(i) / tsflw(i)
          tem2 = tem1 * tem1
          adjsfcdlw(i) = sfcdlw(i) * tem2 * tem2
-!!  - adjust \a sfc downward LW flux to account for t changes in the 
+!!  - adjust \a sfc downward LW flux to account for t changes in the
 !!    lowest model layer. compute 4th power of the ratio of \c tf in the
 !!    lowest model layer over the mean value \c tsflw.
          if (dry(i)) then
@@ -369,7 +369,7 @@
             adjsfculw_wat(i) =  sfcemis_wat(i) * con_sbc *
      &                        tem2 * tem2
      &                        + (one - sfcemis_wat(i)) * adjsfcdlw(i)
-!>  - replace upward longwave flux provided by the mediator 
+!>  - replace upward longwave flux provided by the mediator
 !!    (zero over lakes)
             if (use_med_flux) then
                if (sfculw_med(i) > f_eps) then
@@ -409,20 +409,20 @@
       enddo
 
       ! Adjust the LW and SW heating-rates.
-      ! For LW, optionally scale using the Jacobian of the upward LW 
-      ! flux. *RRTMGP ONLY* For SW, adjust heating rates with zenith 
+      ! For LW, optionally scale using the Jacobian of the upward LW
+      ! flux. *RRTMGP ONLY* For SW, adjust heating rates with zenith
       ! angle change.
       if (use_LW_jacobian) then
          ! Compute adjusted net LW flux following Hogan and Bozzo 2015
          ! (10.1002/2015MS000455)
-         ! Here we assume that the profile of the downwelling LW 
-         ! Jacobian has the same shape as the upwelling, but scaled 
+         ! Here we assume that the profile of the downwelling LW
+         ! Jacobian has the same shape as the upwelling, but scaled
          ! and offset. The scaling factor is 0.2
          ! The profile of the downwelling Jacobian (J) is offset so that
          !     J_dn_sfc / J_up_sfc = scaling_factor
          !     J_dn_toa / J_up_sfc = 0
          !
-         ! Optionally, the flux adjustment can be damped with height 
+         ! Optionally, the flux adjustment can be damped with height
          ! using a logistic function
          ! fx ~ L / (1 + exp(-k*dp)), where dp = p - p0
          ! L  = 1, fix scale between 0-1.      - Fixed
@@ -448,7 +448,7 @@
                htrlw(i,k) = fluxlwnet_adj * con_g /                     &
      &              (con_cp * (p_lev(i,k+1) - p_lev(i,k)))
 
-               ! Add radiative heating rates to physics heating rate. 
+               ! Add radiative heating rates to physics heating rate.
                ! Optionally, scaled w/ height using a logistic function
                if (damp_LW_fluxadj) then
                   lfnc = L / (1+exp(-(p_lev(i,k) - lfnc_p0)/lfnc_k))
@@ -484,7 +484,7 @@
            enddo
          endif
       endif
-!     
+!
       case_rad_scaler_ten: select case (tend_opt_rad_scaler)
         case (1) !immediately apply tendencies
                   !Current state = current state + dt*current tendency
@@ -533,7 +533,7 @@
           end do
         case (4) !Current state unchanged
         !Accumulated tendency unchanged
-        !Current tendency unchanged (but will be overwritten during 
+        !Current tendency unchanged (but will be overwritten during
         !                            next primary scheme)
           exit case_rad_scaler_ten
         case default
@@ -542,7 +542,7 @@
      &                 ' outside of the acceptable range (1-4)'
           return
       end select case_rad_scaler_ten
-      
+
       if (lssav .and. ldiag3d .and. .not. lsidea) then
         idtend = dtidx(index_of_temperature,index_of_process_longwave)
         if(idtend>=1) then
@@ -568,7 +568,7 @@
            enddo
         endif
       end if
-      
+
       return
 !...................................
       end subroutine dcyc2t3_run

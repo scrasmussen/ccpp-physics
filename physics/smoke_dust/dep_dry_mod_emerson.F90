@@ -32,7 +32,7 @@ contains
 ! https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1029/2021MS002792
 !----------------------------------------------------------------------
   IMPLICIT NONE
- 
+
        INTEGER,  INTENT(IN   ) ::  settling_flag,ndvel,                    &
                                    ids,ide, jds,jde, kds,kde,              &
                                    ims,ime, jms,jme, kms,kme,              &
@@ -43,8 +43,8 @@ contains
        REAL(kind_phys), DIMENSION( ims:ime , jms:jme )        ,            &
            INTENT(IN) :: ustar, rmol, znt, snowh
        REAL(kind_phys), DIMENSION( ims:ime , kms:kme , jms:jme ),          &
-           INTENT(IN   ) :: t_phy, rho_phy, p_phy, delz                    
-       INTEGER, DIMENSION(ims:ime,jms:jme), INTENT(IN) ::  ivgtyp          
+           INTENT(IN   ) :: t_phy, rho_phy, p_phy, delz
+       INTEGER, DIMENSION(ims:ime,jms:jme), INTENT(IN) ::  ivgtyp
        REAL(kind_phys), DIMENSION( ims:ime, kms:kme, jms:jme, num_chem ),  &
                                              INTENT(INOUT ) :: chem
        REAL(kind_phys), INTENT(IN) :: g0,dt
@@ -73,7 +73,7 @@ contains
        real(kind_phys) :: airkinvisc              ! Air kinetic viscosity [cm2/s]
        real(kind_phys) :: freepath                ! Air molecular freepath [cm]
        real(kind_phys) :: dp                      ! aerosol diameter [cm]
-       real(kind_phys) :: aerodens                ! aerosol density [g/cm3] 
+       real(kind_phys) :: aerodens                ! aerosol density [g/cm3]
        real(kind_phys) :: Rs                      ! Surface resistance
        real(kind_phys) :: vgpart
        real(kind_phys) :: growth_fac,vsettl,dtmax,conver,converi,dzmin
@@ -97,7 +97,7 @@ contains
        growth_fac = 1.0
        conver=1.e-9
        converi=1.e9
- 
+
        if (mod(int(curr_secs),1800) .eq. 0) then
            icall = 0
        endif
@@ -123,7 +123,7 @@ contains
                 ! Aerodynamic resistance
                 call depvel( rmol_local, dep_ref_hgt, znt(i,j), ustar(i,j), vgpart, aer_res(i,j) )
                 ! depvel uses meters, need to convert to s/cm
-                aer_res(i,j) = max(aer_res(i,j)/100._kind_phys,0._kind_phys) 
+                aer_res(i,j) = max(aer_res(i,j)/100._kind_phys,0._kind_phys)
                 ! Air kinematic viscosity (cm^2/s)
                 airkinvisc = ( 1.8325e-4 * ( 416.16 / ( t_phy(i,k,j) + 120.0 ) ) *   &
                              ( ( t_phy(i,k,j) / 296.16 )**1.5 ) ) / ( rho_phy(i,k,j) / 1.e3 ) ! Convert density to mol/cm^3
@@ -134,7 +134,7 @@ contains
                       dp = 4.E-8 !dgacc
                       aerodens = 1.4e+3 !pdensa
                    elseif ( chem_pointers(nv) == p_dust_1) then
-                      dp = 1.E-6 !dgacc 
+                      dp = 1.E-6 !dgacc
                       aerodens = 2.6e+3 !pdensa
                    elseif ( chem_pointers(nv) == p_coarse_pm ) then
                       dp = 4.5E-6 !dgcor
@@ -162,7 +162,7 @@ contains
                       Eb = Cb * Sc**(-0.666666667)
                       ! Stokes number
                       St = ( 100. * ustar(i,j) ) * ( 100.* ustar(i,j) ) * vg / airkinvisc / ( gravity * 100.) ! Convert ustar to cm/s, gravity to cm/s^2
-                      ! Impaction 
+                      ! Impaction
                       Eim = Cim * ( St / ( alpha + St ) )**1.7
                       ! MODIS type lu, large roughness lengths (e.g., urban or forest)
                       ! -----------------------------------------------------------------------
@@ -214,7 +214,7 @@ contains
                  dp = 4.E-8 !dgacc
                  aerodens = 1.4e+3 !pdensa
                elseif ( chem_pointers(nv) == p_dust_1) then
-                 dp = 1.E-6 !dgacc 
+                 dp = 1.E-6 !dgacc
                  aerodens = 2.6e+3 !pdensa
                elseif ( chem_pointers(nv) == p_coarse_pm ) then
                  dp = 4.5E-6 !dgcor
@@ -227,7 +227,7 @@ contains
                dtmax = dzmin / vsettl
                ndt_settl(nv) = MAX( 1, INT( ntdt /dtmax) )
                ! Limit maximum number of iterations
-               IF (ndt_settl(nv) > 12) ndt_settl(nv) = 12 
+               IF (ndt_settl(nv) > 12) ndt_settl(nv) = 12
                dt_settl(nv) = REAL(ntdt,kind=kind_phys) /REAL(ndt_settl(nv),kind=kind_phys)
              enddo
              ! Perform gravitational settling if desired
@@ -320,7 +320,7 @@ end subroutine depvel
 !
 subroutine particle_settling(cblk,rho_phy,delz,vg,dt_settl,ndt_settl,ndvel,kts,kte)
      IMPLICIT NONE
-     
+
      INTEGER, INTENT(IN ) :: kts, kte, ndvel
      REAL(kind_phys), DIMENSION(kts:kte), INTENT (IN)  :: rho_phy, delz
      REAL(kind_phys), DIMENSION(kts:kte,ndvel), INTENT(IN) :: vg
@@ -331,8 +331,8 @@ subroutine particle_settling(cblk,rho_phy,delz,vg,dt_settl,ndt_settl,ndvel,kts,k
 !--- Local------
      INTEGER :: k,nv,n,l2
      REAL(kind_phys) :: temp_tc, transfer_to_below_level, vd_wrk1
-     REAL(kind_phys), DIMENSION(kts:kte) :: delz_flip 
-     
+     REAL(kind_phys), DIMENSION(kts:kte) :: delz_flip
+
      do k = kts,kte
         delz_flip(k) = delz(kte-k+kts)
      enddo
@@ -342,11 +342,11 @@ subroutine particle_settling(cblk,rho_phy,delz,vg,dt_settl,ndt_settl,ndvel,kts,k
      transfer_to_below_level = 0.0
      do k = kte,kts,-1
         l2 = kte - k + 1
-     
+
         temp_tc = cblk(k,nv)
-     
+
         vd_wrk1 = dt_settl(nv) * vg(k,nv)/100. / delz_flip(l2)               ! convert vg to m/s
-     
+
         cblk(k,nv)= cblk(k,nv) * (1. - vd_wrk1) + transfer_to_below_level
         if (k.gt.kts) then
             transfer_to_below_level =(temp_tc*vd_wrk1)*((delz_flip(l2) &

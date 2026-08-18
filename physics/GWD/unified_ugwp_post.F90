@@ -24,7 +24,7 @@ contains
          dws3dt_obl, dws3dt_oss, dws3dt_ofd, du_ogwcol, dv_ogwcol,  &
          du_oblcol, dv_oblcol, du_osscol, dv_osscol, du_ofdcol,     &
          dv_ofdcol, du3_ogwcol, dv3_ogwcol, du3_oblcol, dv3_oblcol, &
-         du3_osscol, dv3_osscol, du3_ofdcol, dv3_ofdcol,            & 
+         du3_osscol, dv3_osscol, du3_ofdcol, dv3_ofdcol,            &
          errmsg, errflg)
 
         use machine,                only: kind_phys
@@ -72,12 +72,12 @@ contains
           tot_zmtb =  tot_zmtb + dtf *zmtb
           tot_zlwb =  tot_zlwb + dtf *zlwb
           tot_zogw =  tot_zogw + dtf *zogw
-    
+
           tot_tofd  = tot_tofd + dtf *tau_tofd
           tot_mtb   = tot_mtb +  dtf *tau_mtb
           tot_ogw   = tot_ogw +  dtf *tau_ogw
           tot_ngw   = tot_ngw +  dtf *tau_ngw
-    
+
           du3dt_mtb = du3dt_mtb + dtf *dudt_mtb
           du3dt_tms = du3dt_tms + dtf *dudt_tms
           du3dt_ogw = du3dt_ogw + dtf *dudt_ogw

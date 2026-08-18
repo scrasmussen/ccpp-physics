@@ -15,7 +15,7 @@ contains
   subroutine GFS_photochemistry_post_run (tend_opt_photochem, im, levs, ntrac, &
        dtp, ten_t, ten_u, ten_v, ten_q, gt0, gu0, gv0, gq0, dtdt, dudt, dvdt, dqdt, &
        errmsg, errflg)
-    
+
     ! Inputs
     integer, intent(in) :: tend_opt_photochem, im, levs, ntrac
     real(kind=kind_phys), intent(in) :: dtp
@@ -31,14 +31,14 @@ contains
          errmsg          ! CCPP Error message.
     integer,  intent(out) :: &
          errflg          ! CCPP Error flag.
-    
+
     ! Locals
     integer :: i,k,n
-    
+
     ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
-    
+
     case_photochemistry_ten: select case (tend_opt_photochem)
       case (1) !immediately apply tendencies
                 !Current state = current state + dt*current tendency

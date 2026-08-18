@@ -29,7 +29,7 @@
   dimensions = ()
   type = integer
   intent = out
-  
+
 ########################################################################
 [ccpp-arg-table]
   name = moninshoc_run

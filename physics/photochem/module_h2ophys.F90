@@ -7,8 +7,8 @@ module module_h2ophys
 
   public ty_h2ophys
 
-! ######################################################################################### 
-!> \section arg_table_ty_h2ophys Argument Table 
+! #########################################################################################
+!> \section arg_table_ty_h2ophys Argument Table
 !! \htmlinclude ty_h2ophys.html
 !!
 !> Derived type containing data and procedures needed by h2o photochemistry parameterization
@@ -31,7 +31,7 @@ module module_h2ophys
        procedure, public :: update
        procedure, public :: run
   end type ty_h2ophys
-  
+
 contains
   ! #########################################################################################
   ! Procedure (type-bound) for loading data.
@@ -87,8 +87,8 @@ contains
   end function load
 
   ! #########################################################################################
-  ! Procedure (type-bound) for setting up interpolation indices between data-grid and 
-  ! model-grid. 
+  ! Procedure (type-bound) for setting up interpolation indices between data-grid and
+  ! model-grid.
   ! #########################################################################################
   subroutine setup(this, lat, idx1, idx2, idxh)
     class(ty_h2ophys), intent(in)  :: this
@@ -143,7 +143,7 @@ contains
           enddo
        enddo
     enddo
-    
+
   end subroutine update
 
   ! #########################################################################################
@@ -162,18 +162,18 @@ contains
     real(kind_phys), intent(inout), dimension(:, :), optional :: &
          dqv_dt_prd, & ! Net production/loss effect
          dqv_dt_qv     ! water vapor effect
-    
+
     integer :: nCol, nLev, iCol, iLev, iCf, kmax, kmin, k
     logical, dimension(size(p,1)) :: flg
     real(kind_phys) :: pmax, pmin, temp
     real(kind_phys), dimension(size(p,1)) :: wk1, wk2, wk3, h2oib
     real(kind_phys), dimension(size(p,1),this%ncf) :: pltc
     real(kind_phys), parameter :: prsmax=10000.0, pmaxl=log(prsmax)
-    
+
     ! Dimensions
     nCol = size(p,1)
     nLev = size(p,2)
-    
+
     do iLev=1,nLev
        pmin =  1.0e10
        pmax = -1.0e10
@@ -209,7 +209,7 @@ contains
                 enddo
              enddo
           enddo
-          
+
           do iCf=1,this%ncf
              do iCol=1,nCol
                 if (wk1(iCol) < this%ph2o(this%nlev)) then

@@ -440,7 +440,7 @@
 !$OMP          shared(isbarren_table,isice_table,isurban_table)         &
 !$omp          shared(iswater_table,laim_table,sla_table,bexp_table)    &
 !$omp          shared(stc,smc,slc,tg3,snowxy,tsnoxy,snicexy,snliqxy)    &
-!$omp          shared(zsnsoxy,stype,smcmax_table,smcwlt_table,zs,dzs)   & 
+!$omp          shared(zsnsoxy,stype,smcmax_table,smcwlt_table,zs,dzs)   &
 !$omp          shared(dwsat_table,dksat_table,psisat_table,smoiseq)     &
 !$OMP          shared(smcwtdxy,deeprechxy,rechxy,errmsg,errflg)         &
 !$OMP          private(vegtyp,masslai,masssai,snd,dzsno,dzsnso,isnow)   &
@@ -768,7 +768,7 @@
                                       canopy(:), vfrac(:), shdmin(:), shdmax(:),                     &
                                       snowd(:), cv(:), cvb(:), cvt(:), oro(:), oro_uf(:), slmsk(:)
          real(kind_phys),      intent(inout), optional :: smois(:,:), sh2o(:,:), tslb(:,:), tref(:)
-         integer,              intent(inout) :: vtype(:), stype(:),scolor(:), slope(:) 
+         integer,              intent(inout) :: vtype(:), stype(:),scolor(:), slope(:)
 
          logical,              intent(in)    :: is_initialized
          character(len=*),     intent(out)   :: errmsg

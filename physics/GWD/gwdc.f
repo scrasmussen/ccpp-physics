@@ -25,7 +25,7 @@
 
       if (.not. do_cnvgwd) then
           errmsg = "Logic error: gwdc called but do_cnvgwd is false"
-          errflg = 1 
+          errflg = 1
           return
       end if
 
@@ -531,7 +531,7 @@
           bruni(i,k) = sqrt (max (n2min, n2))
         enddo
       enddo
- 
+
       deallocate (spfh)
 !-----------------------------------------------------------------------
 !

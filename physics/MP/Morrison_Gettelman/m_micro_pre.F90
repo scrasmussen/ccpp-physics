@@ -40,7 +40,7 @@
           do i=1,im
             cld_frc_MG(i,k) = cld_shoc(i,k)
           enddo
-        enddo 
+        enddo
       end if
 
       ! add convective cloud fraction

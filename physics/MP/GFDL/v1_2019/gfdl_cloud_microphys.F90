@@ -154,9 +154,9 @@ contains
       real(kind_phys),      intent(out  ), dimension(:) :: graupel0
       real(kind_phys),      intent(out  ), dimension(:) :: prcp0
       real(kind_phys),      intent(out  ), dimension(:) :: sr
-      
+
       real(kind_phys),      intent(out  ), dimension(:,:)    :: ten_t, ten_u, ten_v, ten_qv, ten_ql, ten_qr, ten_qi, ten_qs, ten_qg, ten_cldfrc
-      real(kind_phys),      intent(out  ), dimension(:,:,:)  :: ten_q 
+      real(kind_phys),      intent(out  ), dimension(:,:,:)  :: ten_q
 
       real(kind_phys),      intent(in) :: dtp ! physics time step
       logical, intent (in) :: hydrostatic, phys_hydrostatic
@@ -178,7 +178,7 @@ contains
       real(kind=kind_phys), dimension(1:im,1:levs) :: delp, dz, uin, vin, pt, qv1, ql1, qr1, qg1, qa1, qn1, qi1,    &
                                                       qs1, pt_dt, qa_dt, u_dt, v_dt, w, qv_dt, ql_dt, qr_dt, qi_dt, &
                                                       qs_dt, qg_dt, p123, refl, new_qv, new_ql, new_qi, new_qr,     &
-                                                      new_qs, new_qg, new_t 
+                                                      new_qs, new_qg, new_t
       real(kind=kind_phys), dimension(1:im,1,1:levs) :: pfils, pflls
       real(kind=kind_phys), dimension(:,:), allocatable :: den
       real(kind=kind_phys) :: onebg
@@ -187,7 +187,7 @@ contains
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       ten_t = 0.0
       ten_u = 0.0
       ten_v = 0.0
@@ -199,7 +199,7 @@ contains
       ten_qs = 0.0
       ten_qg = 0.0
       ten_cldfrc = 0.0
-      
+
       iis = 1
       iie = im
       jjs = 1
@@ -310,13 +310,13 @@ contains
             ten_qs(i,k)      = qs_dt(i,kk)
             ten_qg(i,k)      = qg_dt(i,kk)
             ten_cldfrc(i,k)  = qa_dt(i,kk)
-            
+
             ten_t(i,k)       = pt_dt(i,kk)
             ten_u(i,k)       = u_dt(i,kk)
             ten_v(i,k)       = v_dt(i,kk)
-            
+
             refl_10cm(i,k)   = refl(i,kk)
-            
+
             !new values needed for cloud_diagnosis below
             new_qv(i,k)      = qv1(i,kk) + qv_dt(i,kk) * dtp
             new_ql(i,k)      = ql1(i,kk) + ql_dt(i,kk) * dtp
@@ -338,7 +338,7 @@ contains
           enddo
         enddo
       endif
-            
+
       if(effr_in) then
          allocate(den(1:im,1:levs))
          do k=1,levs

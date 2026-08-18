@@ -3,7 +3,7 @@
 !! This module will be used at the initialization stage
 !! where all model-specific constants are read and saved into
 !! memory. This module is then used again in the MYNN-EDMF. All
-!! MYNN-specific constants are declared globally in the main 
+!! MYNN-specific constants are declared globally in the main
 !! module (module_bl_mynn) further below:
 
 !>\ingroup gp_mynnedmf
@@ -14,7 +14,7 @@
 !
 !------------------------------------------
 
-! The following 5-6 lines are the only lines in this file that are not 
+! The following 5-6 lines are the only lines in this file that are not
 ! universal for all dycores... Any ideas how to universalize it?
 ! For MPAS:
 ! use mpas_kind_types,only: kind_phys => RKIND

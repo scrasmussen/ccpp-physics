@@ -1,7 +1,7 @@
 !>  \file sfc_nst_pre.f90
 !!  This file contains preparation for the near-surface sea temperature scheme.
 
-!> This module contain preparation for the near-surface sea temperature scheme 
+!> This module contain preparation for the near-surface sea temperature scheme
 module sfc_nst_pre
 
   use machine               , only : kind_phys

@@ -1,7 +1,7 @@
 !>\file  rrfs_smoke_config.F90
 !! This file contains the configuration for RRFS-Smoke.
 !
-! Haiqin.Li@noaa.gov  
+! Haiqin.Li@noaa.gov
 ! 06/2021
 ! constant parameters and chemistry configurations and tracers
 ! (This will be splited into three subroutines for configuration, constant and tracers later)
@@ -16,7 +16,7 @@ module rrfs_smoke_config
   !-- constant paramters
   real(kind=kind_phys), parameter :: epsilc     = 1.e-12
   !-- aerosol module configurations
-  integer :: chem_opt = 1   
+  integer :: chem_opt = 1
   integer :: kemit = 1
   integer :: dust_opt = 1
   real(kind=kind_phys) :: dust_drylimit_factor  = 1.0

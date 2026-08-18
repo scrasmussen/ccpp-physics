@@ -79,7 +79,7 @@ subroutine shoc_run (nx, nzm, tcr, tcrf, con_cp, con_g, con_hvap, con_hfus, con_
 
     errmsg = ''
     errflg = 0
-    
+
     ten_t = 0.0
     ten_u = 0.0
     ten_v = 0.0
@@ -134,10 +134,10 @@ subroutine shoc_run (nx, nzm, tcr, tcrf, con_cp, con_g, con_hvap, con_hfus, con_
     !     phy_f3d(1,1,ntot3d-2) - shoc determined sgs clouds
     !     phy_f3d(1,1,ntot3d-1) - shoc determined diffusion coefficients
     !     phy_f3d(1,1,ntot3d  ) - shoc determined  w'theta'
-    
+
     air_T = gt0
     qwv = gq0(:,:,ntqv)
-    
+
     call shoc_work (nx, nx, nzm, nzm+1, dtp, prsl, delp,                                &
                     phii, phil, u, v, omega, air_T, qwv, qi, qc, qsnw, qrn,             &
                     rhc, supice, pcrit, cefac, cesfac, tkef1, dis_opt,                  &
@@ -282,7 +282,7 @@ end subroutine shoc_run
   real, parameter :: pt19=0.19_kp,  pt51=0.51_kp, pt01=0.01_kp, atmin=0.01_kp, atmax=one-atmin
   real, parameter :: Cs  = 0.15_kp, epsln=1.0e-6_kp
 ! real, parameter :: Ck  = 0.2_kp     ! Coeff in the eddy diffusivity - TKE relationship, see Eq. 7 in BK13
-  real, parameter :: Ck  = 0.1_kp     ! Coeff in the eddy diffusivity - TKE relationship, see Eq. 7 in BK13 
+  real, parameter :: Ck  = 0.1_kp     ! Coeff in the eddy diffusivity - TKE relationship, see Eq. 7 in BK13
 
 ! real, parameter :: Ce  = Ck**3/(0.7*Cs**4)
 ! real, parameter :: Ce  = Ck**3/(0.7*Cs**4) * 2.2
@@ -444,7 +444,7 @@ end subroutine shoc_run
         qi(i,k)   = zero
       endif
 !
-!    testing removal of ice when too warm to sustain ice 
+!    testing removal of ice when too warm to sustain ice
 !
 !     if (qi(i,k) > zero .and. tabs(i,k) > 273.16) then
 !       wrk = (tabs(i,k) - 273.16) / fac_sub
@@ -715,7 +715,7 @@ contains
                         + def2(i,kd)*tkh(i,kd)*prnum(i,kd))
 
 
-! smixt (turb. mixing lenght) is calculated in eddy_length() 
+! smixt (turb. mixing lenght) is calculated in eddy_length()
 ! Explicitly integrate TKE equation forward in time
 !       a_diss     = Cee/smixt(i,k)*tke(i,k)**1.5 ! TKE dissipation term
 !       tke(i,k) = max(zero,tke(i,k)+dtn*(max(zero,a_prod_sh+a_prod_bu)-a_diss))
@@ -994,13 +994,13 @@ contains
 
     do i=1,nx
 
-      if (cldarr(i) == 1) then ! If there's a cloud in this column 
+      if (cldarr(i) == 1) then ! If there's a cloud in this column
 
         kl = 0
         ku = 0
         do k=2,nzm-3
 
-! Look for the cloud base in this column  
+! Look for the cloud base in this column
 ! thresh (=0) is a  variable local to eddy_length(). Should be a module constant.
           wrk = qcl(i,k) + qci(i,k)
           if (wrk > qcmin) then
@@ -1012,8 +1012,8 @@ contains
             if (qcl(i,k+1)+qci(i,k+1) <= qcmin) then
               ku = k
 ! conv_vel2 (Cubed convective velocity scale) is calculated in conv_scale()
-! Use the value of conv_vel2 at the top of the cloud. 
-!             conv_var = conv_vel2(i,k)** oneb3 
+! Use the value of conv_vel2 at the top of the cloud.
+!             conv_var = conv_vel2(i,k)** oneb3
             endif
           endif
 
@@ -1123,7 +1123,7 @@ contains
                                                             ! Minimum 0.1 of local dz
         smixt(i,k) = max(wrk, min(max_eddy_length_scale,smixt(i,k)))
 
-! If chracteristic grid dimension in the horizontal< 1000m, set lengthscale to 
+! If chracteristic grid dimension in the horizontal< 1000m, set lengthscale to
 ! be not larger that that.
 !       if (sqrt(dx*dy) .le. 1000.) smixt(i,k)=min(sqrt(dx*dy),smixt(i,k))
 
@@ -1274,7 +1274,7 @@ contains
 
 ! Implemetation of the C01 approach in this subroutine is nearly complete
 ! (the missing part are Eqs. 5c and 5e which are very simple)
-! therefore it's easy to diagnose other third order moments obtained in C01 using this code. 
+! therefore it's easy to diagnose other third order moments obtained in C01 using this code.
 
       enddo
     enddo
@@ -1326,7 +1326,7 @@ contains
         pfac  = pval * 1.0e-5_kp
         pkap  = pfac ** kapa
 
-! Read in liquid/ice static energy, total water mixing ratio, 
+! Read in liquid/ice static energy, total water mixing ratio,
 ! and vertical velocity to variables PDF needs
         thl_first = hl(i,k) + fac_cond*qpl(i,k) + fac_sub*qpi(i,k)
         qw_first  = total_water(i,k)
@@ -1402,12 +1402,12 @@ contains
 !>aab
 
           Skew_w = w3var / (sqrtw2*sqrtw2*sqrtw2)     ! Moorthi
-! Proportionality coefficients between widths of each vertical velocity 
+! Proportionality coefficients between widths of each vertical velocity
 ! gaussian and the sqrt of the second moment of w
           w2_1 = 0.4_kp
           w2_2 = 0.4_kp
 
-! Compute realtive weight of the first PDF "plume" 
+! Compute realtive weight of the first PDF "plume"
 ! See Eq A4 in Pete's dissertaion -  Ensure 0.01 < a < 0.99
 
           wrk   = one - w2_1
@@ -1520,7 +1520,7 @@ contains
         w1_1 = w1_1*sqrtw2 + w_first
         w1_2 = w1_2*sqrtw2 + w_first
 
-!  FIND WITHIN-PLUME CORRELATIONS 
+!  FIND WITHIN-PLUME CORRELATIONS
 
         testvar = aterm*sqrtqw2_1*sqrtthl2_1 + onema*sqrtqw2_2*sqrtthl2_2
 
@@ -1629,9 +1629,9 @@ contains
           qn1 = s1
         ENDIF
 
-! now compute non-precipitating cloud condensate 
+! now compute non-precipitating cloud condensate
 
-! If two plumes exactly equal, then just set many of these 
+! If two plumes exactly equal, then just set many of these
 ! variables to themselves to save on computation.
         IF (qw1_1 == qw1_2 .and. thl2_1 == thl2_2 .and. qs1 == qs2) THEN
           s2     = s1

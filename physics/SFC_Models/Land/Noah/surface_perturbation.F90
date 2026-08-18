@@ -19,7 +19,7 @@ module surface_perturbation
 ! mg, sfc-perts ***
 
 ! the routines below are used in the percentile matching algorithm for the
-! albedo and vegetation fraction perturbations 
+! albedo and vegetation fraction perturbations
 
 !>\ingroup gfs_sfcpert
 !> This subrtouine calculates the CDF of the standard normal distribution
@@ -355,7 +355,7 @@ module surface_perturbation
            if (pdfl.ge.log(uflo)) then
               u = exp(pdfl)*xy/pq
               r = xy/yx
-              do while (qp.gt.1.) 
+              do while (qp.gt.1.)
                  if (u.le.eps*(1.-(pq+qp)*xy/(pq+1.))) then
                     if (.not.LL) cdfx = 1.-cdfx
                     return

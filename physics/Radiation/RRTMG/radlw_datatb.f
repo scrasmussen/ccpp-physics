@@ -737,7 +737,7 @@
       end module module_radlw_avplank    !
 !========================================!
 
-!> \ingroup module_radlw_main 
+!> \ingroup module_radlw_main
 !> This module contains reference temperature and pressure.
 !  - These pressures are chosen such that the ln of the first one
 !    has only a few non-zero digits (i.e. ln(pref(1)) = 6.96000) and
@@ -919,7 +919,7 @@
       end module module_radlw_ref        !
 !========================================!
 
-!> \ingroup module_radlw_main 
+!> \ingroup module_radlw_main
 !> This module contains cloud property coefficients.
       module module_radlw_cldprlw        !
 !........................................!
@@ -3286,7 +3286,7 @@
       private
 !
 !> msa03=585
-      integer, public :: MSA03 
+      integer, public :: MSA03
 !> msb03=1175
       integer, public :: MSB03
 !> msf03=10
@@ -21888,7 +21888,7 @@
 
 !> planck fraction mapping level : p = 473.4280 mb, t = 259.83 k
       real (kind=kind_phys), public :: fracrefa(NG06)
-      
+
 !>  the array selfref contains the coefficient of the water vapor
 !!  self-continuum (including the energy term).  the first index
 !!  refers to temperature in 7.2 degree increments.  for instance,
@@ -28248,7 +28248,7 @@
       integer, public :: MFR10
       parameter (MSA10=65, MSB10=235, MSF10=10, MFR10=4)
 
-      
+
 !>  the array absa(NG10,65) = ka(NG10,5,13) contains absorption coefs
 !!  at the NG10=6 chosen g-values for a range of pressure levels>~100mb
 !!  and temperatures.  the first index in the array, jt, which runs from

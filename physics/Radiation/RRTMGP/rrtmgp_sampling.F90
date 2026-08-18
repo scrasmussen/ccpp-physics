@@ -38,7 +38,7 @@ contains
     logical, dimension(:,:,:),      intent(in   ) :: cloud_mask     ! Dimensions ncol,nlay,ngpt
     logical,                        intent(in   ) :: do_twostream   ! Do two-stream?
     class(ty_optical_props_arry),   intent(in   ) :: clouds         ! Defined by band
- 
+
  	! Outputs
     class(ty_optical_props_arry),   intent(inout) :: clouds_sampled ! Defined by g-point
     character(len=128)                            :: error_msg
@@ -46,7 +46,7 @@ contains
 	! Local variables
     integer :: ncol,nlay,nbnd,ngpt
     integer :: imom
-    
+
     error_msg = ""
 
     ! Array extents
@@ -86,7 +86,7 @@ contains
     ! Inputs (optional)
     real(wp), dimension(:,:),    intent(in ), optional :: overlap_param ! ncol,nlay-1
     real(wp), dimension(:,:,:),  intent(in ), optional :: randoms2      ! ngpt,nlay,ncol
-    
+
     ! Local variables
     integer                              :: ncol, nlay, ngpt, icol, ilay, igpt
     integer                              :: cloud_lay_fst, cloud_lay_lst
@@ -101,13 +101,13 @@ contains
     ncol = size(randoms, 3)
     nlay = size(randoms, 2)
     ngpt = size(randoms, 1)
-    
+
     ! Using cloud-overlap parameter (alpha)?
     if (present(overlap_param)) l_use_overlap_param = .true.
-    
+
     ! Using a second RNG?
     if (present(randoms2)) l_use_second_rng = .true.
-    
+
     ! Construct the cloud mask for each column
     do icol = 1, ncol
        cloud_mask_layer(1:nlay) = cloud_frac(icol,1:nlay) > 0._wp
@@ -118,7 +118,7 @@ contains
        cloud_lay_fst = findloc(cloud_mask_layer, .true., dim=1)
        cloud_lay_lst = findloc(cloud_mask_layer, .true., dim=1, back = .true.)
        cloud_mask(icol,1:cloud_lay_fst,1:ngpt) = .false.
-       
+
        ilay = cloud_lay_fst
        local_rands(1:ngpt) = randoms(1:ngpt,cloud_lay_fst,icol)
        cloud_mask(icol,ilay,1:ngpt) = local_rands(1:ngpt) > (1._wp - cloud_frac(icol,ilay))
@@ -159,7 +159,7 @@ contains
           ! Exponential-decorrelation overlap
           !   new  random deviates if the adjacent layer isn't cloudy
           !   correlated  deviates if the adjacent layer is    cloudy and decorrelation-length
-          ! ################################################################################		
+          ! ################################################################################
           if (l_use_overlap_param .and. l_use_second_rng) then
              where(randoms2(1:nGpt,iLay,iCol) .le. overlap_param(iCol,iLay-1))
                 cloud_mask(iCol,iLay,1:nGpt) = randoms(1:ngpt,iLay-1,iCol) > (1._wp - cloud_frac(iCol,iLay))
@@ -168,11 +168,11 @@ contains
              end where
           endif 	! END COND: Exponential decorrelation-length
        end do    ! END LOOP: Layers
-       
-       ! Set cloud-mask in layer below clouds to false      
+
+       ! Set cloud-mask in layer below clouds to false
        cloud_mask(icol,cloud_lay_lst+1:nlay, 1:ngpt) = .false.
     end do		! END LOOP: Columns
-    
+
   end subroutine sampled_mask
 
 !> Apply a true/false cloud mask to a homogeneous field

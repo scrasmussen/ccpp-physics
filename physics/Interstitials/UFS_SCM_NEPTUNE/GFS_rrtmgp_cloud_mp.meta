@@ -36,7 +36,7 @@
   long_name = number of cloud condensate types
   units = count
   dimensions = ()
-  type = integer  
+  type = integer
   intent = in
 [icloud]
   standard_name = control_for_cloud_area_fraction_option
@@ -85,7 +85,7 @@
   long_name = tracer index for cloud amount integer
   units = index
   dimensions = ()
-  type = integer  
+  type = integer
   intent = in
 [i_cldliq_nc]
   standard_name = index_of_mass_number_concentration_of_cloud_droplets_in_tracer_concentration_array
@@ -127,7 +127,7 @@
   long_name = flag for cloud effective radii calculations in GFDL microphysics
   units = flag
   dimensions = ()
-  type = logical  
+  type = logical
   intent = in
 [kdt]
   standard_name = index_of_timestep
@@ -355,7 +355,7 @@
   units = um
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys  
+  kind = kind_phys
   intent = inout
   optional = True
 [tracer]

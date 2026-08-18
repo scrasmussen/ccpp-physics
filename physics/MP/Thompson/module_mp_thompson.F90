@@ -100,7 +100,7 @@ module module_mp_thompson
    real(wp)            :: ssati_min = 0.15
    real(wp)            :: Nt_i_max = 4999.e3_dp
    real(wp)            :: rr_min = 1000.0
-   
+
 !..Declaration of constants for assumed CCN/IN aerosols when none in
 !.. the input data.  Look inside the init routine for modifications
 !.. due to surface land-sea points or vegetation characteristics.
@@ -461,20 +461,20 @@ module module_mp_thompson
          logical:: micro_init
          real(wp) :: stime, etime
          logical, parameter :: precomputed_tables = .FALSE.
-         
+
 ! Set module derived constants
          am_r = PI*rho_w/6.0
          am_g = PI*rho_g/6.0
          am_i = PI*rho_i/6.0
-         
+
          ar_volume = 4./3.*PI*(2.5e-6)**3  !< assume radius of 0.025 micrometer, 2.5e-6 cm
-         
+
          rho_not = 101325.0 / (R*298.0)
-         
+
          oRv = 1./Rv
-         
+
          ma_w = M_w / N_avo
-         
+
          lsub = lvap0 + lfus
          olfus = 1./lfus
 
@@ -920,7 +920,7 @@ module module_mp_thompson
          call table_ccnAct(errmsg,errflg)
          if (.not. errflg==0) return
 
-!>  - Call table_efrw() and table_efsw() to creat collision efficiency table 
+!>  - Call table_efrw() and table_efsw() to creat collision efficiency table
 !! between rain/snow and cloud water
          if (mpirank==mpiroot) write(*,*) '  creating qc collision eff tables'
          call table_Efrw
@@ -1094,7 +1094,7 @@ module module_mp_thompson
          integer, intent(in) :: decfl
          ! To support subcycling: current step and maximum number of steps
          integer, intent (in) :: istep, nsteps
-         logical, intent (in) :: fullradar_diag 
+         logical, intent (in) :: fullradar_diag
          ! Extended diagnostics, array pointers only associated if ext_diag flag is .true.
          logical, intent (in) :: ext_diag
          logical, optional, intent(in):: aero_ind_fdb
@@ -1169,7 +1169,7 @@ module module_mp_thompson
          ! No need to test for every subcycling step
          test_only_once: if (first_time_step .and. istep==1) then
             ! Activate this code when removing the guard above
-      
+
             if ( (present(tt) .and. (present(th) .or. present(pii))) .or. &
                (.not.present(tt) .and. .not.(present(th) .and. present(pii))) ) then
                if (present(errmsg) .and. present(errflg)) then
@@ -1181,7 +1181,7 @@ module module_mp_thompson
                   stop
                end if
             end if
-   
+
             if (is_aerosol_aware .and. (.not.present(nc)     .or. &
                                        .not.present(nwfa)   .or. &
                                        .not.present(nifa)   .or. &
@@ -1470,7 +1470,7 @@ module module_mp_thompson
                      rainprod1d, evapprod1d, &
 #endif
                            rand1, rand2, rand3, &
-                           kts, kte, dt, i, j, ext_diag,                    & 
+                           kts, kte, dt, i, j, ext_diag,                    &
                            sedi_semi, decfl,                                &
                            !vtsk1, txri1, txrc1,                            &
                            prw_vcdc1, prw_vcde1,                            &
@@ -1645,7 +1645,7 @@ module module_mp_thompson
                      !txrc(i,k,j)       = txrc(i,k,j)       + txrc1(k)
                      prw_vcdc(i,k,j)   = prw_vcdc(i,k,j)   + prw_vcdc1(k)
                      prw_vcde(i,k,j)   = prw_vcde(i,k,j)   + prw_vcde1(k)
-                     tpri_inu(i,k,j)   = tpri_inu(i,k,j)   + tpri_inu1(k) 
+                     tpri_inu(i,k,j)   = tpri_inu(i,k,j)   + tpri_inu1(k)
                      tpri_ide_d(i,k,j) = tpri_ide_d(i,k,j) + tpri_ide1_d(k)
                      tpri_ide_s(i,k,j) = tpri_ide_s(i,k,j) + tpri_ide1_s(k)
                      tprs_ide(i,k,j)   = tprs_ide(i,k,j)   + tprs_ide1(k)
@@ -1670,12 +1670,12 @@ module module_mp_thompson
                      tprr_rcg(i,k,j)   = tprr_rcg(i,k,j)   + tprr_rcg1(k)
                      tprr_rcs(i,k,j)   = tprr_rcs(i,k,j)   + tprr_rcs1(k)
                      tprv_rev(i,k,j)   = tprv_rev(i,k,j)   + tprv_rev1(k)
-                     tten3(i,k,j)      = tten3(i,k,j)      + tten1(k) 
+                     tten3(i,k,j)      = tten3(i,k,j)      + tten1(k)
                      qvten3(i,k,j)     = qvten3(i,k,j)     + qvten1(k)
                      qrten3(i,k,j)     = qrten3(i,k,j)     + qrten1(k)
                      qsten3(i,k,j)     = qsten3(i,k,j)     + qsten1(k)
                      qgten3(i,k,j)     = qgten3(i,k,j)     + qgten1(k)
-                     qiten3(i,k,j)     = qiten3(i,k,j)     + qiten1(k) 
+                     qiten3(i,k,j)     = qiten3(i,k,j)     + qiten1(k)
                      niten3(i,k,j)     = niten3(i,k,j)     + niten1(k)
                      nrten3(i,k,j)     = nrten3(i,k,j)     + nrten1(k)
                      ncten3(i,k,j)     = ncten3(i,k,j)     + ncten1(k)
@@ -1695,7 +1695,7 @@ module module_mp_thompson
                   IF ( PRESENT (graupelncv) ) THEN
                      GRAUPELNCV(i,j) = GRAUPELNC(i,j)
                   ENDIF
-               endif 
+               endif
 
          ! Diagnostic calculations only for last step
          ! if Thompson MP is called multiple times
@@ -1770,7 +1770,7 @@ module module_mp_thompson
             pfils(i,k,j) = pfils(i,k,j)/dt_in
             pflls(i,k,j) = pflls(i,k,j)/dt_in
           enddo
-        enddo 
+        enddo
       enddo
 
       ! These are always allocated
@@ -1891,7 +1891,7 @@ module module_mp_thompson
                         kts, kte, dt, ii, jj,                            &
                         ! Extended diagnostics, most arrays only
                         ! allocated if ext_diag flag is .true.
-                        ext_diag,                                        & 
+                        ext_diag,                                        &
                         sedi_semi, decfl,                                &
                         !vtsk1, txri1, txrc1,                            &
                         prw_vcdc1, prw_vcde1,                            &
@@ -1985,7 +1985,7 @@ module module_mp_thompson
 
       real(dp), parameter:: zeroD0 = 0.0
       real(wp) :: dtcfl, rainsfc, graulsfc
-      integer :: niter 
+      integer :: niter
 
       real(wp), dimension(kts:kte) :: temp, pres, qv, pfll, pfil, pdummy
       real(wp), dimension(kts:kte) :: rc, ri, rr, rs, rg, ni, nr, nc, nwfa, nifa
@@ -2003,7 +2003,7 @@ module module_mp_thompson
 
       real(wp), dimension(kts:kte) :: sed_r, sed_s, sed_g, sed_i, sed_n,sed_c
 
-      real(wp) :: rgvm, delta_tp, orho, lfus2, orhodt 
+      real(wp) :: rgvm, delta_tp, orho, lfus2, orhodt
       real(wp), dimension(5):: onstep
       real(dp) :: N0_exp, N0_min, lam_exp, lamc, lamr, lamg
       real(dp) :: lami, ilami, ilamc
@@ -2574,7 +2574,7 @@ module module_mp_thompson
                            *((lamr+fv_r)**(-cre(9)))
             pnd_rcd(k) = min(real(nifa(k)*odts, kind=dp), pnd_rcd(k))
          endif
-      
+
       enddo
 
 !+---+-----------------------------------------------------------------+
@@ -2957,7 +2957,7 @@ module module_mp_thompson
 
 !>  - Freezing of aqueous aerosols based on Koop et al (2001, Nature)
                xni = smo0(k)+ni(k) + (pni_rfz(k)+pni_wfz(k)+pni_inu(k))*dtsave
-               if ((is_aerosol_aware .or. merra2_aerosol_aware) .AND. homogIce .AND. (xni.le.Nt_i_max)    & 
+               if ((is_aerosol_aware .or. merra2_aerosol_aware) .AND. homogIce .AND. (xni.le.Nt_i_max)    &
                               .AND.(temp(k).lt.238).AND.(ssati(k).ge.0.4) ) then
                   xnc = iceKoop(temp(k),qv(k),qvs(k),nwfa(k), dtsave)
                   pni_iha(k) = xnc*odts
@@ -3045,7 +3045,7 @@ module module_mp_thompson
                   prg_ihm(k) = prg_gcw(k)/(prs_scw(k)+prg_gcw(k)) &
                                  * pri_ihm(k)
                endif
-         
+
             else
 
 !>  - Melt snow and graupel and enhance from collisions with liquid.
@@ -3292,7 +3292,7 @@ module module_mp_thompson
                lami = cie(2)/5.E-6
                xni = min(Nt_i_max, cig(1)*oig2*xri/am_i*lami**bm_i)
                niten(k) = (xni-ni1d(k)*rho(k))*odts*orho
-            elseif (xDi.gt. 300.E-6) then 
+            elseif (xDi.gt. 300.E-6) then
                lami = cie(2)/300.E-6
                xni = cig(1)*oig2*xri/am_i*lami**bm_i
                niten(k) = (xni-ni1d(k)*rho(k))*odts*orho
@@ -3408,7 +3408,7 @@ module module_mp_thompson
          if ((qc1d(k) + qcten(k)*DT) .gt. R1) then
             rc(k) = (qc1d(k) + qcten(k)*DT)*rho(k)
             nc(k) = max(2., min((nc1d(k)+ncten(k)*DT)*rho(k), Nt_c_max))
-            if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then 
+            if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then
                if(lsml == 1) then
                   nc(k) = Nt_c_l
                else
@@ -3585,7 +3585,7 @@ module module_mp_thompson
 
    !+---+-----------------------------------------------------------------+ !  EVAPORATION
                elseif (clap .lt. -eps .AND. ssatw(k).lt.-1.E-6 .AND.     &
-                        is_aerosol_aware) then  
+                        is_aerosol_aware) then
                   tempc = temp(k) - 273.15
                   otemp = 1./temp(k)
                   rvs = rho(k)*qvs(k)
@@ -3642,13 +3642,13 @@ module module_mp_thompson
             qvten(k) = qvten(k) - prw_vcd(k)
             qcten(k) = qcten(k) + prw_vcd(k)
             ncten(k) = ncten(k) + pnc_wcd(k)
-            if (is_aerosol_aware)                                            &   
+            if (is_aerosol_aware)                                            &
                nwfaten(k) = nwfaten(k) - pnc_wcd(k)
             tten(k) = tten(k) + lvap(k)*ocp(k)*prw_vcd(k)*(1-IFDRY)
             rc(k) = max(R1, (qc1d(k) + DT*qcten(k))*rho(k))
             if (rc(k).eq.R1) L_qc(k) = .false.
             nc(k) = max(2., min((nc1d(k)+ncten(k)*DT)*rho(k), Nt_c_max))
-            if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then 
+            if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then
                if(lsml == 1) then
                   nc(k) = Nt_c_l
                else
@@ -3994,7 +3994,7 @@ module module_mp_thompson
 
                if (rr(kts).gt.R1*rr_min) then
                   pptrain = pptrain + sed_r(kts)*DT*onstep(1)
-               endif 
+               endif
             enddo
          else !if(.not. sedi_semi)
             niter = 1
@@ -4089,7 +4089,7 @@ module module_mp_thompson
 
             if (ri(kts).gt.R1*rr_min) then
                pptice = pptice + sed_i(kts)*DT*onstep(2)
-            endif 
+            endif
          enddo
       endif
 
@@ -4119,7 +4119,7 @@ module module_mp_thompson
 
             if (rs(kts).gt.R1*rr_min) then
                pptsnow = pptsnow + sed_s(kts)*DT*onstep(3)
-            endif 
+            endif
          enddo
       endif
 
@@ -4127,7 +4127,7 @@ module module_mp_thompson
 
       if (ANY(L_qg .eqv. .true.)) then
          nstep = nint(1./onstep(4))
-         if(.not. sedi_semi) then 
+         if(.not. sedi_semi) then
             do n = 1, nstep
                do k = kte, kts, -1
                   sed_g(k) = vtgk(k)*rg(k)
@@ -4152,7 +4152,7 @@ module module_mp_thompson
                   pptgraul = pptgraul + sed_g(kts)*DT*onstep(4)
                endif
             enddo
-         else ! if(.not. sedi_semi) then 
+         else ! if(.not. sedi_semi) then
             niter = 1
             dtcfl = dt
             niter = int(nstep/max(decfl,1)) + 1
@@ -4190,7 +4190,7 @@ module module_mp_thompson
                enddo
             enddo
          endif ! if(.not. sedi_semi) then
-      endif 
+      endif
 
 !+---+-----------------------------------------------------------------+
 !> - Instantly melt any cloud ice into cloud water if above 0C and
@@ -4272,7 +4272,7 @@ module module_mp_thompson
             xDi = (bm_i + mu_i + 1.) * ilami
             if (xDi.lt. 5.E-6) then
                lami = cie(2)/5.E-6
-            elseif (xDi.gt. 300.E-6) then 
+            elseif (xDi.gt. 300.E-6) then
                lami = cie(2)/300.E-6
             endif
             ni1d(k) = min(cig(1)*oig2*qi1d(k)/am_i*lami**bm_i,           &
@@ -4364,11 +4364,11 @@ module module_mp_thompson
             if(temp(k).ge.T_0)then
                tprr_rcg1(k) = -prr_rcg(k)*lfus*ocp(k)*orho * (1-IFDRY)*DT
             endif
-         
+
             if(temp(k).ge.T_0)then
                tprr_rcs1(k) = -prr_rcs(k)*lfus*ocp(k)*orho * (1-IFDRY)*DT
             endif
-         
+
             tprv_rev1(k) = lvap(k)*ocp(k)*prv_rev(k)*(1-IFDRY)*DT
             tten1(k) = tten(k)*DT
             qvten1(k) = qvten(k)*DT
@@ -4382,7 +4382,7 @@ module module_mp_thompson
             qcten1(k) = qcten(k)*DT
          enddo
       endif calculate_extended_diagnostics
-   
+
    end subroutine mp_thompson
 !>@}
 
@@ -5410,7 +5410,7 @@ module module_mp_thompson
       else if (lsm_in .eq. 0) then  ! water
          lower_lim_nuc_frac = 0.15
       else
-         lower_lim_nuc_frac = 0.15  ! catch-all for anything else	
+         lower_lim_nuc_frac = 0.15  ! catch-all for anything else
       endif
 
       A = tnccn_act(i-1,j-1,k,l,m)
@@ -5428,7 +5428,7 @@ module module_mp_thompson
 
       fraction = (1.0-t)*(1.0-u)*A + t*(1.0-u)*B + t*u*C + (1.0-t)*u*D
       fraction = max(fraction, lower_lim_nuc_frac)
-      
+
 !     if (NCCN*fraction .gt. 0.75*Nt_c_max) then
 !        write(*,*) ' DEBUG-GT ', n_local, w_local, Tt, i, j, k
 !     endif
@@ -5821,13 +5821,13 @@ module module_mp_thompson
          rho(k) = RoverRv*p1d(k) / (R*t1d(k)*(qv1d(k)+RoverRv))
          rc(k) = max(R1, qc1d(k)*rho(k))
          nc(k) = max(2., min(nc1d(k)*rho(k), Nt_c_max))
-         if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then 
+         if (.NOT. (is_aerosol_aware .or. merra2_aerosol_aware)) then
              if( lsml == 1) then
                 nc(k) = Nt_c_l
              else
                 nc(k) = Nt_c_o
              endif
-         endif 
+         endif
          if (rc(k).gt.R1 .and. nc(k).gt.R2) has_qc = .true.
          ri(k) = max(R1, qi1d(k)*rho(k))
          ni(k) = max(R2, ni1d(k)*rho(k))
@@ -6226,7 +6226,7 @@ module module_mp_thompson
 !> This routine is a semi-Lagrangian forward advection for hydrometeors
 !! with mass conservation and positive definite advection
 !! 2nd order interpolation with monotonic piecewise parabolic method is used.
-!! This routine is under assumption of decfl < 1 for semi_Lagrangian 
+!! This routine is under assumption of decfl < 1 for semi_Lagrangian
 !!(Juang and Hong, 2010 \cite Henry_Juang_2010).
    SUBROUTINE semi_lagrange_sedim(km,dzl,wwl,rql,precip,pfsan,dt,R1)
 !-------------------------------------------------------------------
@@ -6234,7 +6234,7 @@ module module_mp_thompson
 ! dzl    depth of model layer in meter
 ! wwl    terminal velocity at model layer m/s
 ! rql    dry air density*mixing ratio
-! precip precipitation at surface 
+! precip precipitation at surface
 ! dt     time step
 !
 ! author: hann-ming henry juang <henry.juang@noaa.gov>
@@ -6268,10 +6268,10 @@ module module_mp_thompson
       dz(:) = dzl(:)
       ww(:) = wwl(:)
       do k = 1,km
-        if(rql(k).gt.R1) then 
-          qq(k) = rql(k) 
-        else 
-          ww(k) = 0.0 
+        if(rql(k).gt.R1) then
+          qq(k) = rql(k)
+        else
+          ww(k) = 0.0
         endif
         pfsan(k) = 0.0
         net_flx(k) = 0.0
@@ -6282,7 +6282,7 @@ module module_mp_thompson
         allold = allold + qq(k)
       enddo
       if(allold.le.0.0) then
-         return 
+         return
       endif
 !
 ! compute interface values
@@ -6460,8 +6460,8 @@ module module_mp_thompson
 !! @brief Calculates graupel size distribution parameters
 !!
 !! Calculates graupel intercept and slope parameters for
-!! for a vertical column 
-!!  
+!! for a vertical column
+!!
 !! @param[in]    kts     integer start index for vertical column
 !! @param[in]    kte     integer end index for vertical column
 !! @param[in]    rand1   real random number for stochastic physics
@@ -6498,8 +6498,8 @@ module module_mp_thompson
 !! @brief Calculates graupel/hail maximum diameter
 !!
 !! Calculates graupel/hail maximum diameter (currently the 99th percentile of mass distribtuion)
-!! for a vertical column 
-!!  
+!! for a vertical column
+!!
 !! @param[in]    kts             integer start index for vertical column
 !! @param[in]    kte             integer end index for vertical column
 !! @param[in]    qg              real array, size(kts:kte) for graupel mass mixing ratio [kg kg^-1]
@@ -6510,7 +6510,7 @@ module module_mp_thompson
    function hail_mass_99th_percentile(kts, kte, qg, temperature, pressure, qv) result(max_hail_diam)
 
       implicit none
-      
+
       integer, intent(in) :: kts, kte
       real(wp), intent(in) :: qg(:), temperature(:), pressure(:), qv(:)
       real(wp) :: max_hail_diam
@@ -6528,14 +6528,14 @@ module module_mp_thompson
             rg(k) = qg(k)*rho(k)
          else
             rg(k) = R1
-         endif 
-      enddo 
+         endif
+      enddo
 
       call graupel_psd_parameters(kts, kte, random_number, rg, ilamg, N0_g)
 
       where(rg .gt. 1.e-9) max_hail_column = 10.05 * ilamg
       max_hail_diam = max_hail_column(kts)
-      
+
    end function hail_mass_99th_percentile
 
 !+---+-----------------------------------------------------------------+

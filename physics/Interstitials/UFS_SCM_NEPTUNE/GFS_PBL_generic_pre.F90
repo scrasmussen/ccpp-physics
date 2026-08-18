@@ -18,7 +18,7 @@
         imp_physics_nssl, ltaerosol, mraerosol, nssl_ccn_on, nssl_hail_on, nssl_3moment, &
         hybedmf, do_shoc, satmedmf, qgrs, vdftra,                                        &
         ugrs, vgrs, tgrs, errmsg, errflg)
-        
+
       use machine,                only : kind_phys
       use GFS_PBL_generic_common, only : set_aerosol_tracer_index
 
@@ -85,7 +85,7 @@
             enddo
           enddo
           rtg_ozone_index = 6
-        
+
         elseif (imp_physics == imp_physics_thompson) then
   ! Thompson
           if(ltaerosol) then
@@ -155,7 +155,7 @@
            enddo
            rtg_ozone_index = 9
            n = 10
-           
+
            if (ltaerosol) then
               do k=1,levs
                  do i=1,im
@@ -169,7 +169,7 @@
 
            if (lthailaware) then
               do k=1,levs
-                 do i=1,im              
+                 do i=1,im
                     vdftra(i,k,n) = qgrs(i,k,ntgnc)
                     vdftra(i,k,n+1) = qgrs(i,k,ntgv)
                  enddo
@@ -260,7 +260,7 @@
                 ENDIF
               enddo
             enddo
-            
+
             ELSE
             ! no hail
             do k=1,levs
@@ -290,7 +290,7 @@
                 ENDIF
               enddo
             enddo
-            
+
             ENDIF
 
 

@@ -39,14 +39,14 @@ CONTAINS
    real(kind_phys), INTENT(IN) ::  dtstep, gmt
    real(kind_phys), INTENT(IN) ::  time_int, pi, ebb_min       ! RAR: time in seconds since start of simulation
    INTEGER, DIMENSION(ims:ime,jms:jme), INTENT(IN) :: fire_type
-   integer, INTENT(IN) ::  ebb_dcycle     ! RAR: this is going to be namelist dependent, ebb_dcycle=means 
+   integer, INTENT(IN) ::  ebb_dcycle     ! RAR: this is going to be namelist dependent, ebb_dcycle=means
    real(kind_phys), DIMENSION(ims:ime,jms:jme), INTENT(INOUT) :: fire_hist
-!>--local 
+!>--local
    logical, intent(in)  :: add_fire_moist_flux
    integer :: i,j,k,n,m
    integer :: icall=0
    real(kind_phys) :: conv_rho, conv, dm_smoke, dc_hwp, dc_gp, dc_fn !daero_num_wfa, daero_num_ifa !, lu_sum1_5, lu_sum12_14
-   
+
    INTEGER, PARAMETER :: kfire_max=51    ! max vertical level for BB plume rise
    real(kind_phys), PARAMETER :: ef_h2o=324.22  ! Emission factor for water vapor
    ! Constants for the fire diurnal cycle calculation ! JLS - needs to be
@@ -72,7 +72,7 @@ CONTAINS
     coef_con=1._kind_phys/((2._kind_phys*pi)**0.5)
 
     if (ebb_dcycle==2) then
-    
+
      do j=jts,jte
        do i=its,ite
         fire_age= MAX(0.01_kind_phys,time_int/3600. + (fire_end_hr(i,j)-2.0))  !One hour delay is due to the latency of the RAVE files, hours; one more hour subtracted to have fire_end_hr in the range of 0-24 instead of 0-25
@@ -89,17 +89,17 @@ CONTAINS
                WRITE(6,*) 'coef_bb_dc(i,j) ',coef_bb_dc(i,j)
              END IF
 
-          CASE (2)    ! Savanna and grassland fires, or fires in the eastern US 
+          CASE (2)    ! Savanna and grassland fires, or fires in the eastern US
             !  coef_bb_dc(i,j) = coef_con*1._kind_phys/(sigma_fire_dur(4) *fire_age) *                          &
             !                  exp(- ( log(fire_age) - avg_fire_dur(4))**2 /(2._kind_phys*sigma_fire_dur(4)**2 ))
-            coef_bb_dc(i,j)= C2/(sigmx2* fire_age)* exp(- (log(fire_age) - avgx2)**2 /(2.*sigmx2**2 ) ) 
+            coef_bb_dc(i,j)= C2/(sigmx2* fire_age)* exp(- (log(fire_age) - avgx2)**2 /(2.*sigmx2**2 ) )
 
               IF ( dbg_opt .AND. time_int<5000.) then
                 WRITE(6,*) 'i,j,peak_hr(i,j) ',i,j,peak_hr(i,j)
                 WRITE(6,*) 'coef_bb_dc(i,j) ',coef_bb_dc(i,j)
               END IF
 
-          CASE (3,4)    ! wildfires 
+          CASE (3,4)    ! wildfires
              IF (swdown(i,j)<.1 .AND. fire_age> 12. .AND. fire_hist(i,j)>0.75) THEN
                  fire_hist(i,j)= 0.75_kind_phys
              ENDIF
@@ -109,19 +109,19 @@ CONTAINS
              IF (swdown(i,j)<.1 .AND. fire_age> 48. .AND. fire_hist(i,j)>0.25) THEN
                  fire_hist(i,j)= 0.25_kind_phys
              ENDIF
-   
+
              ! this is based on hwp, hourly or instantenous TBD
              dc_hwp= hwp(i,j)/ MAX(10._kind_phys,hwp_prevd(i,j))
              dc_hwp= MAX(0._kind_phys,dc_hwp)
              dc_hwp= MIN(20._kind_phys,dc_hwp)
-   
+
              ! RAR: Gaussian profile for wildfires, to be used later
              !dt1= abs(timeq - peak_hr(i,j))
              !dt2= timeq_max - peak_hr(i,j) + timeq   ! peak hour is always <86400.
              !dtm= MIN(dt1,dt2)
              !dc_gp = rinti*( ax2 * exp(- dtm**2/(2._kind_phys*cx2**2) ) + const2 - coef2*timeq )
              !dc_gp = MAX(0._kind_phys,dc_gp)
-   
+
              !dc_fn = MIN(dc_hwp/dc_gp,3._kind_phys)
              coef_bb_dc(i,j) = sc_factor* fire_hist(i,j)* dc_hwp     ! RAR: scaling factor is applied to the forest fires only, except the eastern US
 
@@ -172,4 +172,3 @@ CONTAINS
     END subroutine add_emis_burn
 
 END module module_add_emiss_burn
-

@@ -10,7 +10,7 @@
 
       use canopy_mask_mod !Feb13: , only : canopy_mask_init, canopy_mask_run
       use canopy_levs_mod !Feb13: , only : canopy_levs_init, canopy_levs_run
-      use canopy_transfer_mod !Feb13: , only : canopy_transfer_init, 
+      use canopy_transfer_mod !Feb13: , only : canopy_transfer_init,
 !Feb13:     &                                canopy_transfer_run
 
       contains
@@ -53,7 +53,7 @@
 !!
       subroutine canopy_driver_run(im,km,ntrac,ntcw,ntrw,
      &     ntiw,ntke,ntchm,ntchs,ntche, ntoz,nto3,
-     &     ndtend,                                                        ! in 
+     &     ndtend,                                                        ! in
      &     con_rocp,
      &     grav,pi,rd,cp,rv,hvap,hfus,fv,eps,epsm1,
 !The following three variables are for SA-3D-TKE
@@ -64,7 +64,7 @@
      &     psk,rbsoil,zorl,u10m,v10m,t2m, q2m,fm,fh,
      &     tsea,heat,evap,stress,spd1,
      &     kpbl,                                                          ! in: kpbl
-     &     pgr, 
+     &     pgr,
      &     prsi,del,prsl,prslk,phii,phil,delt,tte_edmf,
      &     dspheat,                                                       ! in
      &     dusfc,dvsfc,dtsfc,dqsfc,hpbl,                                  ! in: dusfc,dvsfc,dtsfc,dqsfc,hpbl
@@ -86,7 +86,7 @@
 !----------------------------------------------------------------------
       integer, intent(in)  :: im, km,
      &                        ntrac, ntcw, ntrw, ntiw, ntke, ntqv,
-     &                        ntchm,ntchs,ntche, ntoz,nto3, ndtend 
+     &                        ntchm,ntchs,ntche, ntoz,nto3, ndtend
       integer, intent(in)  :: sfc_rlm
       integer, intent(in)  :: tc_pbl
       integer, intent(in)  :: use_lpt
@@ -96,7 +96,7 @@
 !
       real(kind=kind_phys), intent(in) :: grav,pi,rd,cp,rv,hvap,hfus,fv,
      &                                    eps,epsm1,
-     &                                    con_rocp 
+     &                                    con_rocp
       real(kind=kind_phys), intent(in) :: delt, xkzm_m, xkzm_h, xkzm_s
       real(kind=kind_phys), intent(in) :: dspfac, bl_upfr, bl_dnfr
       real(kind=kind_phys), intent(in) :: rlmx, elmx
@@ -125,11 +125,11 @@
      &                     psk(:),       rbsoil(:),
      &                     zorl(:),      tsea(:),
      &                     u10m(:),      v10m(:),
-     &                     t2m(:),       q2m(:), 
+     &                     t2m(:),       q2m(:),
      &                     fm(:),        fh(:),
      &                     evap(:),      heat(:),
      &                     stress(:),    spd1(:),
-     &                     pgr(:), 
+     &                     pgr(:),
      &                     prsi(:,:), del(:,:),
      &                     prsl(:,:),   prslk(:,:),
      &                     phii(:,:), phil(:,:)
@@ -177,8 +177,8 @@
      &                     phih(im),  phim(im),
      &                     phims(im), prn(im,km-1),
      &                     rbdn(im),  rbup(im),    thermal(im),
-     &                     ustar(im), wstar(im),   
-     &                     ust3(im),  wst3(im), 
+     &                     ustar(im), wstar(im),
+     &                     ust3(im),  wst3(im),
      &                     z0(im),    crb(im),     tkemean(im),
      &                     hgamt(im), hgamq(im),
      &                     wscale(im),vpert(im),
@@ -194,8 +194,8 @@
 !
       real(kind=kind_phys) elm(im,km),   ele(im,km),
      &                     ckz(im,km),   chz(im,km),
-     &                     diss(im,km-1),prod(im,km-1), 
-     &                     bf(im,km-1),  shr2(im,km-1), 
+     &                     diss(im,km-1),prod(im,km-1),
+     &                     bf(im,km-1),  shr2(im,km-1),
      &                     xlamue(im,km-1), xlamde(im,km-1),
      &                     gotvx(im,km), rlam(im,km-1)
 !
@@ -243,7 +243,7 @@
 
       real(kind=kind_phys) q1_new(im,km,ntrac-1)
 
-      integer kount 
+      integer kount
 
 !PCC_CANOPY------------------------------------
       integer COUNTCAN,KCAN
@@ -267,10 +267,10 @@
      &                     duv_can(im,km),
      &                     tdt_can(im,km), rtg_can(im,km,ntrac)
 
-      real(kind=kind_phys) :: 
-     &                        dum3d_h (im, km)  , dum3d_e(im, km), 
+      real(kind=kind_phys) ::
+     &                        dum3d_h (im, km)  , dum3d_e(im, km),
      &                       tkeh_mod (im, km)
- 
+
       real(kind=kind_phys) ::  dtend_can(im, km , ndtend)
 
 ! Out: list sat_canopy call
@@ -280,9 +280,9 @@
 
       integer              ::  kpbl_can(im)
 
-      real(kind=kind_phys) :: 
-     &                   rho1(im,km), 
-     &                   t2  (im,km), 
+      real(kind=kind_phys) ::
+     &                   rho1(im,km),
+     &                   t2  (im,km),
      &                   u2  (im,km), v2(im,km), ws2(im,km),
      &                   rho2(im,km), duv(im,km)
 
@@ -459,7 +459,7 @@
       km1 = km - 1
       kmpbl = km / 2
       kmscu = km / 2
-!>  - Compute physical height of the layer centers and interfaces from 
+!>  - Compute physical height of the layer centers and interfaces from
 !! the geopotential height (\p zi and \p zl)
       do k=1,km
         do i=1,im
@@ -516,7 +516,7 @@
 
         CALL canopy_mask_init( im, km, nkc, nkt,
      &     claie, cfch, cfrt, cclu, cpopu, ! in:
-     &     FRT_MASK,                       ! out 
+     &     FRT_MASK,                       ! out
      &     errmsg, errflg)
 
         if (errflg /= 0) return
@@ -528,7 +528,7 @@
      &       dv, du, tdt, rtg,                    ! in 3D
      &       u1, v1, t1, q1,                      ! in 3D / 4D
      &       rho1, dkt, dku,                      ! in 3D
-!     &       dtend, 
+!     &       dtend,
      &     zmom_can3,   zmid_can3,                !out 3D
      &   sigmom_can3, sigmid_can3,                !out 3D
      &       ZL_CAN3,     ZM_CAN3,                !out 3D ZL=half- and ZM=full-layer height
@@ -564,8 +564,8 @@
 
 
       !PCC_CANOPY------------------------------------
-      kount=0 
-      if (do_canopy .and. cplaqm) then 
+      kount=0
+      if (do_canopy .and. cplaqm) then
 
 ! NB. Call canopy routines after eddy diffusivities are calculated!!!
 
@@ -632,7 +632,7 @@
          if (errflg /= 0) return
 
 ! ================
-! Out: 
+! Out:
 !      T1_CAN3   (:,:,NLAYT)
 !      QV_CAN3   (:,:,NLAYT) Q2m interpolated
 !      PRSI_CAN3 (   NLAYT+1)
@@ -658,7 +658,7 @@
          do i = 1,im
 !           rho1_can_sfc(i) = prsl_can3(i,1)/
 !     &               (rd*t1_can3(i,1)*(1.+fv*max(q1_can3(i,1, ntqv),qmin))) ! ntqv=1
-         enddo 
+         enddo
 
         do k = 1,km ! ntk to do
           do i = 1,im
@@ -677,11 +677,11 @@
 !         q1_can3(:,1:km, ntqv ) = qv_can3(:,1:km)
 
 ! Above canopy layers
-         do k=1,km 
+         do k=1,km
            do i=1,im
              ! kc = 4,5,6.. 67
              kc = nkc + k
-             del_can3  (i,kc) =  prsi_can3(i,kc) - prsi_can3(i,kc+1) 
+             del_can3  (i,kc) =  prsi_can3(i,kc) - prsi_can3(i,kc+1)
 
 ! Exner function canopy layers
 ! !< exner function = (p/p0)**rocp
@@ -700,7 +700,7 @@
 
 ! Non-canopy columns set to del(1)
             ELSE IF (FRT_MASK(i) <=  0.) THEN
-              del_can3(i,kc) = del(i,1) 
+              del_can3(i,kc) = del(i,1)
 
             ENDIF
 
@@ -719,7 +719,7 @@
 ! zi height model layer interfaces
 !  dz_can = zl_can3(i,k+1) - zl_can3(i,k)
 ! so zm(i,k) = zi(i,k+1) = zl_can3(i,k) + dz_can3(i,k)/2
-!      zm (:,k) = zi(:,k+1), so zm_can (i, k) = zi_can3(i,k+1)  (k=1,km) 
+!      zm (:,k) = zi(:,k+1), so zm_can (i, k) = zi_can3(i,k+1)  (k=1,km)
 
 ! In-Canopy layers: kc = 1, 2, 3
          zi_can3(:, 1) = 0.
@@ -828,10 +828,10 @@
 ! Comment out to use 2-m interpolated value from "canopy_levs" qv_can3(:,:)
 !          q1_can3 (:,1:km, ntqv) = qv_can3(:,1:km) ! ntqv=1
 
-! Subset the canopy tracers/arrays for input to "sat_can", since  routine is coded on dim(km) 
+! Subset the canopy tracers/arrays for input to "sat_can", since  routine is coded on dim(km)
          prsi_can  (:,1:km+1) =  prsi_can3 (:,1:km+1)
          prsl_can  (:,1:km)   =  prsl_can3 (:,1:km)
-         prslk_can (:,1:km)   = prslk_can3 (:,1:km) 
+         prslk_can (:,1:km)   = prslk_can3 (:,1:km)
 
       do i = 1,im
       IF (FRT_MASK(i) >  0.) THEN
@@ -936,18 +936,18 @@
      &     dkt_can,dku_can,                                               ! In: canopy inputs
      &     kinver,xkzm_m,xkzm_h,xkzm_s,dspfac,bl_upfr,bl_dnfr,
      &     rlmx,elmx,sfc_rlm,tc_pbl,use_lpt,
-     &     do_canopy, cplaqm,           
+     &     do_canopy, cplaqm,
      &     ntqv, dtend_can, dtidx,index_of_temperature,index_of_x_wind,   !inout: dtend (.ldiag3d.)
      &     index_of_y_wind,index_of_process_pbl,gen_tend,ldiag3d,
-     &     errmsg,errflg) 
+     &     errmsg,errflg)
 
 ! Set non-canopy columns to resolved values
 ! NB. Only vars not ALREADY defined in non-canopy columns
          do i = 1,im
          IF (FRT_MASK(i) <=  0.) THEN
 
-! Non-canopy columns 
-            kpbl_can(i) = kpbl(i) ! kpbl zero before original sat call 
+! Non-canopy columns
+            kpbl_can(i) = kpbl(i) ! kpbl zero before original sat call
             hpbl_can(i) = hpbl(i)
 
 ! Non-canopy columns
@@ -1205,7 +1205,7 @@ c
 ! ================================
 
 
-! 
+!
 ! Canopy columns calculated in "canopy_to_resolved"
 !
 ! Non-Canopy columns filled with resolved values
@@ -1240,7 +1240,7 @@ c
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         do k = 1, km1-1     ! from bottom to top resolved model levels
 
-          kount=0 
+          kount=0
           ZOOOX(:) = 1.
           do i = 1, im
 
@@ -1292,13 +1292,13 @@ c
 
                    kc_can   = kc
                     FZI05    = 1./
-!                             max(zi_can3 (i,kc+1) - 
+!                             max(zi_can3 (i,kc+1) -
 !     &                           zi_can3 (i,kc), epsilon) *
      &                           (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                           (ZI05 - zi_can3 (i,kc))
 
                    TTCORR   = (t2_can3 (i,kc+1) - t2_can3 (i,kc))/
-!     &                        max(zi_can3 (i,kc+1) - 
+!     &                        max(zi_can3 (i,kc+1) -
 !     &                            zi_can3 (i,kc), epsilon) *
      &                        (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                        (ZI05    - zi_can3 (i,kc))
@@ -1306,21 +1306,21 @@ c
 ! U-Wind/V-Wind after diffusion on canopy layers
                    UUCAN  =  u2_can3 (i,kc  ) +
      &                      (u2_can3 (i,kc+1) - u2_can3 (i,kc))/
-!     &                      max(zi_can3 (i,kc+1) - 
+!     &                      max(zi_can3 (i,kc+1) -
 !     &                          zi_can3 (i,kc), epsilon) *
      &                      (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                      (ZI05      - zi_can3 (i,kc))
 
                    VVCAN  =  v2_can3 (i,kc  ) +
      &                      (v2_can3 (i,kc+1) - v2_can3 (i,kc))/
-!     &                      max(zi_can3 (i,kc+1) - 
+!     &                      max(zi_can3 (i,kc+1) -
 !     &                          zi_can3 (i,kc), epsilon) *
      &                      (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                      (ZI05             - zi_can3 (i,kc))
 ! Temperature after diffusion on canopy layers
                    TTCAN  =  t2_can3 (i,kc  ) +
      &                      (t2_can3 (i,kc+1) - t2_can3 (i,kc))/
-!     &                      max(zi_can3 (i,kc+1) - 
+!     &                      max(zi_can3 (i,kc+1) -
 !     &                          zi_can3 (i,kc), epsilon) *
      &                      (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                      (ZI05      - zi_can3 (i,kc))
@@ -1330,7 +1330,7 @@ c
                    TKECAN =  q2_can3 (i,kc, ntke) +
      &                      (q2_can3 (i,kc+1, ntke) -
      &                       q2_can3 (i,kc  , ntke))/
-!     &                      max(zi_can3 (i,kc+1) - 
+!     &                      max(zi_can3 (i,kc+1) -
 !     &                          zi_can3 (i,kc), epsilon) *
      &                      (zi_can3 (i,kc+1) - zi_can3 (i,kc)) *
      &                      (ZI05      - zi_can3 (i,kc))
@@ -1338,14 +1338,14 @@ c
 ! TKE half layers
                    TKEHCAN =  tkeh_can (i,kc  ) +
      &                      (tkeh_can (i,kc+1) - tkeh_can (i,kc))/
-!     &                      max(zi_can3(i,kc+1) - 
+!     &                      max(zi_can3(i,kc+1) -
 !     &                          zi_can3(i,kc), epsilon) *
      &                      (  zi_can3(i,kc+1) -   zi_can3(i,kc)) *
      &                      (ZI05      -   zi_can3(i,kc))
 
                  END IF !  "zi_can3(kc) < ZI05 <= zi_can3(kc+1)"
 
-!!!!!!!!!!!!!! 
+!!!!!!!!!!!!!!
 ! End steping down in-canopy
 !
                  end do  ! kc = nkt-1, 1, -1         ! from top to bottom combined canopy plus resolved  model layers
@@ -1446,7 +1446,7 @@ c
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Update ALL tracers with in-canopy tendencies (average sub-canopy values )
-! Here just wind components, temperature TKE, and interstitial tracers 
+! Here just wind components, temperature TKE, and interstitial tracers
 ! The chemical tracers are updated below with values from "canopy_to_resolved" transfer
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -1538,7 +1538,7 @@ c
 ! n       = 10  "o3"     GFS_v16  GFDL MP
 ! ...
 ! ntche-1= 196 NTRAC1    GFS_v16  GFDL MP
-! ntche  = 197 "cld_amt" GFS_v16  GFDL MP 
+! ntche  = 197 "cld_amt" GFS_v16  GFDL MP
 ! ntke   = 198 "tke"     GFS_v16  GFDL MP
 ! ---------------------------------------
 ! ntqv    = 1-9  cloud/rain
@@ -1548,7 +1548,7 @@ c
 ! ntchs   = 11  "no"     GFS_v17p8
 ! n       = 12  "o3"     GFS_v17p8
 ! ...
-! ntche-1 = 198 NTRAC1    GFS_v17p8 
+! ntche-1 = 198 NTRAC1    GFS_v17p8
 ! ntke    = 199 "tke"     GFS_v17p8
 ! ---------------------------------------
         DO n =  ntchs-1, ntche-1 ! 10, ntche-1 (same as NTRAC1)

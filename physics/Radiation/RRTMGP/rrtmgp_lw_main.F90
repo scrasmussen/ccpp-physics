@@ -18,7 +18,7 @@ module rrtmgp_lw_main
   use GFS_rrtmgp_pre,         only: iStr_h2o, iStr_co2, iStr_o3, iStr_n2o, iStr_ch4,         &
                                     iStr_o2, iStr_ccl4, iStr_cfc11, iStr_cfc12, iStr_cfc22,  &
                                     eps, oneminus, ftiny
-  use mersenne_twister,       only: random_setseed, random_number, random_stat 
+  use mersenne_twister,       only: random_setseed, random_number, random_stat
   use rrtmgp_sampling,        only: sampled_mask, draw_samples
   use mo_rte_kind,            only: rte_wp => wp
   implicit none
@@ -61,7 +61,7 @@ contains
     integer,          intent(  out) :: &
          errflg                   !< CCPP error code
 
-    ! Initialize CCPP error handling variables 
+    ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
 
@@ -127,7 +127,7 @@ contains
          vmr_ch4,             & ! Molar-mixing ratio methane
          vmr_n2o,             & ! Molar-mixing ratio nitrous oxide
          vmr_co2                ! Molar-mixing ratio carbon dioxide
-    real(kind_phys), dimension(:,:), intent(in) :: &    
+    real(kind_phys), dimension(:,:), intent(in) :: &
          cld_frac,            & ! Cloud-fraction for   stratiform   clouds
          cld_lwp,             & ! Water path for       stratiform   liquid cloud-particles
          cld_reliq,           & ! Effective radius for stratiform   liquid cloud-particles
@@ -139,7 +139,7 @@ contains
          cld_rerain,          & ! Effective radius for              rain   hydrometeors
          precip_frac,         & ! Precipitation fraction (not active, currently precipitation optics uses cloud-fraction)
          cloud_overlap_param    ! Cloud overlap parameter
-    real(kind_phys), dimension(:,:), intent(in), optional :: &         
+    real(kind_phys), dimension(:,:), intent(in), optional :: &
          cld_cnv_lwp,         & ! Water path for       convective   liquid cloud-particles
          cld_cnv_reliq,       & ! Effective radius for convective   liquid cloud-particles
          cld_cnv_iwp,         & ! Water path for       convective   ice    cloud-particles
@@ -165,9 +165,9 @@ contains
          fluxlwDOWN_clrsky,   & ! All-sky flux (W/m2)
          fluxlwUP_radtime,    & ! Copy of fluxes (Used for coupling)
          fluxlwDOWN_radtime     !
-    character(len=*), intent(out) :: & 
+    character(len=*), intent(out) :: &
          errmsg                 ! CCPP error message
-    integer, intent(out) :: & 
+    integer, intent(out) :: &
          errflg                 ! CCPP error flag
 
     ! Local variables
@@ -193,7 +193,7 @@ contains
     type(ty_optical_props_2str) :: lw_optical_props_clouds, lw_optical_props_cloudsByBand,    &
          lw_optical_props_cnvcloudsByBand, lw_optical_props_pblcloudsByBand,                  &
          lw_optical_props_precipByBand
-    type(ty_source_func_lw)     :: sources 
+    type(ty_source_func_lw)     :: sources
 
     ! Initialize CCPP error handling variables
     errmsg = ''
@@ -207,14 +207,14 @@ contains
          present(cld_cnv_iwp) .and. present(cld_cnv_reice)) then
        doGP_sgs_cnv = .true.
     endif
-    
+
     ! Do we have pbl cloud prperties?
     doGP_sgs_pbl = .false.
     if (present(cld_pbl_lwp) .and. present(cld_pbl_reliq) .and. &
          present(cld_pbl_iwp) .and. present(cld_pbl_reice)) then
        doGP_sgs_pbl = .true.
     endif
-    
+
     !
     ! Initialize RRTMGP DDTs (local)
     !
@@ -248,7 +248,7 @@ contains
     !
     ! Loop over all columns...
     !
-    ! ###################################################################################### 
+    ! ######################################################################################
     do iCol=1,nCol,rrtmgp_phys_blksz
        iCol2 = iCol + rrtmgp_phys_blksz - 1
 
@@ -403,7 +403,7 @@ contains
              if (cld_frac(iCol+ix-1,iLay) .gt. eps) then
                 ! Rain optical-depth (No band dependence)
                 tau_rain(ix) = absrain*cld_rwp(iCol+ix-1,iLay)
-                
+
                 ! Snow (+groupel) optical-depth (No band dependence)
                 if (cld_swp(iCol+ix-1,iLay) .gt. 0. .and. cld_resnow(iCol+ix-1,iLay) .gt. 10._kind_phys) then
                    tau_snow(ix) = abssnow0*1.05756*cld_swp(iCol+ix-1,iLay)/cld_resnow(iCol+ix-1,iLay)
@@ -515,13 +515,13 @@ contains
                   flux_clrsky,                     & ! OUT - Fluxes
                   lw_Ds = lw_Ds))
           endif
-          
+
           ! Store fluxes
           fluxlwUP_clrsky(iCol:iCol2,:)   = sum(flux_clrsky%bnd_flux_up, dim=3)
           fluxlwDOWN_clrsky(iCol:iCol2,:) = sum(flux_clrsky%bnd_flux_dn, dim=3)
        else
           fluxlwUP_clrsky(iCol:iCol2,:)   = 0.0
-          fluxlwDOWN_clrsky(iCol:iCol2,:) = 0.0   
+          fluxlwDOWN_clrsky(iCol:iCol2,:) = 0.0
        endif
 
        ! ###################################################################################
@@ -533,18 +533,18 @@ contains
        !
        ! The logic in the code below is to satisfy the polymorphishm in the rte-rrtmgp code.
        ! The rte-rrtmgp "increment" procedures are utilized to provide the correct type to the
-       ! rte solver (rte_lw). Rte_lw quieries the type determine if scattering is to be 
+       ! rte solver (rte_lw). Rte_lw quieries the type determine if scattering is to be
        ! included in the calculation. The increment procedures are called so that the correct
        ! optical properties are inherited. ugh...
-       ! 
+       !
        ! ###################################################################################
 
        ! Include LW cloud-scattering?
-       if (doGP_lwscat) then 
+       if (doGP_lwscat) then
           ! Increment
           call check_error_msg('rrtmgp_lw_main_increment_clrsky_to_clouds',&
                lw_optical_props_clrsky%increment(lw_optical_props_clouds))
-          
+
           if (present(fluxlwUP_jac)) then
              ! Compute LW Jacobians
              call check_error_msg('rrtmgp_lw_main_lw_rte_allsky',rte_lw(           &
@@ -552,7 +552,7 @@ contains
                   top_at_1,                        & ! IN  - veritcal ordering flag
                   sources,                         & ! IN  - source function
                   sfc_emiss_byband,                & ! IN  - surface emissivity in each LW band
-                  flux_allsky,                     & ! OUT - Flxues 
+                  flux_allsky,                     & ! OUT - Flxues
                   n_gauss_angles = nGauss_angles,  & ! IN  - Number of angles in Gaussian quadrature
                   flux_up_Jac    = fluxLW_up_jac))   ! OUT - surface temperature flux (upward) Jacobian (W/m2/K)
           else
@@ -561,15 +561,15 @@ contains
                   top_at_1,                        & ! IN  - veritcal ordering flag
                   sources,                         & ! IN  - source function
                   sfc_emiss_byband,                & ! IN  - surface emissivity in each LW band
-                  flux_allsky,                     & ! OUT - Flxues 
-                  n_gauss_angles = nGauss_angles))   ! IN  - Number of angles in Gaussian quadrature    
+                  flux_allsky,                     & ! OUT - Flxues
+                  n_gauss_angles = nGauss_angles))   ! IN  - Number of angles in Gaussian quadrature
           end if
-       ! No scattering in LW clouds.   
+       ! No scattering in LW clouds.
        else
           ! Increment
           call check_error_msg('rrtmgp_lw_main_increment_clouds_to_clrsky', &
                lw_optical_props_clouds%increment(lw_optical_props_clrsky))
-          
+
           if (present(fluxlwUP_jac)) then
              ! Compute LW Jacobians
              call check_error_msg('rrtmgp_lw_rte_run',rte_lw(           &
@@ -577,7 +577,7 @@ contains
                   top_at_1,                        & ! IN  - veritcal ordering flag
                   sources,                         & ! IN  - source function
                   sfc_emiss_byband,                & ! IN  - surface emissivity in each LW band
-                  flux_allsky,                     & ! OUT - Flxues 
+                  flux_allsky,                     & ! OUT - Flxues
                   n_gauss_angles = nGauss_angles,  & ! IN  - Number of angles in Gaussian quadrature
                   flux_up_Jac    = fluxLW_up_jac))   ! OUT - surface temperature flux (upward) Jacobian (W/m2/K)
           else
@@ -586,11 +586,11 @@ contains
                   top_at_1,                        & ! IN  - veritcal ordering flag
                   sources,                         & ! IN  - source function
                   sfc_emiss_byband,                & ! IN  - surface emissivity in each LW band
-                  flux_allsky,                     & ! OUT - Flxues 
-                  n_gauss_angles = nGauss_angles))   ! IN  - Number of angles in Gaussian quadrature    
+                  flux_allsky,                     & ! OUT - Flxues
+                  n_gauss_angles = nGauss_angles))   ! IN  - Number of angles in Gaussian quadrature
           end if
        endif
-       
+
        ! Store fluxes
        fluxlwUP_allsky(iCol:iCol2,:)   = sum(flux_allsky%bnd_flux_up, dim=3)
        fluxlwDOWN_allsky(iCol:iCol2,:) = sum(flux_allsky%bnd_flux_dn, dim=3)

@@ -1,4 +1,4 @@
-!> \file rrtmgp_lw_gas_optics.F90 
+!> \file rrtmgp_lw_gas_optics.F90
 !!
 
 !> This module contains two routines: One to initialize the k-distribution data
@@ -8,7 +8,7 @@
 module rrtmgp_lw_gas_optics
   use mo_rte_kind,           only: wl,wp
   use mo_gas_optics_rrtmgp,  only: ty_gas_optics_rrtmgp
-  use mo_gas_concentrations, only: ty_gas_concs  
+  use mo_gas_concentrations, only: ty_gas_concs
   use radiation_tools,       only: check_error_msg
   use netcdf
   use mpi_f08
@@ -53,7 +53,7 @@ module rrtmgp_lw_gas_optics
        rayl_upperLW                         !< Not used in LW, rather allocated(rayl_upper) is used
   real(wp), dimension(:,:,:,:), allocatable :: &
        kmajorLW,                          & !< Stored absorption coefficients due to major absorbing gases
-       planck_fracLW                        !< Planck fractions   
+       planck_fracLW                        !< Planck fractions
   character(len=32),  dimension(:), allocatable :: &
        gas_namesLW,                       & !< Names of absorbing gases
        gas_minorLW,                       & !< Name of absorbing minor gas
@@ -79,7 +79,7 @@ contains
          rrtmgp_root_dir,  & !< RTE-RRTMGP root directory
          rrtmgp_lw_file_gas  !< RRTMGP file containing K-distribution data
     character(len=*), dimension(:), intent(in) :: &
-         active_gases_array  !< List of active gases from namelist as array   
+         active_gases_array  !< List of active gases from namelist as array
     type(MPI_Comm),intent(in) :: &
          mpicomm             !< MPI communicator
     integer,intent(in) :: &
@@ -249,7 +249,7 @@ contains
     ! #######################################################################################
     !
     ! Read in data ...
-    ! (ONLY master processor(0), if MPI enabled) 
+    ! (ONLY master processor(0), if MPI enabled)
     !
     ! #######################################################################################
     if (mpirank .eq. mpiroot) then
@@ -323,7 +323,7 @@ contains
           if (temp1(ii) .eq. 1) minor_scales_with_density_lowerLW(ii) = .true.
           if (temp3(ii) .eq. 0) scale_by_complement_lowerLW(ii)       = .false.
           if (temp3(ii) .eq. 1) scale_by_complement_lowerLW(ii)       = .true.
-       enddo 
+       enddo
        do ii=1,nminor_absorber_intervals_upperLW
           if (temp2(ii) .eq. 0) minor_scales_with_density_upperLW(ii) = .false.
           if (temp2(ii) .eq. 1) minor_scales_with_density_upperLW(ii) = .true.
@@ -337,7 +337,7 @@ contains
 
     ! #######################################################################################
     !
-    ! Broadcast data... 
+    ! Broadcast data...
     ! (ALL processors)
     !
     ! #######################################################################################
@@ -449,7 +449,7 @@ contains
     call mpi_barrier(mpicomm, mpierr)
 
     ! #######################################################################################
-    !   
+    !
     ! Initialize RRTMGP DDT's...
     !
     ! #######################################################################################

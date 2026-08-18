@@ -1,4 +1,4 @@
-! ############################################################################################# 
+! #############################################################################################
 !> \file GFS_radiation_post.F90
 !!
 !! Radiation post-processing routine.
@@ -10,7 +10,7 @@
 !! *For RRTMG,  this coupling is handled in the SCHEME.
 !! *For RRTMGP, this coupling is handled HERE (more on this below).
 !!
-! ############################################################################################# 
+! #############################################################################################
 module GFS_radiation_post
   use machine,                   only: kind_phys
   use module_radlw_parameters,   only: topflw_type, sfcflw_type
@@ -32,7 +32,7 @@ contains
 !! CCPP enabled UFS.
 !!
 !! For RRTMG, not much is done here, since the scheme outputs the fields needed by the
-!! UFS. For example, RRTMG provides the heating-rate profiles and has been modified to use 
+!! UFS. For example, RRTMG provides the heating-rate profiles and has been modified to use
 !! UFS native DDTs for storing the fluxes.
 !!
 !! For RRTMGP*:
@@ -51,7 +51,7 @@ contains
 !! - Compute SW total cloud albedo
 !! - Compute diagnostics
 !!
-! ############################################################################################# 
+! #############################################################################################
 
   ! ###########################################################################################
   ! GFS_radiation_post_run
@@ -64,11 +64,11 @@ contains
       fluxswDOWN_clrsky, htrsw, fluxswUP_allsky, fluxswDOWN_allsky, iSFC, iTOA, tsflw, tsfa,    &
       sfcdlw, sfculw, htrlwu, nirbmdi, nirdfdi, visbmdi, visdfdi, nirbmui, nirdfui, visbmui,    &
       visdfui, sfc_alb_nir_dir, sfc_alb_nir_dif, sfc_alb_uvvis_dir, sfc_alb_uvvis_dif, sfcnsw,  &
-      sfcdsw, gu0, gv0, gt0, gq0, dudt, dvdt, dtdt, dqdt, ten_t, ten_u, ten_v, ten_q, errmsg, errflg) 
+      sfcdsw, gu0, gv0, gt0, gq0, dudt, dvdt, dtdt, dqdt, ten_t, ten_u, ten_v, ten_q, errmsg, errflg)
 
     ! Inputs
     integer, intent(in) :: &
-         nCol,              & !< Horizontal loop extent 
+         nCol,              & !< Horizontal loop extent
          nLev,              & !< Number of vertical layers
          ntrac,             & !< number of tracers
          lmk,               & !< Number of vertical layers for radiation (adjusted)
@@ -84,7 +84,7 @@ contains
          tend_opt_lwrad
     integer, intent(in), dimension(:) :: &
          idxday               !< Index array for daytime points
-    logical, intent(in) :: & 
+    logical, intent(in) :: &
          doLWrad,           & !< Logical flags for lw radiation calls
          doSWrad,           & !< Logical flags for sw radiation calls
          lssav,             & !< Flag for radiation diagnostics
@@ -101,7 +101,7 @@ contains
          coszdg               !< Daytime mean cosz over rad call period
     real(kind_phys), dimension(:), intent(in) ::  &
          tsfa,              & !< Lowest model layer air temperature for radiation (K)
-         sfc_alb_nir_dir,   & !< Surface albedo (direct) 
+         sfc_alb_nir_dir,   & !< Surface albedo (direct)
          sfc_alb_nir_dif,   & !< Surface albedo (diffuse)
          sfc_alb_uvvis_dir, & !< Surface albedo (direct)
          sfc_alb_uvvis_dif    !< Surface albedo (diffuse)
@@ -118,7 +118,7 @@ contains
          fluxswDOWN_allsky    !< RRTMGP shortwave all-sky flux     (W/m2)
     real(kind_phys), dimension(:,:), intent(in) ::  &
          aerodp               !< Vertical integrated optical depth for <nspc1> aerosol species
-    real(kind_phys), dimension(:,:), intent(in) ::  & 
+    real(kind_phys), dimension(:,:), intent(in) ::  &
          cldtausw,          & !< .55mu band layer cloud optical depth (SW)
          cldtaulw             !< 10mu  band layer cloud optical depth (LW)
     real(kind_phys), dimension(:,:), intent(in) ::  &
@@ -199,7 +199,7 @@ contains
 
     ! #######################################################################################
     ! Longwave Radiation
-    ! ####################################################################################### 
+    ! #######################################################################################
     if (doLWRad) then
       if (do_RRTMGP) then
         ! Clear-sky heating-rate (optional)
@@ -211,7 +211,7 @@ contains
                 thetaTendClrSkyLW))                     ! OUT - Longwave clear-sky heating rate (K/sec)
            htrlwc = thetaTendClrSkyLW
         endif
-    
+
           ! All-sky heating-rate (mandatory)
         call check_error_msg('GFS_radiation_post',compute_heating_rate(     &
              real(fluxlwUP_allsky, kind=rte_wp),   & ! IN  - RRTMGP upward longwave all-sky flux profiles (W/m2)
@@ -220,7 +220,7 @@ contains
              thetaTendAllSkyLW))                     ! OUT - Longwave all-sky heating rate (K/sec)
         htrlw = thetaTendAllSkyLW
 
-        ! (Copy fluxes from RRTMGP types into model radiation types.) 
+        ! (Copy fluxes from RRTMGP types into model radiation types.)
         ! TOA fluxes
         topflw(:)%upfxc = fluxlwUP_allsky(:,iTOA)
         topflw(:)%upfx0 = fluxlwUP_clrsky(:,iTOA)
@@ -242,13 +242,13 @@ contains
         htrlwu = htrlw
       endif ! RRTMGP Longwave Radiaiton
     endif    ! ALL Longwave Radiation
-    
+
     !htrlw is calculated in rrtmg_lw_post if using RRTMG and above if using RRTMGP
     ten_t = htrlw
-    
+
     !save temperature to give to GFS_radiation_diagnostics
     save_t = gt0
-    
+
     !This may belong in a separate GFS_radsw_post routine rather than here, although it would need to be created
     case_LWRAD_ten: select case (tend_opt_lwrad)
       case (1) !immediately apply tendencies
@@ -303,7 +303,7 @@ contains
         errmsg = 'A tendency application control was outside of the acceptable range (1-4)'
         return
     end select case_LWRAD_ten
-    
+
     ! #######################################################################################
     ! Shortwave Radiation
     ! #######################################################################################
@@ -384,8 +384,8 @@ contains
            sfcdsw(i) = sfcfsw(i)%dnfxc
         enddo
       endif ! RRTMGP Shortwave Radiaiton
-    endif ! ALL Shortwave Radiation  
-    
+    endif ! ALL Shortwave Radiation
+
     ! The total sky (with clouds) shortwave albedo
     total_albedo = 0.0
     where(topfsw(:)%dnfxc>0) total_albedo(:) = topfsw(:)%upfxc/topfsw(:)%dnfxc
@@ -398,10 +398,10 @@ contains
             aerodp, cldsa, mtopa, mbota, cldtausw, cldtaulw, p_lev, save_t, kb, kd, kt, sfcflw, &
             sfcfsw, topfsw, topflw, scmpsw, nCol, nDay, nLev, lmk, nfxr, nspc1, fluxr)
     endif
-    
+
     !htrsw is calculated in rrtmg_sw_post if using RRTMG and above if using RRTMGP
     ten_t = htrsw
-    
+
     case_SWRAD_ten: select case (tend_opt_swrad)
       case (1) !immediately apply tendencies
                 !Current state = current state + dt*current tendency
@@ -457,7 +457,7 @@ contains
     end select case_SWRAD_ten
 
   end subroutine GFS_radiation_post_run
-  
+
   ! ###########################################################################################
   ! GFS_radiation_diagnostics
   !
@@ -486,7 +486,7 @@ contains
     integer,           intent(in) :: kb, kd, kt
     integer,           intent(in) :: mtopa(nCol,3), mbota(nCol,3)
     real(kind_phys),   intent(in) :: cldsa(nCol,5)
-    
+
     ! Outputs
     real(kind_phys), intent(inout) :: fluxr(nCol,nfxr)
     ! Locals
@@ -518,7 +518,7 @@ contains
           fluxr(i,37) = aerodp(i,4)  ! Waso aod at 550nm
           fluxr(i,38) = aerodp(i,5)  ! Suso aod at 550nm
           fluxr(i,39) = aerodp(i,6)  ! Salt aod at 550nm
-          
+
           if (coszen(i) > 0.) then
              ! SW total-sky fluxes
              tem0d = fhswr * coszdg(i) / coszen(i)

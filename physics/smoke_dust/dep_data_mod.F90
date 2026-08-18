@@ -12,7 +12,7 @@ module dep_data_mod
                   500., 500., 500., 500., 500., &
                   500., 500., 500., 500., 500.    /)
   real(kind_phys), parameter :: max_dep_vel = 0.005                   ! m/s (may need to set per species)
-  real(kind_phys), parameter :: dep_ref_hgt = 2.0                     ! Meters 
+  real(kind_phys), parameter :: dep_ref_hgt = 2.0                     ! Meters
   real(kind_phys), parameter :: pi = 3.1415926536
 !  3*PI
   REAL(kind_phys), PARAMETER :: threepi=3.0*pi
@@ -55,134 +55,134 @@ module dep_data_mod
   REAL(kind_phys), PARAMETER :: mean_diameter1 = 4.e-8
   REAL(kind_phys), PARAMETER :: fact_wfa = 1.e-9*6.0/pirs*exp(4.5*log(sigma1)**2)/mean_diameter1**3
   REAL(kind_phys), PARAMETER :: sginia=2.00
-!  initial sigma-G for nucleimode                 
+!  initial sigma-G for nucleimode
   REAL(kind_phys), PARAMETER :: sginin=1.70
-! initial sigma-G for coarse mode               
+! initial sigma-G for coarse mode
   REAL(kind_phys), PARAMETER :: sginic=2.5
-!  starting standard surface pressure [ Pa ]  
+!  starting standard surface pressure [ Pa ]
   REAL(kind_phys), PARAMETER :: pss0=101325.0
-! lowest particle diameter ( m )   
+! lowest particle diameter ( m )
   REAL(kind_phys), PARAMETER :: dgmin=1.0E-09
 ! lowest particle density ( Kg/m**3 )
   REAL(kind_phys), PARAMETER :: densmin=1.0E03
-! index for Aitken mode number                  
+! index for Aitken mode number
   INTEGER, PARAMETER :: vdnnuc=1
-! index for accumulation mode number            
+! index for accumulation mode number
   INTEGER, PARAMETER :: vdnacc=2
-! index for coarse mode number                  
+! index for coarse mode number
   INTEGER, PARAMETER :: vdncor=3
-! index for Aitken mode mass                    
+! index for Aitken mode mass
   INTEGER, PARAMETER :: vdmnuc=4
-! index for accumulation mode                   
+! index for accumulation mode
   INTEGER, PARAMETER :: vdmacc=5
 ! index for fine mode mass (Aitken + accumulation)
   INTEGER, PARAMETER :: vdmfine=6
-! index for coarse mode mass                    
+! index for coarse mode mass
   INTEGER, PARAMETER :: vdmcor=7
-! index for Aitken mode number                  
+! index for Aitken mode number
   INTEGER, PARAMETER :: vsnnuc=1
-! index for Accumulation mode number            
+! index for Accumulation mode number
   INTEGER, PARAMETER :: vsnacc=2
-! index for coarse mode number                  
+! index for coarse mode number
   INTEGER, PARAMETER :: vsncor=3
-! index for Aitken mode mass                     
+! index for Aitken mode mass
   INTEGER, PARAMETER :: vsmnuc=4
-! index for accumulation mode mass              
+! index for accumulation mode mass
   INTEGER, PARAMETER :: vsmacc=5
-! index for coarse mass                         
+! index for coarse mass
   INTEGER, PARAMETER :: vsmcor=6
-! coarse mode exp( log^2( sigmag )/8 )  
-! nuclei        **4                    
+! coarse mode exp( log^2( sigmag )/8 )
+! nuclei        **4
       REAL(kind_phys) :: esn04
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa04
       REAL(kind_phys) :: esc04
-! coarse                               
-! nuclei        **5                    
+! coarse
+! nuclei        **5
       REAL(kind_phys) :: esn05
       REAL(kind_phys) :: esa05
-! accumulation                         
-! nuclei        **8                    
+! accumulation
+! nuclei        **8
       REAL(kind_phys) :: esn08
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa08
       REAL(kind_phys) :: esc08
-! coarse                               
-! nuclei        **9                    
+! coarse
+! nuclei        **9
       REAL(kind_phys) :: esn09
       REAL(kind_phys) :: esa09
-! accumulation                         
-! nuclei        **12                   
+! accumulation
+! nuclei        **12
       REAL(kind_phys) :: esn12
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa12
       REAL(kind_phys) :: esc12
-! coarse mode                          
-! nuclei        **16                   
+! coarse mode
+! nuclei        **16
       REAL(kind_phys) :: esn16
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa16
       REAL(kind_phys) :: esc16
-! coarse                               
-! nuclei        **20                   
+! coarse
+! nuclei        **20
       REAL(kind_phys) :: esn20
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa20
       REAL(kind_phys) :: esc20
-! coarse                               
-! nuclei        **25                   
+! coarse
+! nuclei        **25
       REAL(kind_phys) :: esn25
       REAL(kind_phys) :: esa25
-! accumulation                         
-! nuclei        **24                   
+! accumulation
+! nuclei        **24
       REAL(kind_phys) :: esn24
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa24
       REAL(kind_phys) :: esc24
-! coarse                               
-! nuclei        **28                   
+! coarse
+! nuclei        **28
       REAL(kind_phys) :: esn28
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa28
       REAL(kind_phys) :: esc28
-! coarse                               
-! nuclei        **32                   
+! coarse
+! nuclei        **32
       REAL(kind_phys) :: esn32
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa32
       REAL(kind_phys) :: esc32
-! coarese                              
-! nuclei        **36                   
+! coarese
+! nuclei        **36
       REAL(kind_phys) :: esn36
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa36
       REAL(kind_phys) :: esc36
-! coarse                               
-! nuclei        **49                   
+! coarse
+! nuclei        **49
       REAL(kind_phys) :: esn49
       REAL(kind_phys) :: esa49
-! accumulation                         
-! nuclei        **52                   
+! accumulation
+! nuclei        **52
       REAL(kind_phys) :: esn52
       REAL(kind_phys) :: esa52
-! accumulation                         
-! nuclei        **64                   
+! accumulation
+! nuclei        **64
       REAL(kind_phys) :: esn64
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esa64
       REAL(kind_phys) :: esc64
-! coarse                               
+! coarse
       REAL(kind_phys) :: esn100
-! nuclei        **100                  
-! nuclei        **(-20)                
+! nuclei        **100
+! nuclei        **(-20)
       REAL(kind_phys) :: esnm20
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esam20
       REAL(kind_phys) :: escm20
-! coarse                               
-! nuclei        **(-32)                
+! coarse
+! nuclei        **(-32)
       REAL(kind_phys) :: esnm32
-! accumulation                         
+! accumulation
       REAL(kind_phys) :: esam32
       REAL(kind_phys) :: escm32
 !SAM 10/08 Gaussian quadrature constants for SOA_VBS deposition numerical

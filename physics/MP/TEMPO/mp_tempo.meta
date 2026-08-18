@@ -6,11 +6,11 @@
   dependencies = tempo_v3/src/module_mp_tempo_cfgs.F90
   dependencies = tempo_v3/src/module_mp_tempo_ml.F90
   dependencies = tempo_v3/src/module_mp_tempo_utils.F90
-  dependencies = tempo_v3/src/module_mp_tempo_aerosols.F90  
+  dependencies = tempo_v3/src/module_mp_tempo_aerosols.F90
   dependencies = tempo_v3/src/module_mp_tempo_diags.F90
-  dependencies = tempo_v3/src/module_mp_tempo_main.F90      
+  dependencies = tempo_v3/src/module_mp_tempo_main.F90
   dependencies = tempo_v3/src/module_mp_tempo_driver.F90
-   
+
 ########################################################################
 [ccpp-arg-table]
   name = mp_tempo_init
@@ -200,7 +200,7 @@
   units = none
   dimensions = ()
   type = logical
-  intent = in  
+  intent = in
 [spechum]
   standard_name = physics_timestep_initial_specific_humidity
   long_name = water vapor specific humidity
@@ -251,7 +251,7 @@
   units = mixed
   dimensions = ()
   intent = inout
-  type = ty_tempo_cfgs  
+  type = ty_tempo_cfgs
 [tgrs]
   standard_name = physics_timestep_initial_air_temperature
   long_name = model layer mean temperature
@@ -582,7 +582,7 @@
   units = mixed
   dimensions = ()
   intent = in
-  type = ty_tempo_cfgs   
+  type = ty_tempo_cfgs
 [ten_q]
   standard_name = tendency_of_tracer_concentration
   long_name = tendency of tracer concentration calculated by one physics scheme
@@ -738,8 +738,8 @@
   units = 1
   dimensions = ()
   type = integer
-  intent = out 
-  
+  intent = out
+
 ########################################################################
 [ccpp-arg-table]
   name = mp_tempo_final

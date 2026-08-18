@@ -26,7 +26,7 @@
 ! Program History Log:
 !   2005-06-14  Mark Iredell
 !
-! Usage: 
+! Usage:
 !   The module can be compiled with 4-byte reals or with 8-byte reals, but
 !   4-byte integers are required. The module should be endian-independent.
 !   The Fortran 90 interfaces random_seed and random_number are overloaded
@@ -71,10 +71,10 @@
 !   There is also a relatively inefficient "interactive" mode available, where
 !   setting seeds and generating random numbers are done in the same call.
 !   There is also a functional mode available, returning one value at a time.
-!   
+!
 ! Public Defined Types:
 !   random_stat       Generator state (private contents)
-!   
+!
 ! Public Subprograms:
 !   random_seed         determine size or put or get state
 !     size              optional integer output size of seed array
@@ -154,7 +154,7 @@
 !     each Mersenne twister random number takes less than 30 ns, about 3 times
 !     slower than the default random number generator, and each random number
 !     from a Gaussian distribution takes less than 150 ns.
-!     
+!
 ! Attributes:
 !   Language: Fortran 90
 !
@@ -184,7 +184,7 @@
         integer,parameter:: iseed=4357
         integer,parameter:: nrest=n+4
 !  Defined types
-        type random_stat                         !< Generator state 
+        type random_stat                         !< Generator state
           private
           integer:: mti=n+1
           integer:: mt(0:n-1)

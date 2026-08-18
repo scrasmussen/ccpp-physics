@@ -75,9 +75,9 @@
 !> \brief This module sets up astronomical quantities for solar radiation
 !!  calculations.
 !!
-!! Operational GFS selection for Solar constant value 
-!! (namelist control parameter - \b ISOL = 2) 
-!! \n ISOL=0: presribed value = 1366 \f$W m^{-2}\f$ (old) 
+!! Operational GFS selection for Solar constant value
+!! (namelist control parameter - \b ISOL = 2)
+!! \n ISOL=0: presribed value = 1366 \f$W m^{-2}\f$ (old)
 !! \n ISOL=10: prescibed value = 1361 \f$W m^{-2}\f$ (new)
 !! \n ISOL=1: NOAA old yearly solar constant table with 11-year cycle (range: 1944-2006)
 !! \n ISOL=2: NOAA new yearly solar constant table with 11-year cycle (range: 1850-2019)
@@ -86,11 +86,11 @@
 !! \version NCEP-Radiation_astronomy v5.2  Jan 2013
 
 !> This module sets up astronomy quantities for solar radiation calculations.
-      module module_radiation_astronomy  
+      module module_radiation_astronomy
 !
       use mpi_f08
       use mpiutil,           only : ccpp_bcast
-      use machine,           only : kind_phys 
+      use machine,           only : kind_phys
       use module_iounitdef,  only : NIRADSF
 !
       implicit   none
@@ -202,7 +202,7 @@
       degrad = 180.0/con_pi
       tpi    = 2.0 * con_pi
       hpi    = 0.5 * con_pi
-      pid12  = con_pi/f12  
+      pid12  = con_pi/f12
 
 !  ---  initialization
       isolflg = isolar
@@ -449,7 +449,7 @@
           endif
         else                           ! need to read in new data
           iyr_sav = iyear
-          iyr = iyear 
+          iyr = iyear
           if (mpirank == mpiroot) then
 !  --- ...  check to see if the solar constant data file existed
             inquire (file=solar_fname, exist=file_exist)
@@ -470,7 +470,7 @@
             read (NIRADSF, * ) iyr1,iyr2,icy1,icy2,smean,cline(1:60)
 !           read (NIRADSF, 24) iyr1,iyr2,icy1,icy2,smean,cline
 ! 24        format(4i5,f8.2,a60)
-            
+
             print *,'  Updating solar constant with cycle approx'
             print *,'   Opened solar constant data file: ',solar_fname
 !check      print *, iyr1, iyr2, icy1, icy2, smean, cline
@@ -936,7 +936,7 @@
         coszdg(i) = coszen(i) * rstp
         if (istsun(i) > 0 .and. coszen(i) /= 0.0_kind_phys) then
           coszen(i) = coszen(i) / istsun(i)
-        endif 
+        endif
       enddo
 !
 !...................................

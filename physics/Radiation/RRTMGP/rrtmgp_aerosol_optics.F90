@@ -27,7 +27,7 @@ contains
     ! Inputs
     logical, intent(in) :: &
          doSWrad,               & ! Logical flag for shortwave radiation call
-         doLWrad,               & ! Logical flag for longwave radiation call 
+         doLWrad,               & ! Logical flag for longwave radiation call
          top_at_1                 ! Logical flag for vertical grid direcetion
     integer, intent(in) :: &
          nCol,                  & ! Number of horizontal grid points
@@ -62,12 +62,12 @@ contains
 
     ! Outputs
     real(kind_phys), dimension(:,:), intent(out) :: &
-         aerodp                   ! Vertical integrated optical depth for various aerosol species 
+         aerodp                   ! Vertical integrated optical depth for various aerosol species
     real(kind_phys), dimension(:,:,:), intent(out) :: &
          aerlw_tau,             & ! Longwave aerosol optical depth
          aerlw_ssa,             & ! Longwave aerosol single scattering albedo
          aerlw_g,               & ! Longwave aerosol asymmetry parameter
-         aersw_tau,             & ! Shortwave aerosol optical depth 
+         aersw_tau,             & ! Shortwave aerosol optical depth
          aersw_ssa,             & ! Shortwave aerosol single scattering albedo
          aersw_g                  ! Shortwave aerosol asymmetry parameter
     integer, intent(out) :: &
@@ -96,8 +96,8 @@ contains
     ! Shortwave
     if (doSWrad .and. (nDay .gt. 0)) then
        ! Store aerosol optical properties
-       ! SW. 
-       ! For RRTMGP SW the bands are now ordered from [IR(band) -> nIR -> UV], in RRTMG the 
+       ! SW.
+       ! For RRTMGP SW the bands are now ordered from [IR(band) -> nIR -> UV], in RRTMG the
        ! band ordering was [nIR -> UV -> IR(band)]
        aerosolssw(1:nCol,:,1,1)                          = aerosolssw2(1:nCol,:,sw_gas_props%get_nband(),1)
        aerosolssw(1:nCol,:,1,2)                          = aerosolssw2(1:nCol,:,sw_gas_props%get_nband(),2)
@@ -105,7 +105,7 @@ contains
        aerosolssw(1:nCol,:,2:sw_gas_props%get_nband(),1) = aerosolssw2(1:nCol,:,1:sw_gas_props%get_nband()-1,1)
        aerosolssw(1:nCol,:,2:sw_gas_props%get_nband(),2) = aerosolssw2(1:nCol,:,1:sw_gas_props%get_nband()-1,2)
        aerosolssw(1:nCol,:,2:sw_gas_props%get_nband(),3) = aerosolssw2(1:nCol,:,1:sw_gas_props%get_nband()-1,3)
-     
+
        ! Copy aerosol optical information/
        aersw_tau = aerosolssw(:,:,:,1)
        aersw_ssa = aerosolssw(:,:,:,2)

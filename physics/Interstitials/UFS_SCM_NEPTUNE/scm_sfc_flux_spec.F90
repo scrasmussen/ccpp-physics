@@ -19,12 +19,12 @@ module scm_sfc_flux_spec
 !! \htmlinclude scm_sfc_flux_spec_init.html
 !!
   subroutine scm_sfc_flux_spec_init(lheatstrg, errmsg, errflg)
-    
+
     logical, intent(in) :: lheatstrg
-    
+
     character(len=*), intent(out) :: errmsg
     integer,          intent(out) :: errflg
-    
+
     if (lheatstrg) then
       errmsg = 'Using specified surface fluxes is not compatible with canopy heat storage (lheatstrg) being true. Stopping.'
       errflg = 1
@@ -55,7 +55,7 @@ module scm_sfc_flux_spec
     fm, fh, rb, u10m, v10m, wind1, qss, t2m, q2m, errmsg, errflg)
 
     use machine,             only: kind_phys
-    
+
     integer, intent(in)    :: im, lkm
     integer, intent(inout) :: islmsk(:), use_lake_model(:)
     logical, intent(in)    :: cplflx, cplice
@@ -75,20 +75,20 @@ module scm_sfc_flux_spec
 
     real(kind=kind_phys) :: rho, q1_non_neg, w_thv1, rho_cp_inverse, rho_hvap_inverse, Obukhov_length, thv1, tvs, &
       dtv, adtv, wind10m, u_fraction, roughness_length_m
-    
+
     real(kind=kind_phys), parameter :: timin = 173.0_kind_phys  ! minimum temperature allowed for snow/ice
 
     ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
-  
+
 !     !--- set control properties (including namelist read)
   !calculate u_star from wind profiles (need roughness length, and wind and height at lowest model level)
   do i=1, im
     sh_flux(i) = spec_sh_flux(i)
     lh_flux(i) = spec_lh_flux(i)
     sh_flux_chs(i) = sh_flux(i)
-    
+
     roughness_length_m = 0.01*roughness_length(i)
 
     wind1(i) = sqrt(u1(i)*u1(i) + v1(i)*v1(i))
@@ -140,7 +140,7 @@ module scm_sfc_flux_spec
     t2m(i) = 0.0
     q2m(i) = 0.0
   end do
-  
+
   !GJF: The following code is from GFS_surface_composites.F90; only statements that are used in physics schemes outside of surface schemes are kept
   !GJF: Adding this code means that this scheme should be called before dcyc2t3
   do i = 1, im
@@ -193,7 +193,7 @@ module scm_sfc_flux_spec
     endif
     if (nint(slmsk(i)) /= 1) slmsk(i)  = islmsk(i)
   enddo
-  
+
   do i = 1, im
     if (wet(i)) then
       tsfc_wat(i) = T_surf(i)
@@ -220,7 +220,7 @@ module scm_sfc_flux_spec
     endif
   enddo
 !
-  
+
   end subroutine scm_sfc_flux_spec_run
 
 end module scm_sfc_flux_spec

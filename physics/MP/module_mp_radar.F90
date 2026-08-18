@@ -215,15 +215,15 @@
       epsi = ((epss-epsinf) * ((lambdas/lambda)**(1d0-alpha)            &
            * cos(alpha*PIx*0.5)+0d0)) / nenner                           &
            + lambda*1.25664/1.88496
-      
+
       m_complex_water_ray = SQRT(CMPLX(epsr,-epsi))
-      
+
       END FUNCTION m_complex_water_ray
 
 !+---+-----------------------------------------------------------------+
-      
+
       COMPLEX*16 FUNCTION m_complex_ice_maetzler(lambda,T)
-      
+
 !      complex refractive index of ice as function of Temperature T
 !      [deg C] and radar wavelength lambda [m]; valid for
 !      lambda in [0.0001,30] m; T in [-250.0,0.0] C
@@ -235,7 +235,7 @@
 !      Academic Publishers, Dordrecht, pp. 241-257 (1998). Input:
 !      TK = temperature (K), range 20 to 273.15
 !      f = frequency in GHz, range 0.01 to 3000
-         
+
       IMPLICIT NONE
       DOUBLE PRECISION, INTENT(IN):: T,lambda
       DOUBLE PRECISION:: f,c,TK,B1,B2,b,deltabeta,betam,beta,theta,alfa
@@ -254,9 +254,9 @@
       alfa = (0.00504d0 + 0.0062d0*theta) * EXP(-22.1d0*theta)
       m_complex_ice_maetzler = 3.1884 + 9.1e-4*(TK-273.16)
       m_complex_ice_maetzler = m_complex_ice_maetzler                   &
-                             + CMPLX(0.0d0, (alfa/f + beta*f)) 
+                             + CMPLX(0.0d0, (alfa/f + beta*f))
       m_complex_ice_maetzler = SQRT(CONJG(m_complex_ice_maetzler))
-      
+
       END FUNCTION m_complex_ice_maetzler
 
 !+---+-----------------------------------------------------------------+
@@ -286,7 +286,7 @@
 !     refractive index of air:
       m_air = (1.0d0,0.0d0)
 
-!     Limiting the degree of melting --- for safety: 
+!     Limiting the degree of melting --- for safety:
       fm = DMAX1(DMIN1(fmelt, 1.0d0), 0.0d0)
 !     Limiting the ratio of (melting on outside)/(melting on inside):
       mra = DMAX1(DMIN1(meltratio_outside, 1.0d0), 0.0d0)
@@ -307,7 +307,7 @@
        vg = PIx/6. * D_g**3
        rhog = DMAX1(DMIN1(x_g / vg, 900.0d0), 10.0d0)
        vg = x_g / rhog
-      
+
        meltratio_outside_grenz = 1.0d0 - rhog / 1000.
 
        if (mra .le. meltratio_outside_grenz) then
@@ -315,7 +315,7 @@
         !.. air inclusions within the ice particle get filled with
         !.. meltwater. This only happens at the end of all melting.
         volg = vg * (1.0d0 - mra * fm)
- 
+
        else
         !..In this case, at some melting degree fm, all the air
         !.. inclusions get filled with meltwater.
@@ -336,7 +336,7 @@
        volice = (x_g - x_w) / (volg * 900.0)
        volwater = x_w / (1000. * volg)
        volair = 1.0 - volice - volwater
-      
+
        !..complex index of refraction for the ice-air-water mixture
        !.. of the particle:
        m_core = get_m_mix_nested (m_air, m_i, m_w, volair, volice,      &
@@ -347,7 +347,7 @@
         return
        endif
 
-       !..Rayleigh-backscattering coefficient of melting particle: 
+       !..Rayleigh-backscattering coefficient of melting particle:
        C_back = (ABS((m_core**2-1.0d0)/(m_core**2+2.0d0)))**2           &
                 * PI5 * D_large**6 / lamda4
 
@@ -392,7 +392,7 @@
         mtmp = get_m_mix (m_a, m_i, m_w, 0.0d0, vol1, vol2,             &
                          mixingrule, matrix, inclusion, error)
         cumulerror = cumulerror + error
-          
+
         if (hostmatrix .eq. 'air') then
          get_m_mix_nested = get_m_mix (m_a, mtmp, 2.0*m_a,              &
                          volair, (1.0d0-volair), 0.0d0, mixingrule,     &
@@ -431,7 +431,7 @@
          get_m_mix_nested = get_m_mix (mtmp, m_i, 2.0*m_a,              &
                          (1.0d0-volice), volice, 0.0d0, mixingrule,     &
                          'air', hostinclusion, error)
-         cumulerror = cumulerror + error          
+         cumulerror = cumulerror + error
         else
          write(*,*) 'GET_M_MIX_NESTED: bad hostmatrix: ',        &
                            hostmatrix
@@ -460,7 +460,7 @@
          get_m_mix_nested = get_m_mix (2*m_a, mtmp, m_w,                &
                          0.0d0, (1.0d0-volwater), volwater, mixingrule, &
                          'ice', hostinclusion, error)
-         cumulerror = cumulerror + error          
+         cumulerror = cumulerror + error
         else
          write(*,*) 'GET_M_MIX_NESTED: bad hostmatrix: ',         &
                            hostmatrix
@@ -474,7 +474,7 @@
                        volair, volice, volwater, mixingrule,            &
                        matrix, inclusion, error)
        cumulerror = cumulerror + error
-        
+
       else
        write(*,*) 'GET_M_MIX_NESTED: unknown matrix: ', host
        cumulerror = cumulerror + 1
@@ -482,7 +482,7 @@
 
       IF (cumulerror .ne. 0) THEN
        write(*,*) 'GET_M_MIX_NESTED: error encountered'
-       get_m_mix_nested = CMPLX(1.0d0,0.0d0)    
+       get_m_mix_nested = CMPLX(1.0d0,0.0d0)
       endif
 
       end function get_m_mix_nested

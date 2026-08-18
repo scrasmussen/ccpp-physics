@@ -131,7 +131,7 @@ contains
       ! CCPP error handling
       character(len=*),          intent(  out) :: errmsg
       integer,                   intent(  out) :: errflg
-      
+
       ! initialize ccpp error handling variables
       errmsg = ''
       errflg = 0

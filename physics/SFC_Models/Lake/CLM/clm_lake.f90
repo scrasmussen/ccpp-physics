@@ -7,23 +7,23 @@
 !! modified for CCPP by Sam Trahan in June 2022.
 !!
 !! The original documentation said:
-!! 
-!! The lake scheme was retrieved from the Community Land Model version 4.5 
-!! (Oleson et al. (2013) \cite Oleson2013) with some modifications by Gu et al. (2015) \cite Gu2015. It is a 
-!! one-dimensional mass and energy balance scheme with 20-25 model layers, 
-!! including up to 5 snow layers on the lake ice, 10 water layers, and 10 soil 
-!! layers on the lake bottom. The lake scheme is used with actual lake points and 
-!! lake depth derived from the WPS, and it also can be used with user defined 
-!! lake points and lake depth in WRF (lake_min_elev and lakedepth_default). 
-!! The lake scheme is independent of a land surface scheme and therefore 
-!! can be used with any land surface scheme embedded in WRF. The lake scheme 
-!! developments and evaluations were included in Subin et al. (2012) \cite Subin_2012 
-!! and Gu et al. (2015) \cite Gu2015 . 
+!!
+!! The lake scheme was retrieved from the Community Land Model version 4.5
+!! (Oleson et al. (2013) \cite Oleson2013) with some modifications by Gu et al. (2015) \cite Gu2015. It is a
+!! one-dimensional mass and energy balance scheme with 20-25 model layers,
+!! including up to 5 snow layers on the lake ice, 10 water layers, and 10 soil
+!! layers on the lake bottom. The lake scheme is used with actual lake points and
+!! lake depth derived from the WPS, and it also can be used with user defined
+!! lake points and lake depth in WRF (lake_min_elev and lakedepth_default).
+!! The lake scheme is independent of a land surface scheme and therefore
+!! can be used with any land surface scheme embedded in WRF. The lake scheme
+!! developments and evaluations were included in Subin et al. (2012) \cite Subin_2012
+!! and Gu et al. (2015) \cite Gu2015 .
 MODULE clm_lake
-  
+
     use machine,               only: kind_phys, kind_dbl_prec
 
-    implicit none 
+    implicit none
 
     private
 
@@ -57,11 +57,11 @@ MODULE clm_lake
     integer,parameter  ::     filter_shlakec(1) = 1          !< lake filter (columns)
     integer,parameter  ::     num_shlakep       = 1          !< number of pfts in lake filter
     integer,parameter  ::     filter_shlakep(1) = 1          !< lake filter (pfts)
-    integer,parameter  ::     pcolumn(1)        = 1  
-    integer,parameter  ::     pgridcell(1)      = 1  
+    integer,parameter  ::     pcolumn(1)        = 1
+    integer,parameter  ::     pgridcell(1)      = 1
     integer,parameter  ::     cgridcell(1)      = 1          !< gridcell index of column
     integer,parameter  ::     clandunit(1)      = 1          !< landunit index of column
-  
+
     integer,parameter  ::     begg = 1
     integer,parameter  ::     endg = 1
     integer,parameter  ::     begl = 1
@@ -73,14 +73,14 @@ MODULE clm_lake
 
     integer,parameter  ::     column    =1
     logical,parameter  ::     lakpoi(1) = .true.
-   
+
     !Initialize physical constants not available from model:
     real(kind_lake), parameter :: tcrit  = 2.5          !< critical temperature to determine rain or snow
     real(kind_lake), parameter :: tkwat  = 0.6          !< thermal conductivity of water [W/m/k]
     real(kind_lake), parameter :: tkice  = 2.290        !< thermal conductivity of ice   [W/m/k]
     real(kind_lake), parameter :: tkairc = 0.023        !< thermal conductivity of air   [W/m/k]
     real(kind_lake), parameter :: snow_bd = 250         !< constant snow bulk density (only used in special case here) [kg/m^3]
-  
+
     ! Constants that are copied from model values by clm_lake_init:
     real(kind_lake) :: pi                   !< ratio of the circumference of a circle to its diameter
     real(kind_lake) :: vkc                  !< von Karman constant [-]
@@ -101,11 +101,11 @@ MODULE clm_lake
     real(kind_lake) :: con_eps              !< ratio of gas constants of air and water vapor [unitless]
     real(kind_lake) :: one_minus_con_eps    !< 1 - con_eps [unitless]
     real(kind_lake) :: con_fvirt            !< 1/con_eps - 1 [unitless]
-    
+
     real(kind_lake), public, parameter :: spval = 1.e36 !< special value for missing data (ocean)
     real(kind_lake), parameter  ::     depth_c = 50.    !< below the level t_lake3d will be 277.0  !mchen
     real(kind_lake), parameter :: zero_h2o = 1e-12      !< lower mixing ratio is is treated as zero
-    
+
    ! These are tunable constants
     real(kind_lake), parameter :: wimp   = 0.05    !< Water impermeable if porosity less than wimp
     real(kind_lake), parameter :: ssi    = 0.033   !< Irreducible water saturation of snow
@@ -127,7 +127,7 @@ MODULE clm_lake
     real(kind_lake) :: dzlak(1:nlevlake)    !< lake dz (thickness)
     real(kind_lake) :: zsoi(1:nlevsoil)     !< soil z  (layers)
     real(kind_lake) :: dzsoi(1:nlevsoil)    !< soil dz (thickness)
-    real(kind_lake) :: zisoi(0:nlevsoil)    !< soil zi (interfaces)  
+    real(kind_lake) :: zisoi(0:nlevsoil)    !< soil zi (interfaces)
 
     real, parameter :: SaltLk_T(1:25) = (/ 0.5,  0.,-0.5, 3., 4.,  7., 8., 12.,  13., 16., 19., 21., &
                                           23.5, 25., 26.,24.,23.,20.5,18., 15., 11.5,  8.,  4.,  1., 0.5/)
@@ -150,11 +150,11 @@ MODULE clm_lake
 
       !>tgs  - 7nov19 - salinity effect on freezing point (Tanya, Stan, Trevor).
       !! The Great Salt Lake (GSL), Utah lat/long (39.5-42.0,-111.5- -117.7).
-      !! The GSL's salinity is 270 ppt above ~41.22 N with freezing point of -24 C, 
-      !! and 150 ppt south of ~41.22 N with freezing point -10 C (info from Trevor Alcott). 
+      !! The GSL's salinity is 270 ppt above ~41.22 N with freezing point of -24 C,
+      !! and 150 ppt south of ~41.22 N with freezing point -10 C (info from Trevor Alcott).
       !! The fresh-water Willard Bay should be excluded from the box around the Great Salt
       !! Lake: lat/long 41.3539, -112.102, HRRR i,j = 494,667 (info from Stan and Trevor).
-      !! 
+      !!
       !! 1jun2020: reset the GSL freezing point to be -5 C,
       !! and add a check (after call to LakeMain) to keep the lake ice free for the whole year.
       if ((xlon_d.gt.-117.7 .and. xlon_d.lt.-111.5) .and.    &
@@ -201,7 +201,7 @@ MODULE clm_lake
 
       ! --- The Mono Lake in California, salinity is 75 ppt with freezing point at
       ! --- -4.2 C (Stan). The Mono Lake lat/long (37.9-38.2, -119.3 - 118.8)
-      if (xlon_d.gt.-119.3.and. xlon_d.lt.-118.8) then  
+      if (xlon_d.gt.-119.3.and. xlon_d.lt.-118.8) then
          if(xlat_d.gt.37.9 .and. xlat_d.lt.38.2) then
             salty = .true.
             if(debug_print) then
@@ -217,7 +217,7 @@ MODULE clm_lake
             print *,'Salty Caspian Sea ',xlat_d,xlon_d
          endif
          salty = .true.
-      end if 
+      end if
       if ( xlon_d>35.3 .and. xlon_d<35.6 .and. xlat_d>31.3 .and. xlat_d<31.8) then
          if(debug_print) then
             print *,'Salty Dead Sea ',xlat_d,xlon_d
@@ -227,7 +227,7 @@ MODULE clm_lake
      endif other_locations
      !tgs --- end of special treatment for salty lakes
     end subroutine is_salty
- 
+
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     subroutine calculate_z_dz_lake(i,input_lakedepth,clm_lakedepth,z_lake,dz_lake)
@@ -247,7 +247,7 @@ MODULE clm_lake
         z_lake(1:nlevlake) = zlak(1:nlevlake)
         dz_lake(1:nlevlake) = dzlak(1:nlevlake)
       else
-        depthratio = input_lakedepth(i) / (zlak(nlevlake) + 0.5_kind_lake*dzlak(nlevlake)) 
+        depthratio = input_lakedepth(i) / (zlak(nlevlake) + 0.5_kind_lake*dzlak(nlevlake))
         z_lake(1) = zlak(1)
         dz_lake(1) = dzlak(1)
         dz_lake(2:nlevlake) = dzlak(2:nlevlake)*depthratio
@@ -301,7 +301,7 @@ MODULE clm_lake
       !==============================================================================
 
     IMPLICIT NONE
-    
+
     !
     ! Model time and metadata:
     !
@@ -358,20 +358,20 @@ MODULE clm_lake
     INTEGER, DIMENSION( : ), INTENT(INOUT) :: cannot_freeze
 
     real(kind_phys),           dimension(: )      ,intent(inout)            :: savedtke12d,    &
-                                                                               snowdp2d,       &    
-                                                                               h2osno2d,       &    
-                                                                               snl2d,          &    
+                                                                               snowdp2d,       &
+                                                                               h2osno2d,       &
+                                                                               snl2d,          &
                                                                                t_grnd2d
-    
-    real(kind_phys),    dimension( :,: ),  INTENT(inout)  :: t_lake3d,       &    
+
+    real(kind_phys),    dimension( :,: ),  INTENT(inout)  :: t_lake3d,       &
                                                                                   lake_icefrac3d
-    real(kind_phys),    dimension( :,-nlevsnow+1: )  ,INTENT(inout)            :: t_soisno3d,     &    
-                                                                                  h2osoi_ice3d,   &    
-                                                                                  h2osoi_liq3d,   &    
-                                                                                  h2osoi_vol3d,   &    
-                                                                                  z3d,            &    
-                                                                                  dz3d 
-    real(kind_phys),    dimension( :,-nlevsnow+0: )  ,INTENT(inout)  :: zi3d    
+    real(kind_phys),    dimension( :,-nlevsnow+1: )  ,INTENT(inout)            :: t_soisno3d,     &
+                                                                                  h2osoi_ice3d,   &
+                                                                                  h2osoi_liq3d,   &
+                                                                                  h2osoi_vol3d,   &
+                                                                                  z3d,            &
+                                                                                  dz3d
+    real(kind_phys),    dimension( :,-nlevsnow+0: )  ,INTENT(inout)  :: zi3d
 
     REAL(KIND_PHYS),           DIMENSION( : )  ,INTENT(INOUT) :: clm_lakedepth
     REAL(KIND_PHYS),           DIMENSION( : )  ,INTENT(INOUT) :: input_lakedepth
@@ -382,7 +382,7 @@ MODULE clm_lake
     INTEGER, INTENT(OUT) :: errflg
     CHARACTER(*), INTENT(OUT) :: errmsg
 
-       
+
 
     !
     !local variables:
@@ -394,7 +394,7 @@ MODULE clm_lake
 
       !temporary varibles in:
       real(kind_lake)  :: forc_t(1)          ! atmospheric temperature (Kelvin)
-      real(kind_lake)  :: forc_pbot(1)       ! atm bottom level pressure (Pa) 
+      real(kind_lake)  :: forc_pbot(1)       ! atm bottom level pressure (Pa)
       real(kind_lake)  :: forc_psrf(1)       ! atmospheric surface pressure (Pa)
       real(kind_lake)  :: forc_hgt(1)        ! atmospheric reference height (m)
       real(kind_lake)  :: forc_hgt_q(1)      ! observational height of humidity [m]
@@ -520,11 +520,11 @@ MODULE clm_lake
           wght2 = max(0.0_kind_lake,min(1.0_kind_lake,wght2))
         endif
         wght1 = 1.0_kind_lake - wght2
-  
+
         if(debug_print ) then
           print *,'month,num1,num2,wght1,wght2',month,num1,num2,wght1,wght2
         endif
-      
+
         lake_top_loop: DO I = 1,im
 
         if_lake_is_here: if (flag_iter(i) .and. use_lake_model(i)/=0) THEN
@@ -556,7 +556,7 @@ MODULE clm_lake
            albedo(i) = ( 0.6 * lake_icefrac3d(i,1) ) +  &
                        ( (1.0-lake_icefrac3d(i,1)) * 0.08)
            SOLNET  = SOLDN*(1.-ALBEDO(I))              ! use mid-day albedo to determine net downward solar
-                                                       ! (no solar zenith angle correction) 
+                                                       ! (no solar zenith angle correction)
 
            lake_points = lake_points+1
 
@@ -568,9 +568,9 @@ MODULE clm_lake
            enddo
 
            ! Soil hydraulic and thermal properties
-           isl = ISLTYP(i)   
+           isl = ISLTYP(i)
            if (isl == 0  ) isl = 14
-           if (isl == 14 ) isl = isl + 1 
+           if (isl == 14 ) isl = isl + 1
 
            watsat = 0.489_kind_lake - 0.00126_kind_lake*sand(isl)
            csol   = (2.128_kind_lake*sand(isl)+2.385_kind_lake*clay(isl)) / (sand(isl)+clay(isl))*1.e6_kind_lake  ! J/(m3 K)
@@ -581,7 +581,7 @@ MODULE clm_lake
            tksatu = tkmg(1,1)*0.57_kind_lake**watsat(1,1)
 
            do c = 1,column
-     
+
             forc_t(c)          = SFCTMP           ! [K]
             forc_pbot(c)       = PBOT             ! [Pa]
             forc_psrf(c)       = PSFC             ! [Pa]
@@ -595,7 +595,7 @@ MODULE clm_lake
             forc_lwrad(c)      = LWDN             ! [W/m/m]
             prec(c)            = PRCP             ! [mm/s]
             sabg(c)            = SOLNET
-            lat(c)             = XLAT_D(I)*to_radians  ! [radian] 
+            lat(c)             = XLAT_D(I)*to_radians  ! [radian]
             do_capsnow(c)      = .false.
 
             lakedepth(c)           = clm_lakedepth(i)
@@ -615,7 +615,7 @@ MODULE clm_lake
                h2osoi_vol(c,k)    = h2osoi_vol3d(i,k)
                z(c,k)             = z3d(i,k)
                dz(c,k)            = dz3d(i,k)
-            enddo   
+            enddo
             do k = -nlevsnow+0,nlevsoil
                zi(c,k)            = zi3d(i,k)
             enddo
@@ -635,7 +635,7 @@ MODULE clm_lake
           lat_d = xlat_d(i)
           lon_d = xlon_d(i)
 
-            CALL LakeMain(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,   & !I  
+            CALL LakeMain(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,   & !I
                           forc_hgt_t,forc_hgt_u,forc_q, forc_u,         &
                           forc_v,forc_lwrad,prec, sabg,lat,             &
                           z_lake,dz_lake,lakedepth,do_capsnow,          &
@@ -643,7 +643,7 @@ MODULE clm_lake
                           h2osoi_vol,h2osoi_liq,h2osoi_ice,             &
                           t_grnd,t_soisno,t_lake,                       &
                           savedtke1,lake_icefrac,                       &
-                          eflx_lwrad_net,eflx_gnet,                     & !O 
+                          eflx_lwrad_net,eflx_gnet,                     & !O
                           eflx_sh_tot,eflx_lh_tot,                      &
                           t_ref2m,q_ref2m, dtime,                       &
                           watsat, tksatu, tkmg, tkdry, csol,            &
@@ -676,8 +676,8 @@ MODULE clm_lake
               enddo
               t_soisno(c,1) = max(tfrz-4.2_kind_lake,t_soisno(c,1))
               if(debug_print) print *,'Mono - tsfc,t_lake3d',i,t_grnd(c),t_lake(c,:),t_soisno(c,:)
-            endif 
-           
+            endif
+
             savedtke12d(i)         = savedtke1(c)
             snowdp2d(i)            = snowdp(c)
             h2osno2d(i)            = h2osno(c)
@@ -698,9 +698,9 @@ MODULE clm_lake
            do k = -nlevsnow+0,nlevsoil
                zi3d(i,k)           = zi(c,k)
            enddo
-            
+
          enddo
-         
+
             feedback: if(feedback_to_atmosphere) then
                 c = 1
 
@@ -744,7 +744,7 @@ MODULE clm_lake
                 !TH2(I)         = T2(I)*(1.E5/PSFC)**RCP    ! potential temperature
 
                 ! Calculate qsfc from t_grnd:               ! surface_specific_humidity_over_water
-                PSFC = prsi(i,1) 
+                PSFC = prsi(i,1)
                 discard1 = -9999
                 discard2 = -9999
                 discard3 = -9999
@@ -817,7 +817,7 @@ MODULE clm_lake
                       endif
                     end do
                   endif
-                  
+
                 else ! Not an ice point
                   ! On non-icy lake points, set variables relevant to
                   ! lake ice to reasonable defaults.  Let LSM fill in
@@ -867,7 +867,7 @@ MODULE clm_lake
                 endif
 
             endif feedback
-        
+
         endif if_lake_is_here
         ENDDO lake_top_loop
 
@@ -879,28 +879,28 @@ MODULE clm_lake
     END SUBROUTINE clm_lake_run
 
 
-    SUBROUTINE LakeMain(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,     & !I  
-                          forc_hgt_t,forc_hgt_u,forc_q, forc_u,         &   
-                          forc_v,forc_lwrad,prec, sabg,lat,             &   
+    SUBROUTINE LakeMain(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,     & !I
+                          forc_hgt_t,forc_hgt_u,forc_q, forc_u,         &
+                          forc_v,forc_lwrad,prec, sabg,lat,             &
                           z_lake,dz_lake,lakedepth,do_capsnow,          &
                           h2osno,snowdp,snl,z,dz,zi,                    & !H
                           h2osoi_vol,h2osoi_liq,h2osoi_ice,             &
-                          t_grnd,t_soisno,t_lake,                       &  
+                          t_grnd,t_soisno,t_lake,                       &
                           savedtke1,lake_icefrac,                       &
-                          eflx_lwrad_net,eflx_gnet,                     & !O 
+                          eflx_lwrad_net,eflx_gnet,                     & !O
                           eflx_sh_tot,eflx_lh_tot,                      &
                           t_ref2m,q_ref2m, dtime,                       &
                           watsat, tksatu, tkmg, tkdry, csol,            &
                           taux,tauy,ram1,z0mg,ustar_out,errmsg,errflg, xlat_d,xlon_d)
     implicit none
-    !in: 
+    !in:
 
     integer, intent(inout) :: errflg
     character(*), intent(inout) :: errmsg
     real(kind_lake),intent(in) :: dtime              !< timestep
     real(kind_lake),intent(in) :: xlat_d, xlon_d     !< grid location for debugging
     real(kind_lake),intent(in) :: forc_t(1)          !< atmospheric temperature (Kelvin)
-    real(kind_lake),intent(in) :: forc_pbot(1)       !< atm bottom level pressure (Pa) 
+    real(kind_lake),intent(in) :: forc_pbot(1)       !< atm bottom level pressure (Pa)
     real(kind_lake),intent(in) :: forc_psrf(1)       !< atmospheric surface pressure (Pa)
     real(kind_lake),intent(in) :: forc_hgt(1)        !< atmospheric reference height (m)
     real(kind_lake),intent(in) :: forc_hgt_q(1)      !< observational height of humidity [m]
@@ -918,7 +918,7 @@ MODULE clm_lake
     real(kind_lake),intent(in) :: dz_lake(1,nlevlake)                  !< layer thickness for lake (m)
     real(kind_lake),intent(out) :: ustar_out(1)       !< friction velocity [m/s]
     real(kind_lake), intent(in) :: lakedepth(1)       !< column lake depth (m)
-    !!!!!!!!!!!!!!!!tep(in),hydro(in)   
+    !!!!!!!!!!!!!!!!tep(in),hydro(in)
    ! real(kind_lake), intent(in) :: watsat(1,1:nlevsoil)      ! volumetric soil water at saturation (porosity)
     !!!!!!!!!!!!!!!!hydro
     logical , intent(in) :: do_capsnow(1)     !< true => do snow capping
@@ -927,7 +927,7 @@ MODULE clm_lake
     real(kind_lake), intent(in) :: tkmg(1,nlevsoil)        !< thermal conductivity, soil minerals  [W/m-K]
     real(kind_lake), intent(in) :: tkdry(1,nlevsoil)       !< thermal conductivity, dry soil (W/m/Kelvin)
     real(kind_lake), intent(in) :: csol(1,nlevsoil)        !< heat capacity, soil solids (J/m**3/Kelvin)
-   
+
 
 
     !in&out
@@ -963,7 +963,7 @@ MODULE clm_lake
 
 
     !local output
-    
+
     real(kind_lake) :: begwb(1)           ! water mass begining of the time step
     real(kind_lake) :: t_veg(1)           ! vegetation temperature (Kelvin)
     real(kind_lake) :: eflx_soil_grnd(1)  ! soil heat flux (W/m**2) [+ = into soil]
@@ -1005,7 +1005,7 @@ MODULE clm_lake
     real(kind_lake) :: qflx_dew_snow(1)   ! surface dew added to snow pack (mm H2O /s) [+]
     real(kind_lake) :: qflx_dew_grnd(1)   ! ground surface dew formation (mm H2O /s) [+]
     real(kind_lake) :: qflx_rain_grnd_col(1)   !rain on ground after interception (mm H2O/s) [+]
-    begwb = 0    
+    begwb = 0
 
     !    lat  = lat*pi/180  ! [radian]
 
@@ -1077,12 +1077,12 @@ MODULE clm_lake
     if(errflg/=0) then
       return ! State is invalid now, so pass error to caller.
     endif
-                       
+
     !==================================================================================
     ! !DESCRIPTION:
     ! Calculation of Shallow Lake Hydrology. Full hydrology of snow layers is
-    ! done. However, there is no infiltration, and the water budget is balanced with 
-                       
+    ! done. However, there is no infiltration, and the water budget is balanced with
+
    END SUBROUTINE LakeMain
 
 
@@ -1090,8 +1090,8 @@ MODULE clm_lake
   !> Calculates lake temperatures and surface fluxes for shallow lakes.
   !!
   !! Shallow lakes have variable depth, possible snow layers above, freezing & thawing of lake water,
-  !! and soil layers with active temperature and gas diffusion below.        
-  !!                             
+  !! and soil layers with active temperature and gas diffusion below.
+  !!
   !! WARNING: This subroutine assumes lake columns have one and only one pft.
 SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,           &  !i
                           forc_hgt_t,forc_hgt_u,forc_q,                   &
@@ -1107,15 +1107,15 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
   !==============================================================================
   ! REVISION HISTORY:
   ! - Created by Zack Subin, 2009
-  ! - Reedited by Hongping Gu, 2010 
+  ! - Reedited by Hongping Gu, 2010
   ! - Updated for CCPP by Sam Trahan, 2022
   !==============================================================================
-  
+
    ! implicit none
- 
+
     implicit none
 
-    !in: 
+    !in:
 
     integer, intent(inout) :: errflg                 !<
     character(len=*), intent(inout) :: errmsg        !<
@@ -1241,7 +1241,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
     real(kind_lake) :: bw                       ! partial density of water (ice + liquid)
     real(kind_lake) :: t_grnd_temp              ! Used in surface flux correction over frozen ground
     real(kind_lake) :: betaprime(lbc:ubc)       ! Effective beta: 1 for snow layers, beta(islak) otherwise
-    character*256 :: message 
+    character*256 :: message
     ! tgs COARE
     real(kind_lake) :: tc, visc, ren
 
@@ -1258,7 +1258,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
     !-----------------------------------------------------------------------
 
     ! Begin calculations
-    
+
     !dir$ concurrent
     !cdir nodep
     forc_th(1)  = forc_t(1) * (forc_psrf(1)/ forc_pbot(1))**(rair/cpair)
@@ -1285,7 +1285,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
 
 
        if (snl(c) < 0) then
-           betaprime(c) = 1._kind_lake  !Assume all solar rad. absorbed at the surface of the top snow layer. 
+           betaprime(c) = 1._kind_lake  !Assume all solar rad. absorbed at the surface of the top snow layer.
            dzsur(c) = dz(c,jtop(c))*0.5_kind_lake
        else
            betaprime(c) = beta(islak)
@@ -1317,7 +1317,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
        displa(p) = 0._kind_lake
 
        ! Roughness lengths
- 
+
 
        ! changed by Hongping Gu
     !   if (t_grnd(c) >= tfrz) then   ! for unfrozen lake
@@ -1327,14 +1327,14 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
     !   non-veg. snow?
     !      z0mg(p) = 0.04_kind_lake
     !   end if
- 
+
        if (t_grnd(c) >= tfrz) then   ! for unfrozen lake
           z0mg(p) = 0.001_kind_lake        !original 0.01
        else if(snl(c) == 0 ) then                         ! for frozen lake
        ! Is this okay even if it is snow covered?  What is the roughness over
        ! non-veg. snow?
           z0mg(p) = 0.005_kind_lake          !original 0.04, now for frozen lake without snow
-       else                          ! for frozen lake with snow   
+       else                          ! for frozen lake with snow
           z0mg(p) = 0.0024_kind_lake
        end if
 
@@ -1353,10 +1353,10 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
 
         z0hg(p) = MIN(z0hg(p),1.0e-4_kind_lake)
         z0hg(p) = MAX(z0hg(p),2.0e-9_kind_lake)
- 
+
         z0qg(p) = z0hg(p)
- 
-       ! end COARE 
+
+       ! end COARE
         endif
        z0hg(p) = z0mg(p)
        z0qg(p) = z0mg(p)
@@ -1534,7 +1534,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
        ! Zack Subin, 3/27/09: Since they are now a function of whatever t_grnd was before cooling
        !    to freezing temperature, then this value should be used in the derivative correction term.
        ! Should this happen if the lake temperature is below freezing, too? I'll assume that for now.
-       ! Also, allow convection if ground temp is colder than lake but warmer than 4C, or warmer than 
+       ! Also, allow convection if ground temp is colder than lake but warmer than 4C, or warmer than
        !    lake which is warmer than freezing but less than 4C.
        if ( (h2osno(c) > 0.5_kind_lake .or. t_lake(c,1) <= tfrz) .and. t_grnd(c) > tfrz) then
           t_grnd_temp = t_grnd(c)
@@ -1652,7 +1652,7 @@ SUBROUTINE ShalLakeFluxes(forc_t,forc_pbot,forc_psrf,forc_hgt,forc_hgt_q,       
 
 
 END SUBROUTINE ShalLakeFluxes
- 
+
 SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !i
                                  z_lake,ws,ks,snl,eflx_gnet,lakedepth,       &
                                  lake_icefrac,snowdp,                        & !i&o
@@ -1734,7 +1734,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
   ! 9!) Phase change
   ! 9.5!) (Optional) Do second energy check using temperature change and latent heat, considering changed heat capacity.
   !                  Also do soil water balance check.
-  !10!) Convective mixing 
+  !10!) Convective mixing
   !11!) Do final energy check to detect small numerical errors (especially from convection)
   !     and dump small imbalance into sensible heat, or pass large errors to BalanceCheckMod for abort.
   !
@@ -1743,8 +1743,8 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
   ! Reedited by Hongping Gu, 2010.
   ! Updated for CCPP by Sam Trahan, 2022.
   !=========================================================================================================
-  
-    
+
+
     implicit none
 
     !in:
@@ -1772,11 +1772,11 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     integer , intent(in) :: snl(1)                     !< negative of number of snow layers
     real(kind_lake), intent(inout) :: eflx_gnet(1)     !< net heat flux into ground (W/m**2) at the surface interface
     real(kind_lake), intent(in) :: lakedepth(1)        !< column lake depth (m)
-    
+
    ! real(kind_lake), intent(in) :: watsat(1,nlevsoil)      ! volumetric soil water at saturation (porosity)
     real(kind_lake), intent(inout) :: snowdp(1)        !< snow height (m)
     real(kind_lake), intent(in) :: dtime               !< timestep
-    !out: 
+    !out:
 
     real(kind_lake), intent(out) :: eflx_sh_grnd(1)    !< sensible heat flux from ground (W/m**2) [+ to atm]
     real(kind_lake), intent(out) :: eflx_sh_tot(1)     !< total sensible heat flux (W/m**2) [+ to atm]
@@ -1877,8 +1877,8 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !   that deserves more attention.
     !   Some radiation will be allowed to reach the soil.
     !-----------------------------------------------------------------------
-    
-    
+
+
     ! 1!) Initialization
     ! Determine step size
 
@@ -1943,7 +1943,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
        ! Prepare for lake layer temperature calculations below
 
        ! fin(c) = betaprime * sabg(p) + forc_lwrad(g) - (eflx_lwrad_out(p) + &
-       !     eflx_sh_tot(p) + eflx_lh_tot(p)) 
+       !     eflx_sh_tot(p) + eflx_lh_tot(p))
        ! fin(c) now passed from ShalLakeFluxes as eflx_gnet
        fin(c) = eflx_gnet(p)
 
@@ -1956,7 +1956,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
       !cdir nodep
        do fc = 1, num_shlakec
           c = filter_shlakec(fc)
-          rhow(c,j) = (1._kind_lake - lake_icefrac(c,j)) * & 
+          rhow(c,j) = (1._kind_lake - lake_icefrac(c,j)) * &
                       1000._kind_lake*( 1.0_kind_lake - 1.9549e-05_kind_lake*(abs(t_lake(c,j)-277._kind_lake))**1.68_kind_lake ) &
                     + lake_icefrac(c,j)*denice
                     ! Allow for ice fraction; assume constant ice density.
@@ -1983,22 +1983,22 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
           if (t_grnd(c) > tfrz .and. t_lake(c,1) > tfrz .and. snl(c) == 0) then
             ! ke = vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
 
-             if( t_lake(c,1) > 277.15_kind_lake ) then 
-                if (lakedepth(c) > 15.0 ) then 
+             if( t_lake(c,1) > 277.15_kind_lake ) then
+                if (lakedepth(c) > 15.0 ) then
                    ke = 1.e+2_kind_lake*vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
-                else 
+                else
                    ke = vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
                 endif
-             else 
-                if (lakedepth(c) > 15.0 ) then 
-                  if (lakedepth(c) > 150.0 ) then 
+             else
+                if (lakedepth(c) > 15.0 ) then
+                  if (lakedepth(c) > 150.0 ) then
                     ke = 1.e+5_kind_lake*vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
-                  else 
+                  else
                     ke =1.e+4_kind_lake*vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
                   end if
-                else 
+                else
                   ke = vkc*ws(c)*z_lake(c,j)/p0 * exp(-ks(c)*z_lake(c,j)) / (1._kind_lake+37._kind_lake*ri*ri)
-                endif 
+                endif
              end if
 
              kme(c,j) = km + ke
@@ -2150,7 +2150,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                 ocvts(c) = ocvts(c) - h2osno(c)*hfus
              end if
              t_soisno_bef(c,j) = t_soisno(c,j)
-             if(abs(t_soisno(c,j)-288) > 150)   then 
+             if(abs(t_soisno(c,j)-288) > 150)   then
 48              format('WARNING: At c=',I0,' level=',I0,' extreme t_soisno = ',F15.10)
                 WRITE(message,48) c,j,t_soisno(c,j)
                 ! errmsg=trim(message)
@@ -2235,7 +2235,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
              end if
          end if
 
-      end do 
+      end do
    end do
 
 
@@ -2298,7 +2298,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 
     call Tridiagonal(lbc, ubc, -nlevsnow + 1, nlevlake + nlevsoil, jtop, num_shlakec, filter_shlakec, &
                      a, b, c1, r, tx)
- 
+
     ! Set t_soisno and t_lake
     do j = -nlevsnow+1, nlevlake + nlevsoil
       !dir$ concurrent
@@ -2363,7 +2363,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                     ! unlike eflx_gnet
           if(abs(errsoi(c)) > .001_kind_lake) then ! 1.e-5_kind_lake) then
              WRITE( message,* )'Primary soil energy conservation error in shlake &
-                                &column during Tridiagonal Solution,', 'error (W/m^2):', c, errsoi(c) 
+                                &column during Tridiagonal Solution,', 'error (W/m^2):', c, errsoi(c)
              errmsg=trim(message)
              errflg=1
              return
@@ -2380,7 +2380,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     call PhaseChange_Lake (snl,h2osno,dz,dz_lake,                            & !i
                                t_soisno,h2osoi_liq,h2osoi_ice,               & !i&o
                                lake_icefrac,t_lake, snowdp,                  & !i&o
-                               qflx_snomelt,eflx_snomelt,imelt,              & !o  
+                               qflx_snomelt,eflx_snomelt,imelt,              & !o
                                cv, cv_lake,                                  & !i&o
                                lhabs)                                          !o
 
@@ -2494,7 +2494,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                    print *, 'Convective Ice Mixing in column ', c, 'lake_icefrac(c,j) ',lake_icefrac(c,j),lake_icefrac(c,j+1)
                  endif
                endif
-                qav(c) = qav(c) + dz_lake(c,i)*(t_lake(c,i)-tfrz) * & 
+                qav(c) = qav(c) + dz_lake(c,i)*(t_lake(c,i)-tfrz) * &
                         ((1._kind_lake - lake_icefrac(c,i))*cwat + lake_icefrac(c,i)*cice_eff)
                 !                tav(c) = tav(c) + t_lake(c,i)*dz_lake(c,i)
                 iceav(c) = iceav(c) + lake_icefrac(c,i)*dz_lake(c,i)
@@ -2560,7 +2560,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                 end if
                 zsum(c) = zsum(c) + dz_lake(c,i)
 
-                rhow(c,i) = (1._kind_lake - lake_icefrac(c,i)) * & 
+                rhow(c,i) = (1._kind_lake - lake_icefrac(c,i)) * &
                             1000._kind_lake*( 1.0_kind_lake - 1.9549e-05_kind_lake*(abs(t_lake(c,i)-277._kind_lake))**1.68_kind_lake ) &
                           + lake_icefrac(c,i)*denice
                 if (debug_print .and. lake_icefrac(c,j) > 0.)print *,'rhow(c,i),lake_icefrac(c,i),t_lake(c,i)',  &
@@ -2702,12 +2702,12 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
   ! ROUTINE: SoilThermProp_Lake
   !
   ! INTERFACE:
-    ! DESCRIPTION:  
+    ! DESCRIPTION:
     !> Calculation of thermal conductivities and heat capacities of
     !! snow/soil layers
     !!\n (1) The volumetric heat capacity is calculated as a linear combination
     !!     in terms of the volumetric fraction of the constituent phases.
-    !!    
+    !!
     !!\n (2) The thermal conductivity of soil is computed from the algorithm of
     !!     Johansen (as reported by Farouki 1981), and of snow is from the
     !!     formulation used in SNTHERM (Jordan 1991).
@@ -2723,8 +2723,8 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     implicit none
     !in
 
-    integer, intent(inout) :: errflg                       
-    character(*), intent(inout) :: errmsg                  
+    integer, intent(inout) :: errflg
+    character(*), intent(inout) :: errmsg
     integer , intent(in) :: snl(1)                         !< number of snow layers
     !    real(kind_lake), intent(in) :: h2osno(1)          !< snow water (mm H2O)
     real(kind_lake), intent(in) :: watsat(1,nlevsoil)      !< volumetric soil water at saturation (porosity)
@@ -2763,10 +2763,10 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !    integer , pointer :: ityplun(:)       ! landunit type
     !
     !EOP
-    
-    
+
+
     ! OTHER LOCAL VARIABLES:
-    
+
     integer  :: l,c,j                     ! indices
     integer  :: fc                        ! lake filtered column indices
     real(kind_lake) :: bw                        ! partial density of water (ice + liquid)
@@ -2775,7 +2775,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake) :: fl                        ! fraction of liquid or unfrozen water to total water
     real(kind_lake) :: satw                      ! relative total water content of soil.
     real(kind_lake) :: thk(lbc:ubc,-nlevsnow+1:nlevsoil) ! thermal conductivity of layer
-    character*256 :: message 
+    character*256 :: message
 
     real(kind_lake) :: denom
 
@@ -2916,9 +2916,9 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !> Calculation of the phase change within snow, soil, & lake layers:
     !!\n (1) Check the conditions for which the phase change may take place,
     !!     i.e., the layer temperature is greater than the freezing point
-    !!     and the ice mass is not equal to zero (i.e. melting),       
-    !!     or the layer temperature is less than the freezing point    
-    !!     and the liquid water mass is greater than the allowable supercooled 
+    !!     and the ice mass is not equal to zero (i.e. melting),
+    !!     or the layer temperature is less than the freezing point
+    !!     and the liquid water mass is greater than the allowable supercooled
     !!    (i.e. freezing).
     !!\n (2) Assess the amount of phase change from the energy excess (or deficit)
     !!     after setting the layer temperature to freezing point, depending on
@@ -2932,7 +2932,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
   subroutine PhaseChange_Lake (snl,h2osno,dz,dz_lake,                        & !i
                                t_soisno,h2osoi_liq,h2osoi_ice,               & !i&o
                                lake_icefrac,t_lake, snowdp,                  & !i&o
-                               qflx_snomelt,eflx_snomelt,imelt,              & !o  
+                               qflx_snomelt,eflx_snomelt,imelt,              & !o
                                cv, cv_lake,                                  & !i&o
                                lhabs)                                          !o
     !=============================================================================================
@@ -2947,7 +2947,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !
     ! !ARGUMENTS:
     implicit none
-    !in: 
+    !in:
 
     integer , intent(in) :: snl(1)           !< number of snow layers
     real(kind_lake), intent(inout) :: h2osno(1)        !< snow water (mm H2O)
@@ -2955,7 +2955,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), intent(in) :: dz_lake(1,nlevlake)     !< lake layer thickness (m)
     ! Needed in case snow height is less than critical value.
 
-    !inout: 
+    !inout:
 
     real(kind_lake), intent(inout) :: snowdp(1)        !< snow height (m)
     real(kind_lake), intent(inout) :: t_soisno(1,-nlevsnow+1:nlevsoil)     !< soil temperature (Kelvin)
@@ -2963,7 +2963,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), intent(inout) :: h2osoi_ice(1,-nlevsnow+1:nlevsoil)   !< ice lens (kg/m2)
     real(kind_lake), intent(inout) :: lake_icefrac(1,nlevlake) !<  mass fraction of lake layer that is frozen
     real(kind_lake), intent(inout) :: t_lake(1,nlevlake)       !<  lake temperature (Kelvin)
-    !out: 
+    !out:
 
     real(kind_lake), intent(out) :: qflx_snomelt(1)  !< snow melt (mm H2O /s)
     real(kind_lake), intent(out) :: eflx_snomelt(1)  !< snow melt heat flux (W/m**2)
@@ -2984,7 +2984,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), parameter :: smallnumber = 1.e-7_kind_lake  !to prevent tiny residuals from rounding error
     logical  :: dophasechangeflag
     !-----------------------------------------------------------------------
-    
+
     ! Initialization
 
     !dir$ concurrent
@@ -3160,7 +3160,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                                qflx_dew_snow,qflx_dew_grnd,qflx_rain_grnd_col,   &
                                watsat, tksatu, tkmg, tkdry, csol,                &
                                dtime,errmsg,errflg)
-                       
+
     !==================================================================================
     !
     ! WARNING: This subroutine assumes lake columns have one and only one pft.
@@ -3182,7 +3182,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     ! Created by Zack Subin, 2009
     !
     !============================================================================================
-    
+
     ! USES:
     !
     implicit none
@@ -3219,9 +3219,9 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 
     real(kind_lake), intent(inout) :: begwb(1)         !< water mass begining of the time step
 
-    ! inout: 
+    ! inout:
 
-    
+
     real(kind_lake), intent(inout) :: z(1,-nlevsnow+1:nlevsoil)           !< layer depth  (m)
     real(kind_lake), intent(inout) :: dz(1,-nlevsnow+1:nlevsoil)          !< layer thickness depth (m)
     real(kind_lake), intent(inout) :: zi(1,-nlevsnow+0:nlevsoil)          !< interface depth (m)
@@ -3232,7 +3232,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), intent(inout) :: t_lake(1,nlevlake)        !< lake temperature (Kelvin)
 
     real(kind_lake), intent(inout) :: frac_iceold(1,-nlevsnow+1:nlevsoil)      !< fraction of ice relative to the tot water
-    ! out: 
+    ! out:
 
 
     real(kind_lake), intent(out) :: endwb(1)         !< water mass end of the time step
@@ -3296,7 +3296,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake) :: heatrem                      ! used in case above [J/m^2]
     real(kind_lake) :: heatsum(lbc:ubc)             ! used in case above [J/m^2]
     real(kind_lake) :: qflx_top_soil(1)     !net water input into soil from top (mm/s)
-    character*256 :: message 
+    character*256 :: message
 
     real(kind_lake),allocatable :: snow_water(:)           ! temporary sum of snow water for Bal Check [kg/m^2]
     !-----------------------------------------------------------------------
@@ -3441,7 +3441,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
           ! on snow or ground
 
           if (qflx_evap_soi(p) >= 0._kind_lake) then
-          ! for evaporation partitioning between liquid evap and ice sublimation, 
+          ! for evaporation partitioning between liquid evap and ice sublimation,
           ! use the ratio of liquid to (liquid+ice) in the top layer to determine split
           ! Since we're not limiting evap over lakes, but still can't remove more from top
           ! snow layer than there is there, create temp. limited evap_soi.
@@ -3451,7 +3451,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
              else
                 qflx_evap_grnd(c) = 0._kind_lake
              end if
-             qflx_sub_snow(c) = qflx_evap_soi_lim - qflx_evap_grnd(c)     
+             qflx_sub_snow(c) = qflx_evap_soi_lim - qflx_evap_grnd(c)
           else
              if (t_grnd(c) < tfrz) then
                 qflx_dew_snow(c) = abs(qflx_evap_soi(p))
@@ -3514,13 +3514,13 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 
     ! Determine the change of snow mass and the snow water onto soil
 
-    call SnowWater(lbc, ubc, num_shlakesnowc, filter_shlakesnowc,         & !i 
-                   num_shlakenosnowc, filter_shlakenosnowc,               & !i 
-                   snl,do_capsnow,qflx_snomelt,qflx_rain_grnd,            & !i 
-                   qflx_sub_snow,qflx_evap_grnd,                          & !i   
-                   qflx_dew_snow,qflx_dew_grnd,dz,dtime,                  & !i   
-                   h2osoi_ice,h2osoi_liq,                                 & !i&o 
-                   qflx_top_soil)                                           !o                        
+    call SnowWater(lbc, ubc, num_shlakesnowc, filter_shlakesnowc,         & !i
+                   num_shlakenosnowc, filter_shlakenosnowc,               & !i
+                   snl,do_capsnow,qflx_snomelt,qflx_rain_grnd,            & !i
+                   qflx_sub_snow,qflx_evap_grnd,                          & !i
+                   qflx_dew_snow,qflx_dew_grnd,dz,dtime,                  & !i
+                   h2osoi_ice,h2osoi_liq,                                 & !i&o
+                   qflx_top_soil)                                           !o
 
 
     ! Determine soil hydrology
@@ -3561,7 +3561,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
                               num_shlakesnowc, filter_shlakesnowc, & !i&o
                               snl,h2osno,snowdp,dz,zi,             & !i&o
                               t_soisno,h2osoi_ice,h2osoi_liq,      & !i&o
-                              z)  !o                              
+                              z)  !o
 
 
        ! Divide thick snow elements
@@ -3636,7 +3636,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
              heatsum(c) = heatsum(c) + sumsnowice(c)*hfus
              heatrem = (t_lake(c,1) - tfrz)*cpliq*denh2o*dz_lake(c,1) - heatsum(c)
 
-             if (heatrem + denh2o*dz_lake(c,1)*hfus > 0._kind_lake) then            
+             if (heatrem + denh2o*dz_lake(c,1)*hfus > 0._kind_lake) then
                 ! Remove snow and subtract the latent heat from the top layer.
                 h2osno(c) = 0._kind_lake
                 snl(c) = 0
@@ -3728,7 +3728,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !dir$ concurrent
     !cdir nodep
     do fc = 1, num_shlakec
-       
+
        c = filter_shlakec(fc)
        if (snl(c) < 0) t_snow(c) = t_snow(c)/abs(snl(c))
        endwb(c) = h2osno(c)
@@ -3799,7 +3799,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
        ! The pft average must be done here for output to history tape
        qflx_evap_tot_col(c) = qflx_evap_tot(p)
     end do
-    
+
   end subroutine ShalLakeHydrology
 
 ! DESCRIPTION:
@@ -4002,7 +4002,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     ! DESCRIPTION:
     !> Evaluate the change of snow mass and the snow water onto soil.
     !! Water flow within snow is computed by an explicit and non-physical
-    !! based scheme, which permits a part of liquid water over the holding 
+    !! based scheme, which permits a part of liquid water over the holding
     !! capacity (a tentative value is used, i.e. equal to 0.033*porosity) to
     !! percolate into the underlying layer.  Except for cases where the
     !! porosity of one of the two neighboring layers is less than 0.05, zero
@@ -4011,12 +4011,12 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !! uses a filter for columns containing snow which must be constructed prior
     !! to being called.
   subroutine SnowWater(lbc, ubc, num_snowc, filter_snowc,         & !i
-                   num_nosnowc, filter_nosnowc,               & !i 
+                   num_nosnowc, filter_nosnowc,               & !i
                    snl,do_capsnow,qflx_snomelt,qflx_rain_grnd,            & !i
-                   qflx_sub_snow,qflx_evap_grnd,                          & !i   
-                   qflx_dew_snow,qflx_dew_grnd,dz,dtime,                  & !i   
-                   h2osoi_ice,h2osoi_liq,                                 & !i&o 
-                   qflx_top_soil)                                           !o                        
+                   qflx_sub_snow,qflx_evap_grnd,                          & !i
+                   qflx_dew_snow,qflx_dew_grnd,dz,dtime,                  & !i
+                   h2osoi_ice,h2osoi_liq,                                 & !i&o
+                   qflx_top_soil)                                           !o
     !===============================================================================
     ! !REVISION HISTORY:
     ! 15 September 1999: Yongjiu Dai; Initial code
@@ -4048,13 +4048,13 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), intent(in) :: dz(1,-nlevsnow+1:nlevsoil)             !< layer depth (m)
 
 
-    !inout: 
+    !inout:
 
     real(kind_lake), intent(inout) :: h2osoi_ice(1,-nlevsnow+1:nlevsoil)     !< ice lens (kg/m2)
     real(kind_lake), intent(inout) :: h2osoi_liq(1,-nlevsnow+1:nlevsoil)     !< liquid water (kg/m2)
-    
+
     !out:
-    
+
     real(kind_lake), intent(out) :: qflx_top_soil(1)     !< net water input into soil from top (mm/s)
 
 
@@ -4170,12 +4170,12 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 !! two are from SNTHERM.89 and SNTHERM.99 (1991, 1999). The contribution
 !! due to melt metamorphism is simply taken as a ratio of snow ice
 !! fraction after the melting versus before the melting.
-  subroutine SnowCompaction(lbc, ubc, num_snowc, filter_snowc,   &!i  
-                           snl,imelt,frac_iceold,t_soisno,                  &!i  
-                           h2osoi_ice,h2osoi_liq,dtime,                     &!i  
-                           dz)                                               !i&o   
+  subroutine SnowCompaction(lbc, ubc, num_snowc, filter_snowc,   &!i
+                           snl,imelt,frac_iceold,t_soisno,                  &!i
+                           h2osoi_ice,h2osoi_liq,dtime,                     &!i
+                           dz)                                               !i&o
 
-    
+
     !================================================================================
     ! CALLED FROM:
     ! subroutine Hydrology2 in module Hydrology2Mod
@@ -4294,7 +4294,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 
 !> Combine snow layers that are less than a minimum thickness or mass
 !! If the snow element thickness or mass is less than a prescribed minimum,
-!! then it is combined with a neighboring element.        
+!! then it is combined with a neighboring element.
   subroutine CombineSnowLayers(lbc, ubc,                            & !i
                               num_snowc, filter_snowc, & !i&o
                               snl,h2osno,snowdp,dz,zi,             & !i&o
@@ -4355,10 +4355,10 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), parameter :: dzmin(5) = & ! minimum of top snow layer
          (/0.010, 0.015, 0.025, 0.055, 0.115/)
     !-----------------------------------------------------------------------
-    
+
     ! Check the mass of ice lens of snow, when the total is less than a small value,
     ! combine it with the underlying neighbor.
-    
+
     !dir$ concurrent
     !cdir nodep
     do fc = 1, num_snowc
@@ -4370,16 +4370,16 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
 
     do fc = 1, num_snowc
        c = filter_snowc(fc)
-   !    l = clandunit(c)                                                    
+   !    l = clandunit(c)
        do j = msn_old(c)+1,0
           if (h2osoi_ice(c,j) <= .1) then
-           !  if (ityplun(l) == istsoil) then                                
-           !     h2osoi_liq(c,j+1) = h2osoi_liq(c,j+1) + h2osoi_liq(c,j)        
-           !     h2osoi_ice(c,j+1) = h2osoi_ice(c,j+1) + h2osoi_ice(c,j)       
-           !  else if (ityplun(l) /= istsoil .and. j /= 0) then               
+           !  if (ityplun(l) == istsoil) then
+           !     h2osoi_liq(c,j+1) = h2osoi_liq(c,j+1) + h2osoi_liq(c,j)
+           !     h2osoi_ice(c,j+1) = h2osoi_ice(c,j+1) + h2osoi_ice(c,j)
+           !  else if (ityplun(l) /= istsoil .and. j /= 0) then
              h2osoi_liq(c,j+1) = h2osoi_liq(c,j+1) + h2osoi_liq(c,j)
              h2osoi_ice(c,j+1) = h2osoi_ice(c,j+1) + h2osoi_ice(c,j)
-           !  end if 
+           !  end if
 
              ! shift all elements above this down one.
              if (j > snl(c)+1 .and. snl(c) < -1) then
@@ -4426,7 +4426,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     !cdir nodep
     do fc = 1, num_snowc
        c = filter_snowc(fc)
-      ! l = clandunit(c)                                         
+      ! l = clandunit(c)
        if (snowdp(c) < 0.01 .and. snowdp(c) > 0.) then
           snl(c) = 0
           h2osno(c) = zwice(c)
@@ -4555,7 +4555,7 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
     real(kind_lake), intent(inout) :: h2osoi_ice(1,-nlevsnow+1:nlevsoil)   !< ice lens (kg/m2)
     real(kind_lake), intent(inout) :: h2osoi_liq(1,-nlevsnow+1:nlevsoil)   !< liquid water (kg/m2)
 
-    !out: 
+    !out:
 
     real(kind_lake), intent(out) :: z(1,-nlevsnow+1:nlevsoil)            !< layer thickness (m)
 
@@ -4871,21 +4871,21 @@ SUBROUTINE ShalLakeTemperature(t_grnd,h2osno,sabg,dz,dz_lake,z,zi,           & !
   end subroutine BuildSnowFilter
 
 
-  ! DESCRIPTION:               
+  ! DESCRIPTION:
   !> Calculation of the friction velocity, relation for potential
-  !! temperature and humidity profiles of surface boundary layer.                
+  !! temperature and humidity profiles of surface boundary layer.
   !! The scheme is based on the work of Zeng et al. (1998):
   !! Intercomparison of bulk aerodynamic algorithms for the computation
   !! of sea surface fluxes using TOGA CORE and TAO data. J. Climate,
-  !! Vol. 11, 2628-2644.       
-subroutine FrictionVelocity(pgridcell,forc_hgt,forc_hgt_u,        & !i 
-                             forc_hgt_t,forc_hgt_q,                  & !i 
-                             lbp, ubp, fn, filterp,                  & !i 
-                             displa, z0m, z0h, z0q,                  & !i 
-                             obu, iter, ur, um,                      & !i 
-                             ustar,temp1, temp2, temp12m, temp22m,   & !o 
-                             u10,fv,                                 & !o 
-                             fm)  !i&o 
+  !! Vol. 11, 2628-2644.
+subroutine FrictionVelocity(pgridcell,forc_hgt,forc_hgt_u,        & !i
+                             forc_hgt_t,forc_hgt_q,                  & !i
+                             lbp, ubp, fn, filterp,                  & !i
+                             displa, z0m, z0h, z0q,                  & !i
+                             obu, iter, ur, um,                      & !i
+                             ustar,temp1, temp2, temp12m, temp22m,   & !o
+                             u10,fv,                                 & !o
+                             fm)  !i&o
 
   !=============================================================================
   ! REVISION HISTORY:
@@ -5370,7 +5370,7 @@ if_pergro: if (PERGRO) then
     dzlak(8) = 0.1_kind_lake
     dzlak(9) = 0.1_kind_lake
     dzlak(10)= 0.1_kind_lake
-    
+
     zlak(1) =  0.05_kind_lake
     zlak(2) =  0.15_kind_lake
     zlak(3) =  0.25_kind_lake
@@ -5457,7 +5457,7 @@ if_pergro: if (PERGRO) then
                                                                              h2osno2d,       &
                                                                              snl2d,          &
                                                                              t_grnd2d
-                                                                              
+
   real(kind_phys),    dimension(:,:),INTENT(out)                          :: t_lake3d,       &
                                                                              lake_icefrac3d
   real(kind_phys),    dimension(:,-nlevsnow+1:),INTENT(out)               :: t_soisno3d,     &
@@ -5467,14 +5467,14 @@ if_pergro: if (PERGRO) then
                                                                              z3d,            &
                                                                              dz3d
 
-  real(kind_phys),    dimension(:,-nlevsnow+0:),INTENT(out)   :: zi3d            
+  real(kind_phys),    dimension(:,-nlevsnow+0:),INTENT(out)   :: zi3d
 
 
   integer  :: n,i,j,k,ib,lev,bottom      ! indices
   real(kind_lake),dimension(1:im )    :: bd2d               ! bulk density of dry soil material [kg/m^3]
   real(kind_lake),dimension(1:im )    :: tkm2d              ! mineral conductivity
   real(kind_lake),dimension(1:im )    :: xksat2d            ! maximum hydraulic conductivity of soil [mm/s]
-  real(kind_lake),dimension(1:im )    :: depthratio2d       ! ratio of lake depth to standard deep lake depth 
+  real(kind_lake),dimension(1:im )    :: depthratio2d       ! ratio of lake depth to standard deep lake depth
 
   logical,parameter        :: arbinit = .false.
   real(kind_lake),parameter           :: defval  = -999.0
@@ -5512,7 +5512,7 @@ if_pergro: if (PERGRO) then
 
       ! To handle cold-start with bad lakedepth2d
       if ( use_lakedepth ) then
-        if (oro_lakedepth(i) == 10.0 .or. oro_lakedepth(i) <= 0.) then 
+        if (oro_lakedepth(i) == 10.0 .or. oro_lakedepth(i) <= 0.) then
           !- 10.0 is the fill value for lake depth, in this case set to default value
           clm_lakedepth(i)   = lakedepth_default
           used_lakedepth_default = used_lakedepth_default+1
@@ -5524,7 +5524,7 @@ if_pergro: if (PERGRO) then
         clm_lakedepth(i)   = lakedepth_default
         used_lakedepth_default = used_lakedepth_default+1
       endif
-    
+
     if(clm_lake_initialized(i)>0) then
       cycle
     endif
@@ -5537,14 +5537,14 @@ if_pergro: if (PERGRO) then
         h2osoi_ice3d(i,k)      = defval
         h2osoi_vol3d(i,k)      = defval
         t_soisno3d(i,k)        = defval
-        z3d(i,k)               = defval 
-        dz3d(i,k)              = defval                           
+        z3d(i,k)               = defval
+        dz3d(i,k)              = defval
     enddo
-    do k = 1,nlevlake 
+    do k = 1,nlevlake
         t_lake3d(i,k)          = defval
         lake_icefrac3d(i,k)    = defval
     enddo
-    
+
     if (use_lake_model(i) == 1) then
     !  for lake points only
       z3d(i,:)             = 0.0
@@ -5559,7 +5559,7 @@ if_pergro: if (PERGRO) then
       if(fice(i)>min_lakeice) then
         lake_icefrac3d(i,1) = fice(i)
         snowdp2d(i)         = snowd(i)*1e-3   ! SNOW in kg/m^2 and snowdp in m
-        h2osno2d(i)         = weasd(i)   ! mm 
+        h2osno2d(i)         = weasd(i)   ! mm
       else
         fice(i)             = 0.
         snowd(i)            = 0.
@@ -5567,11 +5567,11 @@ if_pergro: if (PERGRO) then
         snowdp2d(i)         = 0.
         h2osno2d(i)         = 0.
       endif
-    
+
     ! Soil hydraulic and thermal properties
-    isl = ISLTYP(i)   
+    isl = ISLTYP(i)
     if (isl == 0  ) isl = 14
-    if (isl == 14 ) isl = isl + 1 
+    if (isl == 14 ) isl = isl + 1
 
     call calculate_z_dz_lake(i,input_lakedepth,clm_lakedepth,z_lake,dz_lake)
 

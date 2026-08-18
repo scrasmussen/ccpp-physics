@@ -141,7 +141,7 @@ contains
          cld_rerain,          & ! Effective radius for              rain   hydrometeors
          precip_frac,         & ! Precipitation fraction
          cloud_overlap_param    !
-    real(kind_phys), dimension(:,:), intent(in), optional :: &    
+    real(kind_phys), dimension(:,:), intent(in), optional :: &
          cld_cnv_lwp,         & ! Water path for       convective   liquid cloud-particles
          cld_cnv_reliq,       & ! Effective radius for convective   liquid cloud-particles
          cld_cnv_iwp,         & ! Water path for       convective   ice    cloud-particles
@@ -165,7 +165,7 @@ contains
     integer, intent(out) :: &
          errflg                ! CCPP error flag
     real(kind_phys), dimension(:,:), intent(inout) :: &
-         cldtausw              ! Approx 10.mu band layer cloud optical depth  
+         cldtausw              ! Approx 10.mu band layer cloud optical depth
     real(kind_phys), dimension(:,:), intent(inout) :: &
          fluxswUP_allsky,    & ! RRTMGP upward all-sky flux profiles (W/m2)
          fluxswDOWN_allsky,  & ! RRTMGP downward all-sky flux profiles (W/m2)
@@ -229,7 +229,7 @@ contains
          present(cld_pbl_iwp) .and. present(cld_pbl_reice)) then
        doGP_sgs_pbl = .true.
     endif
-    
+
     ! ty_gas_concs
     call check_error_msg('rrtmgp_sw_main_gas_concs_init',gas_concs%init(active_gases_array))
 
@@ -403,10 +403,10 @@ contains
                   real(cld_iwp(iCols,:),  kind=rte_wp),         & ! IN  - Cloud ice water path
                   real(cld_reliq(iCols,:),kind=rte_wp),         & ! IN  - Cloud liquid effective radius
                   real(cld_reice(iCols,:),kind=rte_wp),         & ! IN  - Cloud ice effective radius
-                  sw_optical_props_cloudsByBand))                 ! OUT - RRTMGP DDT: Shortwave optical properties, 
+                  sw_optical_props_cloudsByBand))                 ! OUT - RRTMGP DDT: Shortwave optical properties,
                                                                   !       in each band (tau,ssa,g)
              cldtausw(iCols,:) = sw_optical_props_cloudsByBand%tau(:,:,11)
-          
+
              ! Include convective clouds?
              if (doGP_sgs_cnv) then
                 ! Compute
@@ -436,7 +436,7 @@ contains
                 call check_error_msg('rrtmgp_sw_main_increment_pblclouds_to_clouds',&
                      sw_optical_props_pblcloudsByBand%increment(sw_optical_props_cloudsByBand))
              endif
-          
+
              ! Cloud precipitation optics: rain and snow(+groupel)
              do iblck = 1, rrtmgp_phys_blksz
                 do iLay=1,nLay
@@ -444,11 +444,11 @@ contains
                       ! Rain/Snow optical depth (No band dependence)
                       tau_rain = cld_rwp(iCols(iblck),iLay)*a0r
                       if (cld_swp(iCols(iblck),iLay) .gt. 0. .and. cld_resnow(iCols(iblck),iLay) .gt. 10._kind_phys) then
-                         tau_snow = cld_swp(iCols(iblck),iLay)*1.09087*(a0s + a1s/(1.0315*cld_resnow(iCols(iblck),iLay)))     ! fu's formula 
+                         tau_snow = cld_swp(iCols(iblck),iLay)*1.09087*(a0s + a1s/(1.0315*cld_resnow(iCols(iblck),iLay)))     ! fu's formula
                       else
                          tau_snow = 0._kind_phys
                       endif
-                      
+
                       ! Rain/Snow single-scattering albedo and asymmetry (Band dependent)
                       do iBand=1,sw_gas_props%get_nband()
                          ! By species
@@ -463,7 +463,7 @@ contains
                          asyw     = asy_prec/max(1.e-12_kind_phys, ssa_prec)
                          ssaw     = min(1._kind_phys-0.000001, ssa_prec/tau_prec)
                          za1      = asyw * asyw
-                         za2      = ssaw * za1                      
+                         za2      = ssaw * za1
                          sw_optical_props_precipByBand%tau(iblck,iLay,iBand) = (1._kind_phys - za2) * tau_prec
                          sw_optical_props_precipByBand%ssa(iblck,iLay,iBand) = (ssaw - za2) / (1._kind_phys - za2)
                          sw_optical_props_precipByBand%g(iblck,iLay,iBand)   = asyw/(1+asyw)
@@ -471,10 +471,10 @@ contains
                    endif
                 enddo
              enddo
-             ! Increment 
+             ! Increment
              call check_error_msg('rrtmgp_sw_main_increment_precip_to_clouds',&
                   sw_optical_props_precipByBand%increment(sw_optical_props_cloudsByBand))
-          
+
              ! ###################################################################################
              !
              ! Cloud-sampling
@@ -507,7 +507,7 @@ contains
                    enddo
                 endif
              enddo
-             
+
              ! Cloud-overlap.
              ! Maximum-random, random or maximum.
              if (iovr == iovr_maxrand .or. iovr == iovr_rand .or. iovr == iovr_max) then
@@ -546,7 +546,7 @@ contains
           sw_optical_props_aerosol_local%tau = aersw_tau(iCols,:,:)
           sw_optical_props_aerosol_local%ssa = aersw_ssa(iCols,:,:)
           sw_optical_props_aerosol_local%g   = aersw_g(iCols,:,:)
-          call check_error_msg('rrtmgp_sw_main_increment_aerosol_to_clrsky', & 
+          call check_error_msg('rrtmgp_sw_main_increment_aerosol_to_clrsky', &
                sw_optical_props_aerosol_local%increment(sw_optical_props_accum))
 
           ! Compute clear-sky fluxes (Yes for no-clouds. Optional for cloudy scenes)
@@ -558,8 +558,8 @@ contains
                   toa_src_sw,                       & ! IN  - incident solar flux at TOA
                   sfc_alb_dir,                      & ! IN  - Shortwave surface albedo (direct)
                   sfc_alb_dif,                      & ! IN  - Shortwave surface albedo (diffuse)
-                  flux_clrsky))                       ! OUT - Fluxes, clear-sky, 3D (1,nLay,nBand) 
-             
+                  flux_clrsky))                       ! OUT - Fluxes, clear-sky, 3D (1,nLay,nBand)
+
              ! Store fluxes
              fluxswUP_clrsky(iCols,:)   = sum(flux_clrsky%bnd_flux_up, dim=3)
              fluxswDOWN_clrsky(iCols,:) = sum(flux_clrsky%bnd_flux_dn, dim=3)
@@ -606,7 +606,7 @@ contains
              !call check_error_msg('rrtmgp_sw_main_delta_scale',sw_optical_props_clouds%delta_scale())
 
              ! Increment
-             call check_error_msg('rrtmgp_sw_main_increment_clouds_to_clrsky', & 
+             call check_error_msg('rrtmgp_sw_main_increment_clouds_to_clrsky', &
                   sw_optical_props_clouds%increment(sw_optical_props_accum))
 
              ! Compute fluxes
@@ -618,16 +618,16 @@ contains
                   sfc_alb_dir,                      & ! IN  - Shortwave surface albedo (direct)
                   sfc_alb_dif,                      & ! IN  - Shortwave surface albedo (diffuse)
                   flux_allsky))                       ! OUT - Fluxes, clear-sky, 3D (1,nLay,nBand)
-             
+
              ! Store fluxes
              fluxswUP_allsky(iCols,:)   = sum(flux_allsky%bnd_flux_up, dim=3)
              fluxswDOWN_allsky(iCols,:) = sum(flux_allsky%bnd_flux_dn, dim=3)
-             
+
              ! Compute and store downward beam/diffused flux components
              do iblck = 1, rrtmgp_phys_blksz
                 ! Loop over bands, sum fluxes...
                 do iBand=1,sw_gas_props%get_nband()
-                   flux_dir = flux_allsky%bnd_flux_dn_dir(iblck,iSFC,iBand) 
+                   flux_dir = flux_allsky%bnd_flux_dn_dir(iblck,iSFC,iBand)
                    flux_dif = flux_allsky%bnd_flux_dn(iblck,iSFC,iBand) - flux_allsky%bnd_flux_dn_dir(iblck,iSFC,iBand)
                    ! Near-IR bands
                    if (iBand < ibd) then
@@ -646,7 +646,7 @@ contains
                       scmpsw_allsky(iblck)%visbm = scmpsw_allsky(iblck)%visbm + flux_dir
                       scmpsw_allsky(iblck)%visdf = scmpsw_allsky(iblck)%visdf + flux_dif
                    endif
-                   ! uv-b surface downward flux 
+                   ! uv-b surface downward flux
                    scmpsw_allsky(iblck)%uvbfc    = flux_allsky%bnd_flux_dn(iblck,iSFC,ibd_uv)
                 enddo
                 ! Store surface downward beam/diffused flux components

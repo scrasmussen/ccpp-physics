@@ -106,7 +106,7 @@
 !MYJ-2D
       logical,dimension(:),intent(in) :: flag_iter
       real(kind=kind_phys),dimension(:),intent(in)      ::   &
-              prsik_1, prslk_1, tsfc, qsfc, slmsk 
+              prsik_1, prslk_1, tsfc, qsfc, slmsk
       real(kind=kind_phys),dimension(:),intent(inout),optional :: &
               phy_myj_thz0, phy_myj_z0base, phy_myj_chkqlm,  &
               phy_myj_akhs, phy_myj_akms, phy_myj_qz0,       &

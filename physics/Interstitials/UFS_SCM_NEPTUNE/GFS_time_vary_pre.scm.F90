@@ -86,12 +86,12 @@
                                                            lslwr
         real(kind=kind_phys),             intent(out)   :: sec, phour, zhour,    &
                                                            fhour, julian, solhr
-        
+
         real(kind=kind_phys), intent(in ), dimension(:,:)   :: tgrs, ugrs, vgrs
         real(kind=kind_phys), intent(in ), dimension(:,:,:) :: qgrs
         real(kind=kind_phys), intent(out), dimension(:,:)   :: gt0, gu0, gv0
         real(kind=kind_phys), intent(out), dimension(:,:,:) :: gq0
-        
+
         character(len=*),                 intent(out)   :: errmsg
         integer,                          intent(out)   :: errflg
 
@@ -115,13 +115,13 @@
            errflg = 1
            return
         end if
-        
+
         !--- set current state variables from timestep initial variables
         gt0(:,:)   = tgrs(:,:)
         gu0(:,:)   = ugrs(:,:)
         gv0(:,:)   = vgrs(:,:)
         gq0(:,:,:) = qgrs(:,:,:)
-        
+
         !--- jdat is being updated directly inside of the time integration
         !--- loop of scm.F90
         !--- update calendars and triggers

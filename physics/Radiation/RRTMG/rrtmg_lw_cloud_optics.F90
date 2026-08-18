@@ -232,7 +232,7 @@ module mo_rrtmg_lw_cloud_optics
        1.17216e-02, 1.15168e-02, 1.13177e-02, 1.11241e-02, 1.09358e-02, & !16
        1.07525e-02, 1.05741e-02, 1.04003e-02/),                         & !16
        shape=(/58,nBandsLW_RRTMG/))
-  
+
   real(kind_phys), dimension(2),parameter :: &
        absice0 = (/0.005,1.0/)
 
@@ -388,7 +388,7 @@ module mo_rrtmg_lw_cloud_optics
        6.854061e-03, 6.697986e-03, 6.550224e-03, 6.410138e-03, 6.277153e-03,  & !16
        6.150751e-03, 6.030462e-03, 5.915860e-03/),                            & !16
        shape=(/43,nBandsLW_RRTMG/))
-  
+
   real(kind_phys) , dimension(46,nBandsLW_RRTMG),parameter :: &
        absice3 =  reshape(source=(/ &
        3.110649e-03, 4.666352e-02, 6.606447e-02, 6.531678e-02, 6.012598e-02,  & !1
@@ -551,7 +551,7 @@ module mo_rrtmg_lw_cloud_optics
        1.001831e-02, 9.772141e-03, 9.540280e-03, 9.321966e-03, 9.116517e-03,  & !16
        8.923315e-03, 8.741803e-03, 8.571472e-03, 8.411860e-03, 8.262543e-03,  & !16
        8.123136e-03/),                                                        & !16
-       shape=(/46,nBandsLW_RRTMG/))      
+       shape=(/46,nBandsLW_RRTMG/))
 contains
   ! #######################################################################################
   ! subroutine rrtmg_lw_cloud_optics
@@ -579,9 +579,9 @@ contains
 
      ! Outputs
      real(kind_phys),dimension(ncol,nlay,nBandsLW),intent(out) :: &
-          tau_cld,     & !< Cloud optical-depth                    (1)     
+          tau_cld,     & !< Cloud optical-depth                    (1)
           tau_precip     !< Precipitation optical-depth            (1)
-	
+
      ! Local variables
      integer :: ij,ik,ib,index,ia
      real(kind_phys) :: factor,fint,cld_ref_iceTemp,tau_snow, tau_rain
@@ -590,7 +590,7 @@ contains
      tau_cld(:,:,:)    = 0._kind_phys
      tau_precip(:,:,:) = 0._kind_phys
 
-     if (ilwcliq .gt. 0) then 
+     if (ilwcliq .gt. 0) then
         do ij=1,ncol
            do ik=1,nlay
               if (cld_frac(ij,ik) .gt. 0.) then
@@ -654,7 +654,7 @@ contains
                                fint*(absice3(index+1,ib) - absice3(index,ib)) ))
                        enddo
                     endif
-                 endif 
+                 endif
               else
                  tau_rain   = 0.
                  tau_snow   = 0.
@@ -663,7 +663,7 @@ contains
               endif
               ! Cloud optical depth
               do ib = 1, nBandsLW
-                 tau_cld(ij,ik,ib)    = tau_ice(ib) + tau_liq(ib) 
+                 tau_cld(ij,ik,ib)    = tau_ice(ib) + tau_liq(ib)
                  tau_precip(ij,ik,ib) = tau_rain + tau_snow
               enddo
            end do

@@ -60,7 +60,7 @@
   long_name = specific heat of ice at constant pressure
   units = J kg-1 K-1
   dimensions = ()
-  type = real 
+  type = real
   kind = kind_phys
   intent = in
 [con_rcp]
@@ -1416,7 +1416,7 @@
   units = flag
   dimensions = ()
   type = integer
-  intent = in  
+  intent = in
 [imp_physics_wsm6]
   standard_name = identifier_for_wsm6_microphysics_scheme
   long_name = choice of WSM6 microphysics scheme
@@ -1458,7 +1458,7 @@
   units = flag
   dimensions = ()
   type = integer
-  intent = in 
+  intent = in
 [nssl_ccn_on]
   standard_name = nssl_ccn_on
   long_name = CCN activation flag in NSSL micro

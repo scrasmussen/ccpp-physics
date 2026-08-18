@@ -4,7 +4,7 @@
 
 !> This module contains some of the most frequently used math and physics
 !! constants for RRTMG.
-          module radcons                
+          module radcons
 !
   use machine,      only : kind_phys
 !

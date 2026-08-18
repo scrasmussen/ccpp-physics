@@ -25,11 +25,11 @@
 
       integer,                              intent(in)    :: im, levr, levs,   &
                                                              ltp, nday, lm, kd
-      logical,                              intent(in)    :: lsswr, swhtr 
+      logical,                              intent(in)    :: lsswr, swhtr
       real(kind=kind_phys), dimension(:),   intent(in)    :: sfcalb1, sfcalb2, &
                                                              sfcalb3, sfcalb4
       real(kind=kind_phys), dimension(:,:), intent(in)    :: htswc, htsw0
-      
+
       real(kind=kind_phys), dimension(:),   intent(inout) :: nirbmdi, nirdfdi, &
                                                              visbmdi, visdfdi, &
                                                              nirbmui, nirdfui, &
@@ -57,7 +57,7 @@
             k1 = k + kd
             htrsw(1:im,k) = htswc(1:im,k1)
           enddo
-          ! We are assuming that radiative tendencies are from bottom to top 
+          ! We are assuming that radiative tendencies are from bottom to top
           ! --- repopulate the points above levr i.e. LM
           if (lm < levs) then
             do k = lm+1, levs

@@ -184,7 +184,7 @@ module gfdl_cloud_microphys_mod
    ! qs0_crt = 0.6e-3
    ! c_psaci = 0.1
    ! c_pgacs = 0.1
-   
+
    real :: log_10, tice0, t_wfr
 
 contains
@@ -570,7 +570,7 @@ subroutine mpdrv (hydrostatic, uin, vin, w, delp, pt, qv, ql, qr, qi, qs,     &
     ! -----------------------------------------------------------------------
     ! use local variables
     ! -----------------------------------------------------------------------
-    
+
     !GJF: assign values to intent(out) variables that are commented out
     w_var = 0.0
     vt_r = 0.0
@@ -579,7 +579,7 @@ subroutine mpdrv (hydrostatic, uin, vin, w, delp, pt, qv, ql, qr, qi, qs,     &
     vt_i = 0.0
     qn2 = 0.0
     !GJF
-    
+
     do i = is, ie
 
         do k = ktop, kbot
@@ -4606,7 +4606,7 @@ subroutine cloud_diagnosis (is, ie, ks, ke, den, delp, lsm, qmw, qmi, qmr, qms, 
     real, intent (out), dimension (is:ie, ks:ke) :: rew, rei, rer, res, reg !< units: micron
 
     real, dimension (is:ie, ks:ke) :: qcw, qci, qcr, qcs, qcg !< units: g / m^2
-    
+
     integer :: i, k
 
     real :: lambdar, lambdas, lambdag
@@ -4621,7 +4621,7 @@ subroutine cloud_diagnosis (is, ie, ks, ke, den, delp, lsm, qmw, qmi, qmr, qms, 
 
     do k = ks, ke
         do i = is, ie
-            
+
             dpg = abs (delp (i, k)) / grav
             mask = min (max (real(lsm (i)), 0.0), 2.0)
 
@@ -4640,7 +4640,7 @@ subroutine cloud_diagnosis (is, ie, ks, ke, den, delp, lsm, qmw, qmi, qmr, qms, 
                 qcw (i, k) = 0.0
                 rew (i, k) = rewmin
             endif
-            
+
             if (reiflag .eq. 1) then
 
             ! -----------------------------------------------------------------------
@@ -4666,7 +4666,7 @@ subroutine cloud_diagnosis (is, ie, ks, ke, den, delp, lsm, qmw, qmi, qmr, qms, 
             endif
 
             endif
-            
+
             if (reiflag .eq. 2) then
 
             ! -----------------------------------------------------------------------
@@ -4712,11 +4712,11 @@ subroutine cloud_diagnosis (is, ie, ks, ke, den, delp, lsm, qmw, qmi, qmr, qms, 
                 qcs (i, k) = 0.0
                 res (i, k) = resmin
             endif
-            
+
             ! -----------------------------------------------------------------------
             ! graupel (Lin et al., 1983)
             ! -----------------------------------------------------------------------
-            
+
             if (qmg (i, k) .gt. qmin) then
                 qcg (i, k) = dpg * qmg (i, k) * 1.0e3
                 lambdag = exp (0.25 * log (pi * rhog * n0g / qmg (i, k) / den (i, k)))

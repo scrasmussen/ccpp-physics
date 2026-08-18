@@ -37,11 +37,11 @@
 !
 !    PURPOSE
 !        USING THE GWD PARAMETERIZATIONS OF PS-GLAS AND PH-
-!        GFDL TECHNIQUE.  THE TIME TENDENCIES OF U V ARE 
-!        ALTERED TO INCLUDE/MIMIC THE EFFECT OF NON-STATIONARY 
+!        GFDL TECHNIQUE.  THE TIME TENDENCIES OF U V ARE
+!        ALTERED TO INCLUDE/MIMIC THE EFFECT OF NON-STATIONARY
 !        GRAVITY WAVE DRAG FROM CONVECTION, FRONTGENOSIS,
 !        WIND SHEAR ETC.  LOSS OF KINETIC ENERGY FORM GWD DRAG
-!        IS CONVERTED INTO INTERNAL ENERGY.   
+!        IS CONVERTED INTO INTERNAL ENERGY.
 !
 !  INPUT
 !        A(IM,KM)  NON-LIN TENDENCY FOR V WIND COMPONENT
@@ -84,12 +84,12 @@
      &,                    ENG0, ENG1, tem1, tem2, dti, hfbcpdt, rtrd
       real(kind=kind_phys) tx1(im)
       integer              i, k, uidx,vidx,tidx
-      
+
       A = 0.0
       B = 0.0
       C = 0.0
       ten_q = 0.0
-      
+
       if(ldiag3d) then
          uidx=dtidx(index_of_x_wind,index_of_process_rayleigh_damping)
          vidx=dtidx(index_of_y_wind,index_of_process_rayleigh_damping)

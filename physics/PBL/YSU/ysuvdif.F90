@@ -23,7 +23,7 @@
 
         ! Consistency checks
         if (.not. do_ysu) then
-          write(errmsg,fmt='(*(a))') 'Logic error: do_ysu = .false.'      
+          write(errmsg,fmt='(*(a))') 'Logic error: do_ysu = .false.'
           errflg = 1
           return
         end if
@@ -599,7 +599,7 @@
 !     estimate the entrainment parameters
 !
    do i = 1,im
-     cloudflg(i)=.false. 
+     cloudflg(i)=.false.
      if(pblflg(i)) then
        k = kpbl(i) - 1
        wm3       = wstar3(i) + 5. * ust3(i)
@@ -609,7 +609,7 @@
        we(i) = max(bfxpbl(i)/dthvx(i),-sqrt(wm2(i)))
        if((qx(i,k,ntcw)+qx(i,k,ntiw)).gt.0.01e-3.and.ysu_topdown_pblmix.eq.1)then
            if ( kpbl(i) .ge. 2) then
-                cloudflg(i)=.true. 
+                cloudflg(i)=.true.
                 templ=thlix(i,k)*(p2di(i,k+1)/100000)**rovcp
                 !rvls is ws at full level
                 rvls=100.*6.112*EXP(17.67*(templ-273.16)/(templ-29.65))*(ep2/p2di(i,k+1))
@@ -653,7 +653,7 @@
                 !wstar3_2
                 bfx0 = max(radsum/rhox2(i,k)/cp,0.)
                 wstar3_2(i) =  (g/thvx(i,k)*bfx0*hpbl(i))
-                !recompute hgamt 
+                !recompute hgamt
                 wscale(i) = (ust3(i)+phifac*karman*(wstar3(i)+wstar3_2(i))*0.5)**h1
                 wscale(i) = min(wscale(i),ust(i)*aphi16)
                 wscale(i) = max(wscale(i),ust(i)/aphi5)

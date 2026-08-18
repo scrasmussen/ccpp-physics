@@ -23,7 +23,7 @@ module module_zero_plumegen_coms
     real(kind=kind_phys),dimension(nkp) ::  ucon,vcon,thtcon ,rvcon,picon,tmpcon & ! never used: wcon, dncon, prcon
          ,zcon,zzcon ! environment at RAMS  grid ! never used: scon
 
-    real(kind=kind_phys) :: DZ,DQSDZ,VISC(nkp),VISCOSITY,TSTPF   
+    real(kind=kind_phys) :: DZ,DQSDZ,VISC(nkp),VISCOSITY,TSTPF
     integer :: N,NM1,L
     !
     real(kind=kind_phys) :: CVH(nkp),CVI(nkp),ADIABAT,&
@@ -122,7 +122,7 @@ contains
     this%qvenv=0.0
     !this%rhe=0.0
     this%dne=0.0
-    !this%sce=0.0 
+    !this%sce=0.0
     this%ucon=0.0
     this%vcon=0.0
     !this%wcon=0.0
@@ -131,10 +131,10 @@ contains
     this%picon=0.0
     this%tmpcon=0.0
     !this%dncon=0.0
-    !this%prcon=0.0 
+    !this%prcon=0.0
     this%zcon=0.0
     this%zzcon=0.0
-    !this%scon=0.0 
+    !this%scon=0.0
     this%dz=0.0
     this%dqsdz=0.0
     this%visc=0.0
@@ -152,7 +152,7 @@ contains
     this%wbar=0.0
     !this%alast=0.0
     this%vhrel=0.0
-    this%virel=0.0  
+    this%virel=0.0
     this%zsurf=0.0
     !this%zbase=0.0
     this%ztop=0.0
@@ -167,8 +167,8 @@ contains
     this%time=0.0
     this%tdur=0.0
     this%ztop_=0.0
-    this%upe =0.0  
-    this%vpe =0.0  
+    this%upe =0.0
+    this%vpe =0.0
     this%vel_e =0.0
     this%vel_p =0.0
     this%rad_p =0.0

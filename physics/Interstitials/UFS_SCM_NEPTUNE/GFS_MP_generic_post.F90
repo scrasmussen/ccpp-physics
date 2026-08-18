@@ -2,16 +2,16 @@
 !! This file contains the subroutines that calculate diagnotics variables
 !! after calling any microphysics scheme:
 
-!> This module contains the subroutine that calculates 
+!> This module contains the subroutine that calculates
 !! precipitation type and its post, which provides precipitation forcing
 !! to LSM.
       module GFS_MP_generic_post
       contains
 
 !> If dominant precip type is requested (i.e., Zhao-Carr MP scheme), 4 more algorithms in calpreciptype()
-!! will be called.  the tallies are then summed in calwxt_dominant(). For GFDL cloud MP scheme, determine convective 
+!! will be called.  the tallies are then summed in calwxt_dominant(). For GFDL cloud MP scheme, determine convective
 !! rain/snow by surface temperature;  and determine explicit rain/snow by rain/snow coming out directly from MP.
-!! 
+!!
 !> \section arg_table_GFS_MP_generic_post_run Argument Table
 !! \htmlinclude GFS_MP_generic_post_run.html
 !!
@@ -132,12 +132,12 @@
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       onebg = one/con_g
-      
-      save_t = gt0 !save temperature before tendency application in case 
+
+      save_t = gt0 !save temperature before tendency application in case
                    !the temperature tendency application is overwritten by radar tendencies below
-      
+
       case_MP_ten: select case (tend_opt_mp)
         case (1) !immediately apply tendencies
                   !Current state = current state + dt*current tendency
@@ -191,7 +191,7 @@
           errmsg = 'A tendency application control was outside of the acceptable range (1-4)'
           return
       end select case_MP_ten
-      
+
       do i = 1, im
         rain(i) = rainc(i) + frain * rain1(i) ! time-step convective plus explicit
       enddo
@@ -203,9 +203,9 @@
          do i=1,im
            factor(i) = 0.0
            lfrz = .true.
-           zfrz(i) = phil(i,1)*onebg 
+           zfrz(i) = phil(i,1)*onebg
            do k = levs, 1, -1
-             zo(i,k) =  phil(i,k)*onebg 
+             zo(i,k) =  phil(i,k)*onebg
              if (gt0(i,k) >= con_t0c .and. lfrz) then
               zfrz(i) = zo(i,k)
               lfrz = .false.
@@ -305,7 +305,7 @@
          endif
       endif
 
-!> - If requested (e.g. Zhao-Carr MP scheme), call calpreciptype() to calculate dominant 
+!> - If requested (e.g. Zhao-Carr MP scheme), call calpreciptype() to calculate dominant
 !! precipitation type.
       ! DH* TODO - Fix wrong code in non-CCPP build (GFS_physics_driver)
       ! and use commented lines here (keep wrong version for bit-for-bit):
@@ -331,7 +331,7 @@
         tprcp   = max (zero, rain) ! time-step convective and explicit precip
         ice     = frain*rain1*sr                  ! time-step ice
       end if
-      
+
       if (lsm==lsm_ruc .or. lsm==lsm_noahmp) then
         raincprv(:)   = rainc(:)
         rainncprv(:)  = frain * rain1(:)
@@ -448,7 +448,7 @@
         enddo
       enddo
 
-      ! Conversion factor from mm per day to m per physics timestep 
+      ! Conversion factor from mm per day to m per physics timestep
       tem = dtp * con_p001 / con_day
 
 !> - For GFDL, Thompson and NSSL MP schemes, determine convective snow by surface temperature;
@@ -461,7 +461,7 @@
 
 ! determine convective rain/snow by surface temperature
 ! determine large-scale rain/snow by rain/snow coming out directly from MP
-       
+
         if (lsm /= lsm_ruc) then
           do i = 1, im
             !tprcp(i)  = max(0.0, rain(i) )! clu: rain -> tprcp ! DH now lines 245-250
@@ -542,7 +542,7 @@
               !don't overwrite radar tendencies calculated above when radar temperature tendencies are active
               if(itime>num_dfi_radar) then
                 do k=1,levs
-                  do i=1,im 
+                  do i=1,im
                     dtend(i,k,idtend) = dtend(i,k,idtend) + ten_t(i,k)*dtp*frain
                   enddo
                 enddo
@@ -607,7 +607,7 @@
         pwat(i) = pwat(i) * onebg
       enddo
 
-      if(progsigma)then      
+      if(progsigma)then
          do k = 1, levs
             do i=1, im
                prevsq(i,k) = gq0(i,k,1)

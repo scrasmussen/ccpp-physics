@@ -1,7 +1,7 @@
 !> \file m_micro_post.F90
 !! This file contains subroutines that prepare data from the Morrison-Gettelman microphysics scheme
 !! as part of the GFS physics suite.
-      
+
       module m_micro_post
 
       implicit none
@@ -56,13 +56,13 @@
             new_qr = gq0_rain(i,k) + dtp*ten_qr(i,k)
             !zero out qr when tendencies are applied if after-application value is small or negative
             if (new_qr < qsmall) then
-              ten_qr(i,k) = -gq0_rain(i,k)/dtp 
+              ten_qr(i,k) = -gq0_rain(i,k)/dtp
             end if
-            
+
             new_qs = gq0_snow(i,k) + dtp*ten_qs(i,k)
             !zero out qs when tendencies are applied if after-application value is small or negative
             if (new_qs < qsmall) then
-              ten_qs(i,k) = -gq0_snow(i,k)/dtp 
+              ten_qs(i,k) = -gq0_snow(i,k)/dtp
             end if
           enddo
         enddo
@@ -78,20 +78,20 @@
             new_qr = gq0_rain(i,k) + dtp*ten_qr(i,k)
             !zero out qr when tendencies are applied if after-application value is small or negative
             if (new_qr < qsmall) then
-              ten_qr(i,k) = -gq0_rain(i,k)/dtp 
+              ten_qr(i,k) = -gq0_rain(i,k)/dtp
             end if
-            
+
             new_qs = gq0_snow(i,k) + dtp*ten_qs(i,k)
             !zero out qs when tendencies are applied if after-application value is small or negative
             if (new_qs < qsmall) then
-              ten_qs(i,k) = -gq0_snow(i,k)/dtp 
+              ten_qs(i,k) = -gq0_snow(i,k)/dtp
             end if
-            
-            
+
+
             new_qg = gq0_graupel(i,k) + dtp*ten_qg(i,k)
             !zero out qg when tendencies are applied if after-application value is small or negative
             if (new_qg < qsmall) then
-              ten_qg(i,k) = -gq0_graupel(i,k)/dtp 
+              ten_qg(i,k) = -gq0_graupel(i,k)/dtp
             end if
           enddo
         enddo

@@ -6,10 +6,10 @@ module module_ccpp_suite_simulator
 
   use machine, only : kind_phys
   implicit none
-  
+
   public base_physics_process
 
-!> Type containing 1D (time) physics tendencies. 
+!> Type containing 1D (time) physics tendencies.
   type phys_tend_1d
      real(kind_phys), dimension(:), allocatable :: T
      real(kind_phys), dimension(:), allocatable :: u
@@ -61,7 +61,7 @@ module module_ccpp_suite_simulator
      character(len=16)  :: name                 !< Physics process name
      logical            :: time_split = .false. !< Is process time-split?
      logical            :: use_sim    = .false. !< Is process "active"?
-     integer            :: order                !< Order of process in process-loop 
+     integer            :: order                !< Order of process in process-loop
      type(phys_tend_1d) :: tend1d               !< Instantaneous data
      type(phys_tend_2d) :: tend2d               !< 2-dimensional data
      type(phys_tend_3d) :: tend3d               !< Not used. Placeholder for 3-dimensional spatial data.

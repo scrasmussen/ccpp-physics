@@ -65,19 +65,19 @@
 
       real(kind=kind_phys), dimension(:,:), intent(in) :: ten_t, ten_u, ten_v
       real(kind=kind_phys), dimension(:,:,:), intent(inout) :: ten_q
-      real(kind=kind_phys), dimension(:,:), intent(inout) :: dudt, dvdt, dtdt 
+      real(kind=kind_phys), dimension(:,:), intent(inout) :: dudt, dvdt, dtdt
       real(kind=kind_phys), dimension(:,:,:), intent(inout) :: dqdt
       real(kind=kind_phys), intent(in) ::  delt
-      
+
       ! Initialize CCPP error handling variables
       errmsg = ''
       errflg = 0
-      
+
       !ten_q(:,:,1) already has a value from the deep convection scheme
       if (tracers_total > 0) then
         tracers = 2
         do n=2,ntrac
-          if ( otsptflag(n) ) then                                                    
+          if ( otsptflag(n) ) then
             tracers = tracers + 1
             ten_q(1:im,:,n) = dclw(1:im,:,tracers)
           endif
@@ -93,8 +93,8 @@
           ten_q(1:im,:,ntcw) = dclw(1:im,:,1) + dclw(1:im,:,2)
         endif   ! end if_ntiw
       endif   ! end if_ntcw
-      
-      
+
+
       case_DCNV_ten: select case (tend_opt_dcnv)
         case (1) !immediately apply tendencies
                   !Current state = current state + dt*current tendency
@@ -147,8 +147,8 @@
           errflg = 1
           errmsg = 'A tendency application control was outside of the acceptable range (1-4)'
           return
-      end select case_DCNV_ten      
-      
+      end select case_DCNV_ten
+
       if (cscnv .or. satmedmf .or. trans_trac .or. ras) then
         tracers = 2
         do n=2,ntrac
@@ -189,9 +189,9 @@
           enddo
         enddo
       endif
-      
+
       !shallow convection expects clw has already been updated
-      
+
       if (.not. ras .and. .not. cscnv) then
         if (npdf3d == 3 .and. num_p3d == 4) then
           do k=1,levs

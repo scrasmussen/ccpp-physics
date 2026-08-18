@@ -3,7 +3,7 @@
   name = mynnedmf_wrapper_post
   type = scheme
   dependencies = ../../hooks/machine.F,
-  
+
 ########################################################################
 [ccpp-arg-table]
   name = mynnedmf_wrapper_post_run
@@ -171,4 +171,3 @@
   dimensions = ()
   type = integer
   intent = out
-  

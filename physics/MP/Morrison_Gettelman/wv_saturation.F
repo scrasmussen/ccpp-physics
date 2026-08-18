@@ -99,7 +99,7 @@
 !!
 !! Method:
 !! uses Goff and Gratch (1946) relationships to generate the table
-!! according to a set of free paramters defined below. Auxiliary 
+!! according to a set of free paramters defined below. Auxiliary
 !! routines are also included for making rapid estimates (well with 1%)
 !! of both es and d(es)/dt for the particular table configuration.
 !>\author J. Hack
@@ -221,7 +221,7 @@
 !>\ingroup wv_saturation_mod
 !! This subroutine is the utility procedure to look up and returen
 !! saturation vapor pressure from precomputed table, calculate and
-!! return saturation specific humidity (\f$g g^{-1}\f$), for input 
+!! return saturation specific humidity (\f$g g^{-1}\f$), for input
 !! arrays of temperature and pressure (dimensioned ii,kk).
 !> \author J. Hack
       subroutine aqsat(t ,p ,es ,qs ,ii , ilen ,kk ,kstart ,kend )
@@ -276,9 +276,9 @@
 !>\ingroup wv_saturation_mod
 !! This subroutine includes the utility procedure to look up and return
 !! saturation vapor pressure from precomputed table, calculate and return
-!! saturation specific humidity (g/g), for input arrays of temperature and 
+!! saturation specific humidity (g/g), for input arrays of temperature and
 !! pressure (dimensiond ii, kk). This routine is useful for evaluating only
-!! a selected region in the vertical. 
+!! a selected region in the vertical.
 !>\author J. Hack
       subroutine aqsat_water(t, p, es, qs, ii, ilen, kk, kstart,kend)
 !------------------------------Arguments--------------------------------
@@ -336,7 +336,7 @@
 
 !>\ingroup wv_saturation_mod
 !! This subroutine include the utility procedure to look up and returen saturation
-!! vapor pressure from precomputed table, calculate and return saturation 
+!! vapor pressure from precomputed table, calculate and return saturation
 !! specific humidity (g/g)
 !!
 !! Method:
@@ -476,9 +476,9 @@
       end subroutine aqsatd
 
 !>\ingroup wv_saturation_mod
-!! This subroutine is the utility procedure to look up and return 
-!! saturation vapor pressure from precomputed table, calculated the 
-!! return saturation specific humidity (g/g). and calculate and 
+!! This subroutine is the utility procedure to look up and return
+!! saturation vapor pressure from precomputed table, calculated the
+!! return saturation specific humidity (g/g). and calculate and
 !! return gamma (1/cp)*(d(qsat)/dT). The same function as qsatd,
 !! but operates on vectors of temperature and pressure
 !>\author J. Hack
@@ -593,7 +593,7 @@
            tterm = 0.0_kp
            end if
            desdt = hltalt*es(i)/(rgasv*t(i)*t(i)) + tterm*trinv
-           gam(i) = hltalt*qs(i)*p(i)*desdt/(cp*es(i)*(p(i) 
+           gam(i) = hltalt*qs(i)*p(i)*desdt/(cp*es(i)*(p(i)
      &              - omeps*es(i)))
            if (qs(i) == 1.0_kp) gam(i) = 0.0_kp
          end do
@@ -789,7 +789,7 @@
       end function qsat_water
 
 !>\ingroup wv_saturation_mod
-!! This subroutine 
+!! This subroutine
       subroutine vqsat_water(t,p,qsat_water,len)
 
        integer, intent(in) :: len
@@ -1316,7 +1316,7 @@
 
 !  end do
        end if
-       
+
        return
 !
       end subroutine vqsatd2_single

@@ -135,7 +135,7 @@
 [dusfc]
   standard_name = surface_x_momentum_flux_from_coupled_process
   long_name = sfc x momentum flux for coupling
-  units = Pa 
+  units = Pa
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys
@@ -143,7 +143,7 @@
 [dvsfc]
   standard_name = surface_y_momentum_flux_from_coupled_process
   long_name = sfc y momentum flux for coupling
-  units = Pa 
+  units = Pa
   dimensions = (horizontal_loop_extent)
   type = real
   kind = kind_phys

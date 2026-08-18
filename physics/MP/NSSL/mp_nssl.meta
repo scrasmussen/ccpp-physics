@@ -285,7 +285,7 @@
   kind = kind_phys
   intent = in
 [nssl_ehw0]
-  standard_name = nssl_graupel_collection_efficiency 
+  standard_name = nssl_graupel_collection_efficiency
   long_name = graupel droplet collection efficiency in NSSL microphysics scheme
   units = none
   dimensions = ()
@@ -293,7 +293,7 @@
   kind = kind_phys
   intent = in
 [nssl_ehlw0]
-  standard_name = nssl_hail_collection_efficiency 
+  standard_name = nssl_hail_collection_efficiency
   long_name = hail droplet collection efficiency in NSSL microphysics scheme
   units = none
   dimensions = ()
@@ -851,7 +851,7 @@
   units = kg kg-1 s-1
   dimensions = (horizontal_loop_extent,vertical_layer_dimension)
   type = real
-  kind = kind_phys 
+  kind = kind_phys
   intent = out
   optional = True
 [ten_cccn]

@@ -52,20 +52,20 @@ SUBROUTINE coarsepm_settling_driver(dt,t_phy,                         &
 !
        do j=jts,jte
        do i=its,ite
-! 
+!
 ! initialize some met stuff
 !
           kk=0
           bstl_dust(:)=0.
-          do k=kts,kte 
+          do k=kts,kte
           kk=kk+1
-          p_mid(1,1,kk)=.01*p_phy(i,kte-k+kts,j) 
-          delz(1,1,kk)=dz8w(i,kte-k+kts,j) 
+          p_mid(1,1,kk)=.01*p_phy(i,kte-k+kts,j)
+          delz(1,1,kk)=dz8w(i,kte-k+kts,j)
           airmas(1,1,kk)=-(p8w(i,k+1,j)-p8w(i,k,j))*area(i,j)/g
           airden(1,1,kk)=rho_phy(i,k,j)
           tmp(1,1,kk)=t_phy(i,k,j)
           do nv = 1, num_chem
-            chem_before(i,j,k,nv) =  chem(i,k,j,nv)  
+            chem_before(i,j,k,nv) =  chem(i,k,j,nv)
           enddo
           enddo
 !
@@ -73,7 +73,7 @@ SUBROUTINE coarsepm_settling_driver(dt,t_phy,                         &
 !
           idust=1
           kk=0
-          do k=kts,kte 
+          do k=kts,kte
             kk=kk+1
             dust(1,1,kk,1)=chem(i,k,j,1)*conver
           enddo
@@ -121,7 +121,7 @@ END SUBROUTINE coarsepm_settling_driver
 ! *    TMP(i,j,k)      - Air temperature  (K)                                *
 ! *    CT(i,j)         - Surface exchange coeff for moisture
 ! *                                                                          *
-! **************************************************************************** 
+! ****************************************************************************
 
 
   IMPLICIT  NONE
@@ -140,7 +140,7 @@ END SUBROUTINE coarsepm_settling_driver
   INTEGER :: ndt_settl(nmx)
   REAL(kind_phys)    :: dzmin, vsettl, dtmax, rhb, rwet(nmx), ratio_r(nmx)
   REAL(kind_phys)    :: c_stokes, free_path, c_cun, viscosity,  growth_fac
-  REAL(kind_phys)    :: vd_cor(lmx),vd_wk1 
+  REAL(kind_phys)    :: vd_cor(lmx),vd_wk1
   INTEGER :: k, n, i, j, l, l2
   REAL(kind_phys)    :: transfer_to_below_level,temp_tc
 
@@ -198,7 +198,7 @@ END SUBROUTINE coarsepm_settling_driver
 
   ! Loop over latitudes
   DO j = 1,jmx
- 
+
      DO k = 1,nmx
         IF (idust.eq.1) THEN
            rwet_priv(k) = rwet(k)
@@ -209,7 +209,7 @@ END SUBROUTINE coarsepm_settling_driver
 
            ! Solve each vertical layer successively (layer l)
         transfer_to_below_level=0
- 
+
            DO l = lmx,1,-1
               l2 = lmx - l + 1
 
@@ -217,9 +217,9 @@ END SUBROUTINE coarsepm_settling_driver
               DO i = 1,imx
 
                  ! Dynamic viscosity
-                 c_stokes = 1.458E-6 * tmp(i,j,l)**1.5/(tmp(i,j,l) + 110.4) 
+                 c_stokes = 1.458E-6 * tmp(i,j,l)**1.5/(tmp(i,j,l) + 110.4)
 
-                 ! Mean free path as a function of pressure (mb) and 
+                 ! Mean free path as a function of pressure (mb) and
                  ! temperature (K)
                  ! order of p_mid is top->sfc
                  free_path = 1.1E-3/p_mid(i,j,l2)/SQRT(tmp(i,j,l))
@@ -237,11 +237,11 @@ END SUBROUTINE coarsepm_settling_driver
                  vd_cor(l) = 2.0/9.0*g0*rho_priv(k)*rwet_priv(k)**2/viscosity
 
             ! Update mixing ratio; order of delz: top->sfc
-            temp_tc=tc(i,j,l,k)      !temp_tc - for temporal storage [ug/kg]            
+            temp_tc=tc(i,j,l,k)      !temp_tc - for temporal storage [ug/kg]
             vd_wk1 = dt_settl(k)*vd_cor(l)/delz(i,j,l2)   !fraction to leave level
 
             tc(i,j,l,k)   =  tc(i,j,l,k)*(1.- vd_wk1)+transfer_to_below_level ! [ug/kg]
-            
+
            if (l.gt.1) transfer_to_below_level =(temp_tc*vd_wk1)*((delz(i,j,l2) &
                    *airden(i,j,l))/(delz(i,j,l2+1)*airden(i,j,l-1)))          ! [ug/kg]
 
@@ -267,7 +267,7 @@ END SUBROUTINE coarsepm_settling_driver
         END DO
      END DO
   END DO
-  
+
 END SUBROUTINE settling
 
 end module coarsepm_settling_mod

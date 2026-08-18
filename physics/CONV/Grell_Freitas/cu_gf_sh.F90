@@ -83,7 +83,7 @@ contains
      integer, intent (in   )              ::                                &
         ichoice
   !
-  ! 
+  !
   !
   ! outtem = output temp tendency (per s)
   ! outq   = output q tendency (per s)
@@ -119,7 +119,7 @@ contains
      real(kind=kind_phys), dimension (its:ite)                                         &
         ,intent (in   )                   ::                           &
         xland,z1,psur,hfx,qfx
-       
+
      real(kind=kind_phys)                                                              &
         ,intent (in   )                   ::                           &
         dtime,tcrit
@@ -129,7 +129,7 @@ contains
   !                  variables. they carry a "_cup" if they are
   !                  on model cloud levels (staggered). they carry
   !                  an "o"-ending (z becomes zo), if they are the forced
-  !                  variables. 
+  !                  variables.
   !
   ! z           = heights of model levels
   ! q           = environmental mixing ratio
@@ -222,7 +222,7 @@ contains
      real(kind=kind_phys)                                 ::                           &
       dz,mbdt,zkbmax,                                                  &
       cap_maxs,trash,trash2,frh
-      
+
       real(kind=kind_phys) buo_flux,pgeoh,dp,entup,detup,totmas
 
      real(kind=kind_phys) xff_shal(3),blqe,xkshal
@@ -232,7 +232,7 @@ contains
 !$acc declare create(up_massentr,up_massdetr,up_massentro,up_massdetro,up_massentru,up_massdetru)
      real(kind=kind_phys) :: c_up,x_add,qaver,dts,fp,fpi
      real(kind=kind_phys),    dimension (its:ite,kts:kte) :: c1d,dtempdz
-     integer, dimension (its:ite,kts:kte) ::  k_inv_layers 
+     integer, dimension (its:ite,kts:kte) ::  k_inv_layers
      integer, dimension (its:ite) ::  start_level, pmin_lev
 !$acc declare create(c1d,dtempdz,k_inv_layers,start_level, pmin_lev)
 
@@ -268,7 +268,7 @@ contains
 !--- initial entrainment rate (these may be changed later on in the
 !--- program
 !
-      
+
 !
 !> - Initial detrainmentrates
 !
@@ -295,7 +295,7 @@ contains
 !--- minimum depth (m), clouds must have
 !
 !
-!--- maximum depth (mb) of capping 
+!--- maximum depth (mb) of capping
 !--- inversion (larger cap = no convection)
 !
 !$acc kernels
@@ -320,7 +320,7 @@ contains
          if(zws(i) > tiny(pgeoh)) then
           !-convective-scale velocity w*
           zws(i) = 1.2*zws(i)**.3333
-          !- temperature excess 
+          !- temperature excess
           ztexec(i)     = max(flux_tun(i)*hfx(i)/(rho(i,1)*zws(i)*cp),0.0)
           !- moisture  excess
           zqexec(i)     = max(flux_tun(i)*qfx(i)/xlv/(rho(i,1)*zws(i)),0.)
@@ -415,7 +415,7 @@ contains
  36   continue
 !$acc end parallel
 !
-!> - Call get_cloud_bc() and cup_kbcon() to determine the level of 
+!> - Call get_cloud_bc() and cup_kbcon() to determine the level of
 !! convective cloud base (\p kbcon)
 !
 !$acc parallel loop private(x_add)
@@ -630,7 +630,7 @@ contains
            qco (i,k)= qo_cup(i,k)
          enddo
          k=start_level(i)
-         qco (i,k)= qaver 
+         qco (i,k)= qaver
 !
 !$acc loop seq
          do k=start_level(i)+1,ktop(i)
@@ -642,7 +642,7 @@ contains
                        up_massentr(i,k-1)*qo(i,k-1))   /               &
                        (zuo(i,k-1)-.5*up_massdetr(i,k-1)+up_massentr(i,k-1))
 
-          if(qco(i,k)>=trash ) then 
+          if(qco(i,k)>=trash ) then
               dz=z_cup(i,k)-z_cup(i,k-1)
               ! cloud liquid water
               c1d(i,k)=.02*up_massdetr(i,k-1)
@@ -652,12 +652,12 @@ contains
                  c1d(i,k)=0.
               endif
               pwo(i,k)=c0_shal*dz*qrco(i,k)*zuo(i,k)
-              ! cloud water vapor 
+              ! cloud water vapor
               qco (i,k)= trash+qrco(i,k)
-        
+
           else
               qrco(i,k)= 0.0
-          endif 
+          endif
           cupclw(i,k)=qrco(i,k)
          enddo
          trash=0.
@@ -809,7 +809,7 @@ contains
 !             dellaqc(i,k)=   detup*qrco(i,k) *g/dp
             endif
 
-            !-- condensation source term = detrained + flux divergence of 
+            !-- condensation source term = detrained + flux divergence of
             !-- cloud liquid water (qrco)
             c_up = dellaqc(i,k)+(zuo(i,k+1)* qrco(i,k+1) -       &
                                   zuo(i,k  )* qrco(i,k  )  )*g/dp
@@ -820,9 +820,9 @@ contains
                            zuo(i,k  )*(qco(i,k  )-qo_cup(i,k  ) ) )*g/dp &
                            - c_up - 0.5*(pwo (i,k)+pwo (i,k+1))*g/dp
              dellu(i,k) =-(zuo(i,k+1)*(uc (i,k+1)-u_cup(i,k+1) ) - &
-                           zuo(i,k  )*(uc (i,k  )-u_cup(i,k  ) ) )*g/dp 
+                           zuo(i,k  )*(uc (i,k  )-u_cup(i,k  ) ) )*g/dp
              dellv(i,k) =-(zuo(i,k+1)*(vc (i,k+1)-v_cup(i,k+1) ) - &
-                           zuo(i,k  )*(vc (i,k  )-v_cup(i,k  ) ) )*g/dp 
+                           zuo(i,k  )*(vc (i,k  )-v_cup(i,k  ) ) )*g/dp
 
           enddo
         endif
@@ -843,7 +843,7 @@ contains
          dellat(i,k)=(1./cp)*(dellah(i,k)-xlv*(dellaq(i,k)))
          xt (i,k)= (-dellaqc(i,k)*xlv/cp+dellat(i,k))*mbdt+tn(i,k)
          xt (i,k)=  max(190.,xt(i,k))
-         
+
        enddo
       enddo
       do i=its,itf
@@ -940,7 +940,7 @@ contains
         xmb(i)=0.
         xff_shal(1:3)=0.
         if(ierr(i).eq.0)then
-          xmbmax(i)=1.0  
+          xmbmax(i)=1.0
 !         xmbmax(i)=100.*(p(i,kbcon(i))-p(i,kbcon(i)+1))/(g*dtime)
 !
 !-stabilization closure
@@ -963,7 +963,7 @@ contains
           trash=max((hc(i,kbcon(i))-he_cup(i,kbcon(i))),1.e1)
           xff_shal(3)=max(0.,blqe/trash)
           xff_shal(3)=min(xmbmax(i),xff_shal(3))
-!- average 
+!- average
           xmb(i)=(xff_shal(1)+xff_shal(2)+xff_shal(3))/3.
           xmb(i)=min(xmbmax(i),xmb(i))
           if(ichoice > 0)xmb(i)=min(xmbmax(i),xff_shal(ichoice))
@@ -986,7 +986,7 @@ contains
            outqc(i,:)=0.
         else if(ierr(i).eq.0)then
           xmb_out(i)=xmb(i)
-! 
+!
 ! final tendencies
 !
           pre(i)=0.
@@ -1020,7 +1020,7 @@ contains
                 dp=(po_cup(i,k)-po_cup(i,k+1))*100.
 !total ke dissiptaion estimate
                 dts= dts -(outu(i,k)*us(i,k)+outv(i,k)*vs(i,k))*dp/g
-! fpi needed for calcualtion of conversion to pot. energyintegrated 
+! fpi needed for calcualtion of conversion to pot. energyintegrated
                 fpi = fpi  +sqrt(outu(i,k)*outu(i,k) + outv(i,k)*outv(i,k))*dp
              enddo
              if(fpi.gt.0.)then
@@ -1032,7 +1032,7 @@ contains
           endif
       enddo
 !$acc end kernels
-!      
+!
 ! done shallow
 !--------------------------done------------------------------
 !

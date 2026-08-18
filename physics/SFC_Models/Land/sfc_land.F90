@@ -3,7 +3,7 @@
 
 !> This module contains the CCPP-compliant GFS land post
 !! interstitial codes, which returns updated surface
-!! properties such as latent heat and sensible heat 
+!! properties such as latent heat and sensible heat
 !! provided by the component version of land model
 
 !> This module contains the CCPP-compliant GFS land scheme.
@@ -123,7 +123,7 @@
    if (.not. cpllnd2atm) return
 
    ! Check if it is cold or warm run
-   if (flag_init .and. .not. flag_restart) then 
+   if (flag_init .and. .not. flag_restart) then
       ! Calculate fluxes internally
       do i = 1, im
          if (dry(i)) then
@@ -168,7 +168,7 @@
          end if
       enddo
    else
-      ! Use fluxes from land component model 
+      ! Use fluxes from land component model
       do i = 1, im
          if (dry(i)) then
             sncovr1(i) = sncovr1_lnd(i)
@@ -187,7 +187,7 @@
          end if
       enddo
    endif
- 
+
    end subroutine sfc_land_run
 
    end module sfc_land

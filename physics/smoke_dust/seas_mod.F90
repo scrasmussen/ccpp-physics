@@ -88,7 +88,7 @@ CONTAINS
     real(kind=kind_phys), dimension(1,1,1) :: airmas1
     real(kind=kind_phys), dimension(1,1,1,number_ss_bins) :: tc1
     real(kind=kind_phys), dimension(1,1,number_ss_bins) :: bems1
-    
+
 !
 ! local parameters
 !
@@ -267,16 +267,16 @@ CONTAINS
                        bems,ipr)
 
 ! ****************************************************************************
-! *  Evaluate the source of each seasalt particles size classes  (kg/m3) 
+! *  Evaluate the source of each seasalt particles size classes  (kg/m3)
 ! *  by soil emission.
 ! *  Input:
 ! *         SSALTDEN  Sea salt density                               (kg/m3)
 ! *         DXY       Surface of each grid cell                     (m2)
 ! *         NDT1      Time step                                     (s)
 ! *         W10m      Velocity at the anemometer level (10meters)   (m/s)
-! *      
+! *
 ! *  Output:
-! *         DSRC      Source of each sea salt bins       (kg/timestep/cell) 
+! *         DSRC      Source of each sea salt bins       (kg/timestep/cell)
 ! *
 ! *
 ! * Number flux density: Original formula by Monahan et al. (1986) adapted
@@ -297,7 +297,7 @@ CONTAINS
 ! *               where rho_p is particle density [kg/m3]
 ! *    The factor 1.e-18 is to convert in micro-meter r_d^3
 ! ****************************************************************************
-   
+
 
     IMPLICIT NONE
 
@@ -309,14 +309,14 @@ CONTAINS
     REAL(kind=kind_phys),    INTENT(OUT)   :: bems(imx,jmx,nmx)
 
     REAL(kind=kind_phys) :: c0(5), b0(2)
-!  REAL(kind=kind_phys), PARAMETER :: c_old(5)=(/1.373, 3.41, 0.057, 1.05, 1.190/) 
+!  REAL(kind=kind_phys), PARAMETER :: c_old(5)=(/1.373, 3.41, 0.057, 1.05, 1.190/)
 !  REAL(kind=kind_phys), PARAMETER :: c_new(5)=(/1.373, 3.41, 0.057, 3.45, 1.607/)
     ! Change suggested by MC
-    REAL(kind=kind_phys), PARAMETER :: c_old(5)=(/1.373, 3.2, 0.057, 1.05, 1.190/) 
+    REAL(kind=kind_phys), PARAMETER :: c_old(5)=(/1.373, 3.2, 0.057, 1.05, 1.190/)
     REAL(kind=kind_phys), PARAMETER :: c_new(5)=(/1.373, 3.2, 0.057, 3.45, 1.607/)
     REAL(kind=kind_phys), PARAMETER :: b_old(2)=(/0.380, 0.650/)
     REAL(kind=kind_phys), PARAMETER :: b_new(2)=(/0.433, 0.433/)
-    REAL(kind=kind_phys), PARAMETER :: dr=5.0D-2 ! um   
+    REAL(kind=kind_phys), PARAMETER :: dr=5.0D-2 ! um
     REAL(kind=kind_phys), PARAMETER :: theta=30.0
     ! Swelling coefficient frh (d rwet / d rd)
 !!!  REAL(kind=kind_phys),    PARAMETER :: frh = 1.65
@@ -337,19 +337,19 @@ CONTAINS
     REAL(kind=kind_phys), TARGET :: tcms(imx,jmx,lmx,nmx) ! tracer mass (kg; kgS for sulfur case)
     REAL(kind=kind_phys), TARGET :: tcgm(imx,jmx,lmx,nmx) ! g/m3
 
-    !-----------------------------------------------------------------------  
+    !-----------------------------------------------------------------------
     ! sea salt specific
-    !-----------------------------------------------------------------------  
+    !-----------------------------------------------------------------------
 ! REAL(kind=kind_phys), DIMENSION(nmx) :: ra, rb
 ! REAL(kind=kind_phys) :: ch_ss(nmx,12)
 
-    !-----------------------------------------------------------------------  
+    !-----------------------------------------------------------------------
     ! emissions (input)
-    !-----------------------------------------------------------------------  
+    !-----------------------------------------------------------------------
     REAL(kind=kind_phys) :: e_an(imx,jmx,2,nmx), e_bb(imx,jmx,nmx), &
             e_ac(imx,jmx,lmx,nmx)
 
-    !-----------------------------------------------------------------------  
+    !-----------------------------------------------------------------------
     ! diagnostics (budget)
     !-----------------------------------------------------------------------
 !  ! tendencies per time step and process
@@ -360,7 +360,7 @@ CONTAINS
 !  REAL(kind=kind_phys), TARGET :: tems(imx,jmx,nmx), tstl(imx,jmx,nmx)
 !  REAL(kind=kind_phys), TARGET :: tdry(imx,jmx,nmx), twet(imx,jmx,nmx), tcnv(imx,jmx,nmx)
 
-    ! global mass balance per time step 
+    ! global mass balance per time step
     REAL(kind=kind_phys) :: tmas0(nmx), tmas1(nmx)
     REAL(kind=kind_phys) :: dtems(nmx), dttrp(nmx), dtdif(nmx), dtcnv(nmx)
     REAL(kind=kind_phys) :: dtwet(nmx), dtdry(nmx), dtstl(nmx)
@@ -402,7 +402,7 @@ CONTAINS
           b = (b0(1) - LOG10(r_w))/b0(2)
           dfn = (c0(1)/r_w**a)*(1.0 + c0(3)*r_w**c0(4))* &
                10**(c0(5)*EXP(-(b**2)))
-          
+
           r_d = r_w/frh*1.0D-6  ! um -> m
           dfm = 4.0/3.0*pi*r_d**3*rho_d*frh*dfn*dr*dt1 ! 3600 !dt1
           DO i = 1,imx

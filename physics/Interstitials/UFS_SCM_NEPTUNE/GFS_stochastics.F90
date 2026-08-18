@@ -77,7 +77,7 @@
          integer,                               intent(in)    :: im
          integer,                               intent(in)    :: km
          integer,                               intent(in)    :: kdt
-         real(kind_phys),                       intent(in)    :: delt     
+         real(kind_phys),                       intent(in)    :: delt
          logical,                               intent(in)    :: do_sppt
          logical,                               intent(in)    :: pert_mp
          logical,                               intent(in)    :: do_ca
@@ -155,7 +155,7 @@
                sppt_vwt=1.0
                if (zmtnblck(i).EQ.0.0) then
                   sppt_vwt=1.0
-               else 
+               else
                   if (k.GT.zmtnblck(i)+2) then
                      sppt_vwt=1.0
                   endif
@@ -258,7 +258,7 @@
 
           !if(kdt == 1)then
           !endif
-   
+
             do k = 1,km
                do i = 1,im
                   sppt_vwt=1.0
@@ -287,7 +287,7 @@
                   qpert = (gq0_wv(i,k)   - qgrs_wv(i,k)) * ca(i,k)
                   gu0(i,k)  = ugrs(i,k)+upert
                   gv0(i,k)  = vgrs(i,k)+vpert
-                  !negative humidity check                                                                                                                                                                                                                     
+                  !negative humidity check
                   qnew = qgrs_wv(i,k)+qpert
                   if (qnew >= 1.0e-10) then
                      gq0_wv(i,k) = qnew
@@ -337,8 +337,8 @@
                   endif
                enddo
             enddo
-       
-            ! instantaneous precip rate going into land model at the next time step                                                                                                                                                                         
+
+            ! instantaneous precip rate going into land model at the next time step
             tprcp(:) = ca(:,15)*tprcp(:)
             totprcp(:) = totprcp(:) + (ca(:,15) - 1 )*rain(:)
             ! convective precipitation
@@ -348,7 +348,7 @@
               totprcpb(:,ib) = totprcpb(:,ib)   + (ca(:,15) - 1 )*rain(:)
               cnvprcpb(:,ib) = cnvprcpb(:,ib)   + (ca(:,15) - 1 )*rainc(:)
             enddo
-            
+
             if (cplflx .or. cpllnd) then
                rain_cpl(:) = rain_cpl(:) + (ca(:,15) - 1.0)*drain_cpl(:)
             endif
@@ -366,7 +366,7 @@
              gq0_wv(:,k) = gq0_wv(:,k)*(1.0 + shum_wts(:,k))
            end do
          endif
-         
+
          if (do_skeb) then
            do k=1,km
              gu0(:,k) = gu0(:,k)+skebu_wts(:,k)*(diss_est(:,k))

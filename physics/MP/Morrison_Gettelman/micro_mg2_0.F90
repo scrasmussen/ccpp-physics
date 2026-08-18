@@ -4,15 +4,15 @@
 
 !>\ingroup mg2mg3
 !>\defgroup mg2_0_mp Morrison-Gettelman MP version 2.0
-!! This module includes the MG microphysics version 2.0 - update of MG 
+!! This module includes the MG microphysics version 2.0 - update of MG
 !! microphysics with prognostic precipitation.
 !!
 !!\author Andrew Gettelman, Hugh Morrison, Sean Santos
 !! e-mail: morrison@ucar.edu, andrew@ucar.edu
 !!\n Contributions from: Peter Caldwell, Xiaohong Liu and Steve Ghan
-!!  
+!!
 !! - Anning Cheng adopted for FV3GFS 9/29/2017
-!! - Anning Cheng added GMAO ice conversion and Liu et al. Liquid water conversion 
+!! - Anning Cheng added GMAO ice conversion and Liu et al. Liquid water conversion
 !! in 10/12/2017
 !! - S. Moorthi - Oct/Nov 2017 - optimized the code
 !! - S. Moorthi - Nov 2017 - made the sedimentation quasi-implicit
@@ -411,7 +411,7 @@ subroutine micro_mg_tend (                                       &
   ! Microphysical processes.
   use micro_mg_utils, only: ice_deposition_sublimation,    &
                             sb2001v2_liq_autoconversion,   &
-                            sb2001v2_accre_cld_water_rain, &       
+                            sb2001v2_accre_cld_water_rain, &
                             kk2000_liq_autoconversion,     &
                             ice_autoconversion,            &
                             immersion_freezing,            &
@@ -481,7 +481,7 @@ subroutine micro_mg_tend (                                       &
   ! (For example, in CAM, the last dimension is always size 4.)
   real(r8), intent(in) :: rndst(mgncol,nlev,10)   ! radius of each dust bin, for contact freezing (from microp_aero_ts) (m)
   real(r8), intent(in) :: nacon(mgncol,nlev,10)   ! number in each dust bin, for contact freezing  (from microp_aero_ts) (1/m^3)
-  
+
   ! output arguments
 
   real(r8), intent(out) :: qcsinksum_rate1ord(mgncol,nlev) ! 1st order rate for
@@ -1067,7 +1067,7 @@ subroutine micro_mg_tend (                                       &
       nric(i,k)   = zero
 
   ! initialize precip fallspeeds to zero
-      ums(i,k)    = zero 
+      ums(i,k)    = zero
       uns(i,k)    = zero
       umr(i,k)    = zero
       unr(i,k)    = zero
@@ -1272,7 +1272,7 @@ subroutine micro_mg_tend (                                       &
         end if
 
      end do
-  end do 
+  end do
 ! if (lprnt) write(0,*)' tlat1=',tlat(1,:)*deltat
 
   do k=1,nlev
@@ -1308,7 +1308,7 @@ subroutine micro_mg_tend (                                       &
            end if
         end if
      end do
-  end do 
+  end do
 
 ! if (lprnt) write(0,*)' tlat2=',tlat(1,:)*deltat
   do k=1,nlev
@@ -1431,7 +1431,7 @@ subroutine micro_mg_tend (                                       &
      ! taking root of negative later
 
        nric(i,k) = max(nric(i,k),zero)
-     enddo 
+     enddo
      ! Get size distribution parameters for cloud ice
 
      call size_dist_param_ice(mg_ice_props, qiic(:,k), niic(:,k), &
@@ -1439,8 +1439,8 @@ subroutine micro_mg_tend (                                       &
 
 !    call size_dist_param_basic(mg_ice_props, qiic(:,k), niic(:,k), &
 !         lami(:,k), mgncol, n0=n0i(:,k))
-  
-     ! Alternative autoconversion 
+
+     ! Alternative autoconversion
      if (do_sb_physics) then
        if  (do_liq_liu) then
          call liu_liq_autoconversion(pgam(:,k),qcic(:,k),ncic(:,k), &
@@ -1649,7 +1649,7 @@ subroutine micro_mg_tend (                                       &
 
      if (do_sb_physics) then
        call sb2001v2_accre_cld_water_rain(qcic(:,k), ncic(:,k), qric(:,k), &
-            rho(:,k), relvar(:,k), pra(:,k), npra(:,k), mgncol)     
+            rho(:,k), relvar(:,k), pra(:,k), npra(:,k), mgncol)
      else
        call accrete_cloud_water_rain(microp_uniform, qric(:,k), qcic(:,k), &
             ncic(:,k), relvar(:,k), accre_enhan(:,k), pra(:,k), npra(:,k), mgncol)
@@ -1804,7 +1804,7 @@ subroutine micro_mg_tend (                                       &
              if (one/lamr(i,k) < Dcs) then
                mnuccri(i,k) = mnuccr(i,k)
                nnuccri(i,k) = nnuccr(i,k)
-               mnuccr(i,k)  = zero 
+               mnuccr(i,k)  = zero
                nnuccr(i,k)  = zero
              endif
            endif
@@ -2344,7 +2344,7 @@ subroutine micro_mg_tend (                                       &
            ! particles (blend over 18-20 um)
            irad = (1.5_r8 * 1e6_r8) * tx3
            ifrac = min(one, max(zero, (irad-18._r8)*half))
- 
+
            if (ifrac < one) then
               tx1 = ajn(i,k) / lami(i,k)**bj
               vtrmi(i,k) = ifrac*vtrmi(i,k) + (one-ifrac) * min(tx1*gamma_bj_plus4*oneo6, tx2)
@@ -2918,8 +2918,8 @@ subroutine micro_mg_tend (                                       &
                  tlat(i,k)   = tlat(i,k) + xlf*tx2
               end if
            end if
-        enddo 
-     enddo 
+        enddo
+     enddo
      ! remove any excess over-saturation, which is possible due to non-linearity when adding
      ! together all microphysical processes
      !-----------------------------------------------------------------
@@ -2964,8 +2964,8 @@ subroutine micro_mg_tend (                                       &
               qvres(i,k)    = -dum
               tlat(i,k)     = tlat(i,k) + dum*tx1
            end if
-        enddo 
-     enddo 
+        enddo
+     enddo
   end if
 
 ! if (lprnt) write(0,*)' tlat7=',tlat(1,:)*deltat
@@ -3231,7 +3231,7 @@ subroutine micro_mg_tend (                                       &
       else
          dsout(i,k)     = zero
          qsout2(i,k)    = zero
-         nsout2(i,k)    = zero 
+         nsout2(i,k)    = zero
          dsout2(i,k)    = zero
          freqs(i,k)     = zero
          reff_snow(i,k) = zero
@@ -3350,7 +3350,7 @@ end subroutine micro_mg_tend
 !========================================================================
 
 !>\ingroup mg2_0_mp
-!! This subroutine 
+!! This subroutine
 subroutine calc_rercld(lamr, n0r, lamc, pgam, qric, qcic, ncic, rercld, mgncol,nlev)
   integer, intent(in) :: mgncol, nlev
   real(r8), dimension(mgncol,nlev), intent(in) :: lamr          ! rain size parameter (slope)

@@ -134,7 +134,7 @@ contains
       real(kind=kind_phys) :: PAPHM1(KLON,KLEV+1)   !  interface pressure
       real(kind=kind_phys) :: PGEO1(KLON,KLEV)   !  full model level geopotential in meters
 
-!      real(kind=kind_phys)  :: PGAW(KLON) !normalised gaussian quadrature weight/nb of longitude pts 
+!      real(kind=kind_phys)  :: PGAW(KLON) !normalised gaussian quadrature weight/nb of longitude pts
                                                        ! local sub-area == 4*RPI*RA**2 * PGAW
 !      real(kind=kind_phys) ,intent(in)   :: PPRECIP(KLON) ! total surface precipitation
 
@@ -170,7 +170,7 @@ contains
       INTEGER,      PARAMETER   :: INCDIM=20     !number of discretized c spectral elements in launch spectrum
 
       REAL(kind=kind_phys),  PARAMETER    :: RA=6370.e3             !half-model level zonal velocity
-      REAL(kind=kind_phys),  PARAMETER    :: GPTWO=2.0              ! 2p in equation 
+      REAL(kind=kind_phys),  PARAMETER    :: GPTWO=2.0              ! 2p in equation
 
       REAL(kind=kind_phys) :: ZUHM1(KLON,KLEV)             !half-model level zonal velocity
       REAL(kind=kind_phys) :: ZVHM1(KLON,KLEV)             !half-model level meridional velocity
@@ -214,7 +214,7 @@ contains
       REAL(KIND=kind_phys) :: ZGAUSS(KLON), ZFLUXLAUN(KLON), ZCNGL(KLON)
       REAL(KIND=kind_phys) :: ZCONS1,ZCONS2,ZDELP,ZRGPTS
 
-!!!  try to assign values for the following 
+!!!  try to assign values for the following
 
       REAL(KIND=kind_phys) :: GSSEC
       REAL(KIND=kind_phys) :: ZGAUSSB,ZFLUXGLOB
@@ -222,7 +222,7 @@ contains
 !      REAL(KIND=kind_phys) :: PGAW(KLON)  don't need this value, set ZDX directly
 
 
-!      REAL(KIND=kind_phys) ::  PGELAT(KLON) !!! use xlatd from gfs instead 
+!      REAL(KIND=kind_phys) ::  PGELAT(KLON) !!! use xlatd from gfs instead
       REAL(KIND=kind_phys) ::  GCOEFF, GGAUSSA           !!! GCOEFF link to precip
 !      REAL(KIND=kind_phys) ::   GGAUSSB                  !!! GGAUSSB->ZGAUSS
                                                          !!!! GGAUSSA
@@ -232,7 +232,7 @@ contains
       LOGICAL :: LGACALC, LGSATL, LOZPR
 
       integer :: NGAUSS, NSLOPE
-     
+
 
       NSLOPE=1
       LGACALC=.false.
@@ -253,12 +253,12 @@ contains
 !        ZGAUSSB=0.3_kind_phys
       GCSTAR=1.0_kind_phys
 
-       
+
 
 !      GSSEC=(pi2/1800.)*(pi2/1800.)
        GSSEC=1.e-24
        GCOEFF=1.0_kind_phys   !!do not know the value, but never use it when NGAUSS is not equal 1
-      
+
 
 
 !!      LOGIC :: LGINDL !!LGINDL=.true. using standard atm values to calculate!! comment out
@@ -281,7 +281,7 @@ contains
 !         ZFLUXGLOB=3.55e-3_kind_phys
 !           ZFLUXGLOB=3.65e-3_kind_phys  !standard value
 !           ZFLUXGLOB=3.62e-3_kind_phys  !standard value
-           ZFLUXGLOB=3.60e-3_kind_phys 
+           ZFLUXGLOB=3.60e-3_kind_phys
 
 !       ZFLUXGLOB=3.2e-3_kind_phys
 !        ZFLUXGLOB=3.0e-3_kind_phys
@@ -319,7 +319,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!
 !       redefine ilaunch
-       
+
       DO JK=1, KLEV
         if (PAPM11(KLON,JK) .LT. psrc) exit
       ENDDO
@@ -332,7 +332,7 @@ contains
       ILAUNCH = KLEV + 1 - ILAUNCH
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
-       
+
 
 !* reverse vertical coordinate to ECMWF
       DO JL=1,KLON
@@ -343,7 +343,7 @@ contains
       PAPM1(JL,:)=transfer(PAPM11(JL,KLEV:1:-1),PAPM11(JL,:))
       PGEO1(JL,:)=transfer(PGEO11(JL,KLEV:1:-1),PGEO11(JL,:))
       prslk(JL,:)=transfer(prslk1(JL,KLEV:1:-1),prslk1(JL,:))
- 
+
       dked(JL,:)=transfer(dked(JL,KLEV:1:-1),dked(JL,:))
       PTENU(JL,:)=transfer(PTENU(JL,KLEV:1:-1),PTENU(JL,:))
       PTENV(JL,:)=transfer(PTENV(JL,KLEV:1:-1),PTENV(JL,:))
@@ -355,7 +355,7 @@ contains
       ENDDO
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      
+
 
 
 !*       INITIALIZE PARAMETERS FOR COORDINATE TRANSFORM
@@ -466,7 +466,7 @@ contains
 
 
 
-      DO INC=1,INCDIM 
+      DO INC=1,INCDIM
       ZTX=REAL(INC-1)*ZDX+ZXMIN
       ZX(INC)=ZX1*EXP((ZTX-ZXMIN)/ZGAM)+ZX2                       !Eq. 29 of Scinocca 2003
       ZCI(INC)=1.0_kind_phys/ZX(INC)                                   !Eq. 28 of Scinocca 2003
@@ -619,7 +619,7 @@ contains
 !!      ZDX=50.E3    ! c192 for c192 usage
 !!!   ZDX=25.E3    !C384
 !!!      ZDX=13.E3    !C768
- 
+
 
    !Scaling factor for launch flux depending on grid resolution
    ! smooth reduction below 30 km
@@ -697,7 +697,7 @@ contains
       ENDDO
 
       ENDIF
-      ENDIF 
+      ENDIF
 
       DO IAZI=1,IAZIDIM
          DO JL=1,KLON
@@ -786,7 +786,7 @@ contains
          ENDDO
 
 !* get weighted average of phase speed in layer
-                                                    
+
         DO JL=1,KLON
             IF(ZDFL(JL,JK,IAZI)>0.0_kind_phys) THEN
                ZATMP=ZCRT(JL,JK,IAZI)
@@ -868,7 +868,7 @@ contains
         ENDDO
         DO JK=2,ILAUNCH
         DO JL=1,KLON
-         ZULM=ZCOSANG(IAZI)*PUM1(JL,JK)+ZSINANG(IAZI)*& 
+         ZULM=ZCOSANG(IAZI)*PUM1(JL,JK)+ZSINANG(IAZI)*&
      &   PVM1(JL,JK)-ZUL(JL,IAZI)
          ZDFL(JL,JK-1,IAZI)=ZDFL(JL,JK-1,IAZI)+ZCNGL(JL)
          ZDFT=MIN(ZDFL(JL,JK-1,IAZI),2.0_kind_phys*(PAPM1(JL,JK-1)-&
@@ -908,7 +908,7 @@ contains
       ZE2=(PFLUXV(JL,JK+1)-PFLUXV(JL,JK))*ZDELP
 
       if (abs(ZE1) >= maxdudt ) then
-           ZE1 = sign(maxdudt, ZE1) 
+           ZE1 = sign(maxdudt, ZE1)
       endif
       if (abs(ZE2) >= maxdudt ) then
            ZE2 = sign(maxdudt, ZE2)
@@ -917,11 +917,11 @@ contains
 
       PTENU(JL,JK)=ZE1
       PTENV(JL,JK)=ZE2
-!     add the tendency of dT/dt 
+!     add the tendency of dT/dt
       ZE2=-(PUM1(JL,JK)*PTENU(JL,JK)+PVM1(JL,JK)*PTENV(JL,JK))/cpd
       if (abs(ZE2) >= max_eps) pdtdt(JL,JK) = sign(max_eps, ZE2)
 
-!     end of the tendency of dT/dt      
+!     end of the tendency of dT/dt
       ENDDO
       ENDDO
 
@@ -949,9 +949,5 @@ contains
        return
        end subroutine ecmwf_ngw_emc
 
-      
+
 end module ecmwf_ngw
-
-
-
-

@@ -31,10 +31,10 @@ contains
         logical :: micro_init
         real(wp) :: stime, etime
         logical, parameter :: precomputed_tables = .false.
-        
+
         ! Initialize physical constants
         call mp_tempo_params_init()
-        
+
         ! Set module variable is_aerosol_aware/merra2_aerosol_aware
         configs%aerosol_aware = is_aerosol_aware_in
         merra2_aerosol_aware = merra2_aerosol_aware_in
@@ -73,7 +73,7 @@ contains
            write (*,*) 'Hail-aware option is: ', configs%hail_aware
            write (*,*) 'Hail-aware option dimNRHG is: ', dimNRHG
         endif
-        
+
         ! Allocate space for lookup tables (J. Michalakes 2009Jun08).
         if (.not. allocated(tcg_racg)) then
             allocate(tcg_racg(ntb_g1,ntb_g,dimNRHG,ntb_r1,ntb_r))
@@ -635,7 +635,7 @@ contains
          real(wp), dimension(:), intent(in), optional :: spp_stddev_cutoff
          character(len=10), optional, dimension(:), intent(in) :: spp_var_list
          integer, intent(in):: has_reqc, has_reqi, has_reqs
-         
+
          real(wp), dimension(ims:ime, kms:kme, jms:jme), intent(in):: &
             p, w, dz
          real(wp), dimension(ims:ime, jms:jme), intent(inout):: &
@@ -656,7 +656,7 @@ contains
          integer, intent(in) :: decfl
         ! To support subcycling: current step and maximum number of steps
          integer, intent (in) :: istep, nsteps
-         logical, intent (in) :: fullradar_diag 
+         logical, intent (in) :: fullradar_diag
         ! Extended diagnostics, array pointers only associated if ext_diag flag is .true.
          logical, intent (in) :: ext_diag
          logical, optional, intent(in):: aero_ind_fdb
@@ -1503,4 +1503,3 @@ end module module_mp_tempo
  !ctrlL
  !+---+-----------------------------------------------------------------+
  !+---+-----------------------------------------------------------------+
-

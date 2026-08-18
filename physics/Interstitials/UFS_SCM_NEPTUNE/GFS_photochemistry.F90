@@ -31,14 +31,14 @@ contains
        errflg = 1
        return
     endif
-    
+
     ! Only one ozone scheme can be on. Otherwise, return and report error.
     if (oz_phys_2006 .and. oz_phys_2015) then
        write (errmsg,'(*(a))') 'Logic error: Only one ozone scheme can be enabled at a time'
        errflg = 1
        return
     endif
-    
+
   end subroutine GFS_photochemistry_init
 
 !> \section arg_table_GFS_photochemistry_run Argument Table
@@ -48,7 +48,7 @@ contains
   subroutine GFS_photochemistry_run (dtp, ntqv, ntoz, im, levs, ozphys, oz_phys_2015, oz_phys_2006, con_1ovg,   &
        prsl, dp, ozpl, h2o_phys, h2ophys, h2opl, gq0, gt0, ten_q, ten_u, ten_v, ten_t, do3_dt_prd, do3_dt_ozmx, &
        do3_dt_temp, do3_dt_ohoz, dqv_dt_prd, dqv_dt_qvmx, errmsg, errflg)
-    
+
     ! Inputs
     real(kind=kind_phys), intent(in) :: &
          dtp,          & ! Model timestep
@@ -94,17 +94,17 @@ contains
          errmsg          ! CCPP Error message.
     integer,  intent(out) :: &
          errflg          ! CCPP Error flag.
-    
+
     ! Locals
     integer :: i,k
     real(kind=kind_phys), dimension(im,levs) :: &
          init_oz0,  oz0,          & ! initial and updated local ozone concentration
          init_h2o0, h2o0            ! initial and updated local h2o concentration
-    
+
     ! Initialize CCPP error handling variables
     errmsg = ''
     errflg = 0
-    
+
     ten_u(:,:) = 0.0_kind_phys
     ten_v(:,:) = 0.0_kind_phys
     ten_t(:,:) = 0.0_kind_phys

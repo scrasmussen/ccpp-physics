@@ -362,7 +362,7 @@
   units = index
   dimensions = (horizontal_loop_extent)
   type = integer
-  intent = in 
+  intent = in
 [refl_10cm]
   standard_name = radar_reflectivity_10cm
   long_name = instantaneous refl_10cm
@@ -1042,4 +1042,3 @@
   dimensions = ()
   type = integer
   intent = out
-

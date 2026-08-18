@@ -14,7 +14,7 @@
   type = scheme
 [doLWrad]
   standard_name = flag_for_calling_longwave_radiation
-  long_name = logical flags for lw radiation calls  
+  long_name = logical flags for lw radiation calls
   units = flag
   dimensions = ()
   type = logical

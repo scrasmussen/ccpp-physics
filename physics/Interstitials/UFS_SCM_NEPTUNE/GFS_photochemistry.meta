@@ -45,7 +45,7 @@
   dimensions = ()
   type = integer
   intent = out
-  
+
 ########################################################################
 [ccpp-arg-table]
   name = GFS_photochemistry_run
@@ -278,4 +278,3 @@
   dimensions = ()
   type = integer
   intent = out
-  

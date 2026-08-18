@@ -4,9 +4,9 @@
 !  init gw-solvers (1,2) .. no UFS-funds for (3,4) tests
 !  init gw-source specifications
 !  init gw-background dissipation
-!===============================    
+!===============================
 
-!> This module contains UGWP v0 initialization schemes 
+!> This module contains UGWP v0 initialization schemes
     module ugwp_common_v0
 !
      use machine,  only: kind_phys
@@ -55,7 +55,7 @@
      real, parameter :: inv_pra = 3.  !kt/kv =inv_pr
 !
      real, parameter :: alpha  = 1./86400./15.
-!     
+!
      real, parameter :: kdrag  = 1./86400./10.
      real, parameter :: zdrag  = 100.
      real, parameter :: zgrow  = 50.
@@ -83,10 +83,10 @@
       krad(k) = krad(k-1)
       kvg(k)  =  kvg(k-1)
       ktg(k)  =  ktg(k-1)
-!                                                          
+!
      end subroutine init_global_gwdis_v0
 
-     
+
 ! ========================================================================
 ! Part 2 - sources
 !      wave  sources
@@ -101,7 +101,7 @@
      use ugwp_common_v0, only : bnv2min, grav, grcp, fv, grav, cpd, grcp, pi
 
      implicit none
-!  
+!
 ! constants and "crirtical" values to run oro-mtb_gw physics
 !
 ! choice of oro-scheme: strver = 'vay_2018' , 'gfs_2018', 'kdn_2005', 'smc_2000'
@@ -124,18 +124,18 @@
        real, parameter :: rlolev=50000.0
 !
        real,      parameter :: hncrit=9000.   ! max value in meters for elvmax
- 
+
 !  hncrit set to 8000m and sigfac added to enhance elvmax mtn hgt
 
        real,      parameter :: sigfac=4.0     ! mb3a expt test for elvmax factor
        real,      parameter :: hminmt=50.     ! min mtn height (*j*)
        real,      parameter :: minwnd=1.0     ! min wind component (*j*)
        real,      parameter :: dpmin=5000.0   ! minimum thickness of the reference layer in pa
- 
+
        real,      parameter ::   kxoro=6.28e-3/200.    !
        real,      parameter ::   coro = 0.0
        integer,   parameter ::   nridge=2
- 
+
       real    ::  cdmb                      ! scale factors for mtb
       real    ::  cleff                     ! scale factors for orogw
       integer ::  nworo                     ! number of waves
@@ -180,19 +180,19 @@
       integer :: nwaves, nazdir, nstoch
       integer :: lonr
       real    :: cdmbgwd(2)   ! scaling factors for MTb (1) & (2) for cleff = cleff  * cdmbgwd(2)
-                              ! high res-n "larger" MTB and "less-active" cleff in GFS-2018   
+                              ! high res-n "larger" MTB and "less-active" cleff in GFS-2018
       real    :: cdmbX
       real    :: kxw
       real    :: effac        ! it is analog of cdmbgwd(2) for GWs, off for now
 !-----------------------------! GFS-setup for cdmb & cleff
-! cdmb =  4.0 * (192.0/IMX)  
+! cdmb =  4.0 * (192.0/IMX)
 ! cleff = 0.5E-5 / SQRT(IMX/192.0)  = 0.5E-5*SQRT(192./IMX)
 !
       real, parameter :: lonr_refmb =  4.0 * 192.0
       real, parameter :: lonr_refgw =  192.0
 
 ! copy  to "ugwp_oro_init"  =>  nwaves, nazdir, nstoch
- 
+
       nworo  =  nwaves
       nazoro =  nazdir
       nstoro =  nstoch
@@ -200,13 +200,13 @@
       cdmbX = lonr_refmb/float(lonr)
       cdmb  = cdmbX
       if (cdmbgwd(1) >= 0.0) cdmb = cdmb * cdmbgwd(1)
- 
+
        cleff = 0.5e-5 * sqrt(lonr_refgw/float(lonr))  !* effac
 
 !!!    cleff = kxw    * sqrt(lonr_refgw/float(lonr))  !* effac
 
       if (cdmbgwd(2) >= 0.0) cleff = cleff  * cdmbgwd(2)
-! 
+!
 !....................................................................
 ! higher res => smaller h' ..&.. higher kx
 ! flux_gwd ~ 'u'^2*kx/kz ~kxu/n ~1/dx *u/n    tau ~ h'*h'*kx*kx = const (h'-less kx-grow)
@@ -274,7 +274,7 @@
 !
 !>This module contains init-solvers for "broad" non-stationary multi-wave spectra
   module ugwpv0_wmsdis_init
- 
+
     use ugwp_common_v0, only :   pi, pi2
     implicit none
 
@@ -288,7 +288,7 @@
       real,     parameter   :: gssec = (6.28/30.)**2        ! max-value for bn2
       real,     parameter   :: bv2min = (6.28/60./120.)**2  ! min-value for bn2  7.6(-7)  2 hrs
       real,     parameter   :: minvel = 0.5
- 
+
 !
 ! make parameter list that will be passed to SOLVER
 !
@@ -299,11 +299,11 @@
       real, parameter       :: zfluxglob= 3.75e-3
 
       real ,     parameter  :: nslope=1        ! the GW sprctral slope at small-m
- 
+
       integer  , parameter  :: iazidim=4       ! number of azimuths
       integer  , parameter  :: incdim=25       ! number of discrete cx - spectral elements in launch spectrum
       real ,     parameter  :: ucrit2=0.5
- 
+
       real ,     parameter  :: zcimin = ucrit2
       real ,     parameter  :: zcimax = 125.0
       real ,     parameter  :: zgam   =   0.25
@@ -311,18 +311,18 @@
 
       integer               :: ilaunch
       real                  :: gw_eff
- 
+
 !===========================================================================
       integer  :: nwav, nazd, nst
       real     :: eff
- 
+
       real                :: zaz_fct
       real, allocatable   :: zci(:), zci4(:), zci3(:),zci2(:), zdci(:)
       real, allocatable   :: zcosang(:), zsinang(:)
       contains
 !============================================================================
      subroutine initsolv_wmsdis_v0(me, master,  nwaves, nazdir, nstoch, effac, do_physb, kxw)
- 
+
      implicit none
 !
 !input -control for solvers:
@@ -391,7 +391,7 @@
        zaz_fct = 2.0 / znorm            ! correction factor for azimuthal sums
 
 !       define coordinate transform for "Ch"   ....x = 1/c stretching transform
-!       ----------------------------------------------- 
+!       -----------------------------------------------
 ! note that this is expresed in terms of the intrinsic phase speed
 ! at launch ci=c-u_o so that the transformation is identical
 ! see eq. 28-30 of scinocca 2003.   x = 1/c stretching transform

@@ -15,7 +15,7 @@
       ! in the CCPP version - they are defined in the interstitial_create routine
 !> \section arg_table_GFS_rrtmg_pre_run Argument Table
 !! \htmlinclude GFS_rrtmg_pre_run.html
-!!    
+!!
 !>\section rrtmg_pre_gen General Algorithm
       subroutine GFS_rrtmg_pre_run (im, levs, lm, lmk, lmp, n_var_lndp, lextop,&
         ltp, imfdeepcnv, imfdeepcnv_gf, imfdeepcnv_c3, me, ncnd, ntrac,        &
@@ -378,7 +378,7 @@
           prslk1(i,k1)  = prslk(i,k2)
           rho(i,k1)     = prsl(i,k2)/(con_rd*tlyr(i,k1))
           orho(i,k1)    = 1.0/rho(i,k1)
-          
+
 !> - Compute relative humidity.
           es  = min( prsl(i,k2),  fpvs( tgrs(i,k2) ) )  ! fpvs and prsl in pa
           qs  = max( QMIN, con_eps * es / (prsl(i,k2) + epsm1*es) )
@@ -716,7 +716,7 @@
 
 !      if (ntcw > 0) then                            ! prognostic cloud schemes
         ccnd = 0.0_kind_phys
-        if (ncnd == 1) then                          
+        if (ncnd == 1) then
           do k=1,LMK
             do i=1,IM
               ccnd(i,k,1) = tracer1(i,k,ntcw)        ! liquid water/ice
@@ -802,7 +802,7 @@
                 qs_mp (i,k) = tracer1(i,k,ntsw)/(1.-qvs)
                 ni_mp (i,k) = tracer1(i,k,ntinc)/(1.-qvs)
                 if (ltaerosol) nc_mp (i,k) = tracer1(i,k,ntlnc)/(1.-qvs)
-                
+
                 qcten (i,k) = 0.
                 ncten (i,k) = 0.
                 qiten (i,k) = 0.
@@ -1007,8 +1007,8 @@
               effrs_inout(i,k) = effrs(i,k1)
             enddo
          enddo
-          
-         
+
+
         else                                                           ! all other cases
           cldcov = 0.0
         endif
@@ -1019,7 +1019,7 @@
 !      it is to enhance cloudiness due to suspended convec cloud water
 !      for ferrier's (imp_phys=5) microphysics schemes
 
-        if ((num_p3d == 4) .and. (npdf3d == 3)) then     
+        if ((num_p3d == 4) .and. (npdf3d == 3)) then
           do k=1,lm
             k1 = k + kd
             do i=1,im

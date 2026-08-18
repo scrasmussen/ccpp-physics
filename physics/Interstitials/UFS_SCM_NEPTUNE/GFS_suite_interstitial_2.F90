@@ -1,11 +1,11 @@
 !> \file GFS_suite_interstitial_2.f90
-!!  Contains code related used to calculate radiation-based and PBL-based diagnostics that are executed after radiation time interpolation and before the surface layer. 
+!!  Contains code related used to calculate radiation-based and PBL-based diagnostics that are executed after radiation time interpolation and before the surface layer.
 
   module GFS_suite_interstitial_2
 
   use machine, only: kind_phys
   real(kind=kind_phys), parameter :: one = 1.0_kind_phys
-  logical :: linit_mod  = .false. 
+  logical :: linit_mod  = .false.
 
   contains
 

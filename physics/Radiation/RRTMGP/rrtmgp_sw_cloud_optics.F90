@@ -11,16 +11,16 @@ module rrtmgp_sw_cloud_optics
   use mpi_f08
 
   implicit none
-  
-  type(ty_cloud_optics) :: sw_cloud_props 
+
+  type(ty_cloud_optics) :: sw_cloud_props
   integer :: &
        nrghice_fromfileSW, nBandSW, nSize_liqSW, nSize_iceSW, nSizeregSW, &
        nCoeff_extSW, nCoeff_ssa_gSW, nBoundSW, nPairsSW
   real(wp), dimension(:,:), allocatable :: &
-       lut_extliqSW,          & !< LUT shortwave liquid extinction coefficient  
-       lut_ssaliqSW,          & !< LUT shortwave liquid single scattering albedo   
-       lut_asyliqSW,          & !< LUT shortwave liquid asymmetry parameter  
-       band_limsCLDSW           !< Beginning and ending wavenumber [cm -1] for each band                           
+       lut_extliqSW,          & !< LUT shortwave liquid extinction coefficient
+       lut_ssaliqSW,          & !< LUT shortwave liquid single scattering albedo
+       lut_asyliqSW,          & !< LUT shortwave liquid asymmetry parameter
+       band_limsCLDSW           !< Beginning and ending wavenumber [cm -1] for each band
   real(wp), dimension(:,:,:), allocatable :: &
        lut_exticeSW,          & !< LUT shortwave ice extinction coefficient
        lut_ssaiceSW,          & !< LUT shortwave ice single scattering albedo
@@ -36,7 +36,7 @@ module rrtmgp_sw_cloud_optics
   real(wp),parameter :: &
        a0r = 3.07e-3,        & !
        a0s = 0.0,            & !
-       a1s = 1.5               !  
+       a1s = 1.5               !
   real(wp),dimension(:),allocatable :: b0r,b0s,b1s,c0r,c0s
 
 contains
@@ -66,7 +66,7 @@ contains
          errmsg                !< CCPP error message
     integer,          intent(  out) :: &
          errflg                !< CCPP error code
-    
+
     ! Local variables
     integer :: status,ncid,dimid,varID,mpierr
     character(len=264) :: sw_cloud_props_file
@@ -110,7 +110,7 @@ contains
        status = nf90_inq_dimid(ncid, 'nbound', dimid)
        status = nf90_inquire_dimension(ncid, dimid, len=nBoundSW)
        status = nf90_inq_dimid(ncid, 'pair', dimid)
-       status = nf90_inquire_dimension(ncid, dimid, len=nPairsSW) 
+       status = nf90_inquire_dimension(ncid, dimid, len=nPairsSW)
     endif ! On master processor
 
     ! Other processors waiting...
@@ -130,7 +130,7 @@ contains
     call mpi_bcast(nCoeff_ssa_gSW,     1, MPI_INTEGER, mpiroot, mpicomm, mpierr)
     call mpi_bcast(nBoundSW,           1, MPI_INTEGER, mpiroot, mpicomm, mpierr)
     call mpi_bcast(nPairsSW,           1, MPI_INTEGER, mpiroot, mpicomm, mpierr)
-    
+
     ! Has the number of ice-roughnes categories been provided from the namelist?
     ! If so, override nrghice from cloud-optics file
     if (nrghice .ne. 0) nrghice_fromfileSW = nrghice
@@ -153,10 +153,10 @@ contains
     ! #######################################################################################
     !
     ! Read in data ...
-    ! (ONLY master processor(0), if MPI enabled) 
+    ! (ONLY master processor(0), if MPI enabled)
     !
     ! #######################################################################################
-    if (mpirank .eq. mpiroot) then 
+    if (mpirank .eq. mpiroot) then
        write (*,*) 'Reading RRTMGP shortwave cloud data (LUT) ... '
        status = nf90_inq_varid(ncid,'radliq_lwr',varID)
        status = nf90_get_var(ncid,varID,radliq_lwrSW)
@@ -182,7 +182,7 @@ contains
        status = nf90_get_var(ncid,varID,band_limsCLDSW)
 
        ! Close file
-       status = nf90_close(ncid)       
+       status = nf90_close(ncid)
 
     endif ! Master process
 
@@ -191,7 +191,7 @@ contains
 
     ! #######################################################################################
     !
-    ! Broadcast data... 
+    ! Broadcast data...
     ! (ALL processors)
     !
     ! #######################################################################################
@@ -229,7 +229,7 @@ contains
 #endif
 
     ! #######################################################################################
-    !   
+    !
     ! Initialize RRTMGP DDT's...
     !
     ! #######################################################################################
