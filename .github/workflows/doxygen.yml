@@ -40,6 +40,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: NCAR/ccpp-scm
+        ref: main
         path: scm_repo
         fetch-depth: 0
         submodules: recursive
@@ -50,35 +51,121 @@ jobs:
         git remote set-url origin https://github.com/NCAR/ccpp-physics.git
         git fetch origin
         git checkout main
+        git submodule update --init --recursive
 
     - name: Generate metadata tables main branch
       run: |
         cd scm_repo
-        mkdir -p ccpp/physics/physics/docs/doc/html
-        export PYTHONPATH=$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts:$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts/parse_tools
-        ./ccpp/framework/scripts/metadata2html.py -c ccpp/config/ccpp_prebuild_config.py
-        mv ccpp/physics/physics/docs/*.html ccpp/physics/physics/docs/doc/html
+        export PYTHONPATH="$GITHUB_WORKSPACE/scm_repo/ccpp/framework/capgen"
+        python3 - <<'PY'
+        from html import escape
+        from pathlib import Path
+        import re
+        import subprocess
+        from tempfile import TemporaryDirectory
+
+        from metadata.metadata_table import parse_metadata_file
+
+        physics = Path("ccpp/physics")
+        # Keep the tables available for all three main-branch Doxygen builds.
+        output = physics / "physics/docs/metadata_html"
+        output.mkdir(parents=True, exist_ok=True)
+        attributes = (
+            "local_name", "standard_name", "long_name", "units",
+            "type", "dimensions", "kind", "intent",
+        )
+        files = subprocess.check_output(
+            ["git", "ls-files", "--recurse-submodules", "-z", "--", "*.meta"],
+            cwd=physics,
+        ).decode().split("\0")
+        generated = {}
+
+        with TemporaryDirectory() as temporary:
+            for filename in sorted(filter(None, files)):
+                # Host-specific variants share section names. Use the SCM variants,
+                # as the former SCM prebuild configuration did.
+                if filename.endswith((".fv3.meta", ".mpas.meta", ".neptune.meta")):
+                    continue
+                source = physics / filename
+                lines = []
+                in_header = False
+                for line in source.read_text(encoding="utf-8").splitlines(keepends=True):
+                    header = re.match(r"\s*\[([^]]+)\]", line)
+                    if header:
+                        in_header = header.group(1).strip().lower() in (
+                            "ccpp-table-properties", "ccpp-arg-table",
+                        )
+                    if in_header:
+                        # Capgen renamed module tables to host tables. Normalize
+                        # only headers in a temporary copy; preserve variable data.
+                        line = re.sub(
+                            r"(\btype\s*=\s*)module\b", r"\1host", line,
+                            flags=re.IGNORECASE,
+                        )
+                    lines.append(line)
+                normalized = Path(temporary) / source.name
+                normalized.write_text("".join(lines), encoding="utf-8")
+                try:
+                    tables = parse_metadata_file(str(normalized))
+                except Exception as error:
+                    raise RuntimeError(f"Cannot generate metadata HTML for {source}: {error}") from error
+                for table in tables:
+                    for section in table.sections():
+                        if not section.variables:
+                            continue
+                        name = section.section_name
+                        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", name):
+                            raise ValueError(f"Invalid section filename {name!r} in {source}")
+                        if name in generated:
+                            raise ValueError(f"Duplicate section {name}: {generated[name]} and {source}")
+                        rows = ["<tr>" + "".join(f"<th>{attr}</th>" for attr in attributes) + "</tr>"]
+                        for variable in section.variables:
+                            cells = []
+                            for attr in attributes:
+                                value = getattr(variable, attr)
+                                if attr == "dimensions":
+                                    value = "(" + ", ".join(value) + ")"
+                                elif value is None:
+                                    value = "n/a"
+                                cells.append(f"<td>{escape(str(value))}</td>")
+                            rows.append("<tr>" + "".join(cells) + "</tr>")
+                        document = (
+                            '<html><head><meta charset="UTF-8">'
+                            f'<title>{escape(name)} argument table</title></head>\n'
+                            '<body><table border="1">\n' + "\n".join(rows)
+                            + "\n</table></body></html>\n"
+                        )
+                        (output / f"{name}.html").write_text(document, encoding="utf-8")
+                        generated[name] = source
+        if not generated:
+            raise RuntimeError("No metadata HTML tables were generated")
+        print(f"Generated {len(generated)} metadata HTML tables in {output}")
+        PY
 
     - name: Build HSD docs
       run: |
         cd scm_repo/ccpp/physics/physics/docs
+        mkdir -p doc/html
+        cp metadata_html/*.html doc/html/
         doxygen ccpphsd_doxyfile
-        mkdir -p $GITHUB_WORKSPACE/physics/docs/html/HSD
-        mv doc/html/* $GITHUB_WORKSPACE/physics/docs/html/HSD
+        mkdir -p "$GITHUB_WORKSPACE/physics/docs/html/HSD"
+        mv doc/html/* "$GITHUB_WORKSPACE/physics/docs/html/HSD"
 
     - name: Build GW docs
       run: |
         cd scm_repo/ccpp/physics/physics/docs
+        cp metadata_html/*.html doc/html/
         doxygen ccppgw_doxyfile
-        mkdir -p $GITHUB_WORKSPACE/physics/docs/html/GWv1
-        mv doc/html/* $GITHUB_WORKSPACE/physics/docs/html/GWv1
+        mkdir -p "$GITHUB_WORKSPACE/physics/docs/html/GWv1"
+        mv doc/html/* "$GITHUB_WORKSPACE/physics/docs/html/GWv1"
 
     - name: Build Land DA docs
       run: |
         cd scm_repo/ccpp/physics/physics/docs
+        cp metadata_html/*.html doc/html/
         doxygen ccpplandda_doxyfile
-        mkdir -p $GITHUB_WORKSPACE/physics/docs/html/LandDA
-        mv doc/html/* $GITHUB_WORKSPACE/physics/docs/html/LandDA
+        mkdir -p "$GITHUB_WORKSPACE/physics/docs/html/LandDA"
+        mv doc/html/* "$GITHUB_WORKSPACE/physics/docs/html/LandDA"
 
     - name: Switch to v7 tag
       run: |
@@ -91,7 +178,7 @@ jobs:
       run: |
         cd scm_repo
         mkdir -p ccpp/physics/physics/docs/doc/html
-        export PYTHONPATH=$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts:$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts/parse_tools
+        export PYTHONPATH="$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts:$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts/parse_tools"
         ./ccpp/framework/scripts/metadata2html.py -c ccpp/config/ccpp_prebuild_config.py
         mv ccpp/physics/physics/docs/*.html ccpp/physics/physics/docs/doc/html
 
@@ -99,8 +186,8 @@ jobs:
       run: |
         cd scm_repo/ccpp/physics/physics/docs
         doxygen ccpp_doxyfile
-        mkdir -p $GITHUB_WORKSPACE/physics/docs/html/V7
-        mv doc/html/* $GITHUB_WORKSPACE/physics/docs/html/V7
+        mkdir -p "$GITHUB_WORKSPACE/physics/docs/html/V7"
+        mv doc/html/* "$GITHUB_WORKSPACE/physics/docs/html/V7"
 
     - name: Switch physics submodule to SRWv3 (ufs-community)
       run: |
@@ -113,16 +200,16 @@ jobs:
       run: |
         cd scm_repo
         mkdir -p ccpp/physics/physics/docs/doc/html
-        export PYTHONPATH=$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts:$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts/parse_tools
-        ./ccpp/framework/scripts/metadata2html.py -c $GITHUB_WORKSPACE/ccpp_repo/physics/docs/pdftxt/RE300/ccpp_prebuild_config.py
+        export PYTHONPATH="$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts:$GITHUB_WORKSPACE/scm_repo/ccpp/framework/scripts/parse_tools"
+        ./ccpp/framework/scripts/metadata2html.py -c "$GITHUB_WORKSPACE/ccpp_repo/physics/docs/pdftxt/RE300/ccpp_prebuild_config.py"
         mv ccpp/physics/physics/docs/*.html ccpp/physics/physics/docs/doc/html
 
     - name: Build SRWv3 docs
       run: |
         cd scm_repo/ccpp/physics/physics/docs
         doxygen ccppsrw_doxyfile
-        mkdir -p $GITHUB_WORKSPACE/physics/docs/html/SRWv3
-        mv doc/html/* $GITHUB_WORKSPACE/physics/docs/html/SRWv3
+        mkdir -p "$GITHUB_WORKSPACE/physics/docs/html/SRWv3"
+        mv doc/html/* "$GITHUB_WORKSPACE/physics/docs/html/SRWv3"
 
     - name: Switch to submodule main (ncar)
       run: |
@@ -135,7 +222,7 @@ jobs:
       run: |
         cd scm_repo/ccpp/physics/physics/docs
         doxygen mainpage_doxyfile
-        mv html/main/* $GITHUB_WORKSPACE/physics/docs/html
+        mv html/main/* "$GITHUB_WORKSPACE/physics/docs/html"
 
     - name: Setup Pages
       uses: actions/configure-pages@v6
