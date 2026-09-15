@@ -373,7 +373,7 @@ module lsm_ruc
      &       flag_iter, flag_guess, flag_init, lsm_cold_start,          &
      &       flag_cice, frac_grid, errmsg, errflg                       &
      &     )
-      use, intrinsic :: ieee_arithmetic
+
       implicit none
 
 !  ---  input:
@@ -839,10 +839,7 @@ module lsm_ruc
       do i  = 1, im   ! i - horizontal loop
         xice(i,j)  = zero
         if (flag_iter(i) .and. flag(i)) then
-        if (ieee_is_nan(srflag(i))) then
-          write(*,*) 'NaN srflag'
-          STOP
-        endif
+
         if (frpcpn) then
           ffrozp(i,j) = srflag(i)
         else
