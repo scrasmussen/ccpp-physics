@@ -186,8 +186,7 @@
 !    =.false.:volcanic aerosol effect is not included in radiation
       logical, save :: lavoflg = .true.
 
- ! use new mapping method (set in aer_init)
-      logical, save :: lmap_new = .true.
+      logical, save :: lmap_new = .true.  ! use new mapping method (set in aer_init)
 
 ! --------------------------------------------------------------------- !
 !   section-1 : module variables for spectral band interpolation        !
@@ -554,10 +553,8 @@
       character(len=*), intent(out) :: errmsg
 
 !  ---  locals:
- ! one wvn sol flux
-      real (kind=kind_phys), dimension(NWVTOT) :: solfwv
- ! one wvn ir flux
-      real (kind=kind_phys), dimension(NWVTIR) :: eirfwv
+      real (kind=kind_phys), dimension(NWVTOT) :: solfwv        ! one wvn sol flux
+      real (kind=kind_phys), dimension(NWVTIR) :: eirfwv        ! one wvn ir flux
 !
 !===>  ...  begin here
 !
@@ -571,12 +568,9 @@
       kyrsav  = 1
       kmonsav = 1
 
- ! control flag for sw tropospheric aerosol
-      laswflg= (mod(iaerflg,10) > 0)
- ! control flag for lw tropospheric aerosol
-      lalwflg= (mod(iaerflg/10,10) > 0)
- ! control flag for stratospheric volcanic aeros
-      lavoflg= (mod(iaerflg/100,10) >0)
+      laswflg= (mod(iaerflg,10) > 0)    ! control flag for sw tropospheric aerosol
+      lalwflg= (mod(iaerflg/10,10) > 0) ! control flag for lw tropospheric aerosol
+      lavoflg= (mod(iaerflg/100,10) >0) ! control flag for stratospheric volcanic aeros
 
 !> -# Call wrt_aerlog to write aerosol parameter configuration to output logs.
 
@@ -589,8 +583,7 @@
 
       endif
 
- ! return without any aerosol calculations
-      if ( iaerflg == 0 ) return
+      if ( iaerflg == 0 ) return      ! return without any aerosol calculations
 
 !  --- ...  in sw, aerosols optical properties are computed for each radiation
 !           spectral band; while in lw, optical properties can be calculated
@@ -622,8 +615,7 @@
 ! note: for result consistency, the defalt opac-clim aeros setting still use
 !       old spectral band mapping. use iaermdl=5 to use new mapping method
 
- ! opac-climatology scheme
-      if ( iaermdl == 0 ) then
+      if ( iaermdl == 0 ) then                    ! opac-climatology scheme
         lmap_new = .false.
 
         wvn_sw1(2:NBDSW-1) = wvn_sw1(2:NBDSW-1) + 1
@@ -1013,10 +1005,8 @@
 !  ==================================================================  !
 
 !  ---  inputs:
- ! one wvn sol flux
-      real (kind=kind_phys), dimension(:) :: solfwv
- ! one wvn ir flux
-      real (kind=kind_phys), dimension(:) :: eirfwv
+      real (kind=kind_phys), dimension(:) :: solfwv        ! one wvn sol flux
+      real (kind=kind_phys), dimension(:) :: eirfwv        ! one wvn ir flux
       type(MPI_Comm), intent(in) :: mpicomm
       integer,  intent(in) :: mpirank, mpiroot
       character(len=26), intent(in) :: aeros_file
@@ -2140,12 +2130,10 @@
 
       kmonsav = imon
 
- ! use previously input data
-      if ( kyrstr<=iyear .and. iyear<=kyrend ) then
+      if ( kyrstr<=iyear .and. iyear<=kyrend ) then   ! use previously input data
         kyrsav = iyear
         return
- ! need to input new data
-      else
+      else                                            ! need to input new data
         kyrsav = iyear
         kyrstr = iyear - mod(iyear,10)
         kyrend = kyrstr + 9
@@ -2336,8 +2324,7 @@
       character(len=*), intent(out) :: errmsg
 
 !  ---  locals:
- ! ref press (mb) for upper bound
-      real (kind=kind_phys), parameter :: psrfh = 5.0
+      real (kind=kind_phys), parameter :: psrfh = 5.0    ! ref press (mb) for upper bound
 
       real (kind=kind_phys), dimension(IMAX) :: alon,alat,volcae,rdelp
 !     real (kind=kind_phys), dimension(IMAX) :: sumodp
@@ -3616,10 +3603,8 @@
       implicit none
 
 !  ---  inputs:
- ! one wvn sol flux
-      real (kind=kind_phys), dimension(:) :: solfwv
- ! one wvn ir flux
-      real (kind=kind_phys), dimension(:) :: eirfwv
+      real (kind=kind_phys), dimension(:) :: solfwv        ! one wvn sol flux
+      real (kind=kind_phys), dimension(:) :: eirfwv        ! one wvn ir flux
 
       integer,  intent(in) :: me
 

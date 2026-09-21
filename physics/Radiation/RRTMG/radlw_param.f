@@ -75,8 +75,7 @@
 !! \section arg_table_topflw_type Argument Table
 !! \htmlinclude topflw_type.html
 !!
- !< define type construct for radiation fluxes at toa
-      type topflw_type
+      type topflw_type                      !< define type construct for radiation fluxes at toa
         real (kind=kind_phys) :: upfxc      !< total sky upward flux at toa
         real (kind=kind_phys) :: upfx0      !< clear sky upward flux at toa
       end type topflw_type
@@ -85,16 +84,14 @@
 !! \section arg_table_sfcflw_type Argument Table
 !! \htmlinclude sfcflw_type.html
 !!
- !< define type construct for radiation fluxes at surface
-      type sfcflw_type
+      type sfcflw_type                      !< define type construct for radiation fluxes at surface
         real (kind=kind_phys) :: upfxc      !< total sky upward flux at sfc
         real (kind=kind_phys) :: upfx0      !< clear sky upward flux at sfc
         real (kind=kind_phys) :: dnfxc      !< total sky downward flux at sfc
         real (kind=kind_phys) :: dnfx0      !< clear sky downward flux at sfc
       end type sfcflw_type
 !
- !< define type construct for optional radiation flux profiles
-      type proflw_type
+      type proflw_type                      !< define type construct for optional radiation flux profiles
         real (kind=kind_phys) :: upfxc      !< level up flux for total sky
         real (kind=kind_phys) :: dnfxc      !< level down flux for total sky
         real (kind=kind_phys) :: upfx0      !< level up for clear sky
@@ -102,19 +99,13 @@
       end type proflw_type
 !
 ! Parameter constants for LW band structures
- !< number of total spectral bands
-      integer, parameter :: NBANDS = 16
- !< number of total g-points   
-      integer, parameter :: NGPTLW = 140
+      integer, parameter :: NBANDS = 16     !< number of total spectral bands
+      integer, parameter :: NGPTLW = 140    !< number of total g-points   
       integer, parameter :: NTBL   = 10000  !< lookup table dimension 
- !< maximum number of absorbing gases
-      integer, parameter :: MAXGAS = 7
- !< number of halocarbon gases
-      integer, parameter :: MAXXSEC= 4
- !< number of ref rates of binary species   
-      integer, parameter :: NRATES = 6
- !< dimension for plank function table
-      integer, parameter :: NPLNK  = 181
+      integer, parameter :: MAXGAS = 7      !< maximum number of absorbing gases
+      integer, parameter :: MAXXSEC= 4      !< number of halocarbon gases
+      integer, parameter :: NRATES = 6      !< number of ref rates of binary species   
+      integer, parameter :: NPLNK  = 181    !< dimension for plank function table
 
       integer, parameter :: NBDLW  = NBANDS
 
@@ -134,8 +125,7 @@
 
 !> band indices for each g-point
       integer, dimension(NGPTLW) :: NGB
- ! band  1- 8
-      data NGB(:) / 10*1, 12*2, 16*3, 14*4, 16*5,  8*6, 12*7,  8*8,     &
+      data NGB(:) / 10*1, 12*2, 16*3, 14*4, 16*5,  8*6, 12*7,  8*8,     & ! band  1- 8
      &              12*9, 6*10, 8*11, 8*12, 4*13, 2*14, 2*15, 2*16 /      ! band  9-16
 
 !> Band spectrum structures (wavenumber is 1/cm)
