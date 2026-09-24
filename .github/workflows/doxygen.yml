@@ -4,11 +4,31 @@ on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
+  metadata-check:
+    if: github.repository == 'NCAR/ccpp-physics' || github.repository == 'ufs-community/ccpp-physics'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout current ccpp-physics code
+      uses: actions/checkout@v7
+      with:
+        submodules: recursive
+
+    - name: Generate metadata HTML tables
+      run: |
+        python3 tools/doxygen/generate_metadata_html.py \
+          --physics . \
+          --output "$RUNNER_TEMP/metadata_html"
+
   deploy:
-    if: ${{ github.repository == 'NCAR/ccpp-physics' }}
+    needs: metadata-check
+    if: ${{ github.event_name != 'pull_request' && github.repository == 'NCAR/ccpp-physics' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -31,7 +51,7 @@ jobs:
         dot -V
 
     - name: Checkout current ccpp-physics code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Build GitHub Pages site
       run: |
