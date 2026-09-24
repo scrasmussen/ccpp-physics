@@ -107,8 +107,7 @@
 !
       if (lsidea .or. ral_ts <= 0.0 .or. prslrd0 == 0.0) return
 !
- ! RECIPROCAL OF TIME SCALE PER SCALE HEIGHT
-      RTRD1 = 1.0/(ral_ts*86400)
+      RTRD1 = 1.0/(ral_ts*86400) ! RECIPROCAL OF TIME SCALE PER SCALE HEIGHT
                                  ! ABOVE BEGINNING SIGMA LEVEL FOR RAYLEIGH DAMPING
       dti = cons1 / dt
       hfbcpdt = half / (cp*dt)

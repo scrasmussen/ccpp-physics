@@ -109,8 +109,7 @@
       real (kind=kind_phys) :: pid12
       real (kind=kind_phys), parameter :: f12    = 12.0
       real (kind=kind_phys), parameter :: f3600  = 3600.0
- ! ~ cos(89.99427)
-      real (kind=kind_phys), parameter :: czlimt = 0.0001
+      real (kind=kind_phys), parameter :: czlimt = 0.0001      ! ~ cos(89.99427)
 !     real (kind=kind_phys), parameter :: pid12  = (2.0*asin(1.0))/f12
 
 ! Module variable (to be set in module_radiation_astronomy::sol_init):
@@ -224,8 +223,7 @@
         if (mpirank==mpiroot) then
           print *,' - Using new fixed solar constant =', solc0
         endif
- ! noaa ann-mean tsi in absolute scale
-      elseif ( isolar == 1 ) then
+      elseif ( isolar == 1 ) then        ! noaa ann-mean tsi in absolute scale
         solar_fname(15:26) = 'noaa_a0.txt'
 
         if (mpirank==mpiroot) then
@@ -247,8 +245,7 @@
      &              ' reset control flag isolflg=',isolflg
           endif
         endif
- ! noaa ann-mean tsi in tim scale
-      elseif ( isolar == 2 ) then
+      elseif ( isolar == 2 ) then        ! noaa ann-mean tsi in tim scale
         solar_fname(15:26) = 'noaa_an.txt'
 
         if (mpirank==mpiroot) then
@@ -270,8 +267,7 @@
      &              ' reset control flag isolflg=',isolflg
           endif
         endif
- ! cmip5 ann-mean tsi in tim scale
-      elseif ( isolar == 3 ) then
+      elseif ( isolar == 3 ) then        ! cmip5 ann-mean tsi in tim scale
         solar_fname(15:26) = 'cmip_an.txt'
 
         if (mpirank==mpiroot) then
@@ -293,8 +289,7 @@
      &              ' reset control flag isolflg=',isolflg
           endif
         endif
- ! cmip5 mon-mean tsi in tim scale
-      elseif ( isolar == 4 ) then
+      elseif ( isolar == 4 ) then        ! cmip5 mon-mean tsi in tim scale
         solar_fname(15:26) = 'cmip_mn.txt'
 
         if (mpirank==mpiroot) then
@@ -417,12 +412,9 @@
       integer,          intent(out) :: errflg
 
 !  ---  locals:
- ! frc day/hour
-      real (kind=kind_phys), parameter :: hrday = 1.0/24.0
- ! frc day/minute
-      real (kind=kind_phys), parameter :: minday= 1.0/1440.0
- ! frc day/second
-      real (kind=kind_phys), parameter :: secday= 1.0/86400.0
+      real (kind=kind_phys), parameter :: hrday = 1.0/24.0    ! frc day/hour
+      real (kind=kind_phys), parameter :: minday= 1.0/1440.0  ! frc day/minute
+      real (kind=kind_phys), parameter :: secday= 1.0/86400.0 ! frc day/second
 
       real (kind=kind_phys) :: smean, solc1, dtswh, smon(12)
       real (kind=kind_phys) :: fjd, fjd1, dlt, r1, alp
@@ -663,8 +655,7 @@
 
 !  --- ...  setting up calculation parameters used by subr coszmn
 
- ! number of mdl t-step per sw call
-      nswr  = max(1, nint(deltsw/deltim))
+      nswr  = max(1, nint(deltsw/deltim))   ! number of mdl t-step per sw call
       dtswh = deltsw / f3600                ! time length in hours
 
 !     if ( deltsw >= f3600 ) then           ! for longer sw call interval
@@ -740,18 +731,13 @@
       real (kind=kind_phys), intent(out) :: r1, dlt, alp
 
 !  ---  locals:
- ! days of year
-      real (kind=kind_phys), parameter :: cyear = 365.25
- ! iteration limit
-      real (kind=kind_phys), parameter :: ccr   = 1.3e-6
- ! days between epoch and
-      real (kind=kind_phys), parameter :: tpp   = 1.55
+      real (kind=kind_phys), parameter :: cyear = 365.25   ! days of year
+      real (kind=kind_phys), parameter :: ccr   = 1.3e-6   ! iteration limit
+      real (kind=kind_phys), parameter :: tpp   = 1.55     ! days between epoch and
                                                            ! perihelion passage of 1900
- ! days between perihelion passage
-      real (kind=kind_phys), parameter :: svt6  = 78.035
+      real (kind=kind_phys), parameter :: svt6  = 78.035   ! days between perihelion passage
                                                            ! and march equinox of 1900
- ! jd of epoch which is january
-      integer,               parameter :: jdor  = 2415020
+      integer,               parameter :: jdor  = 2415020  ! jd of epoch which is january
                                                            ! 0, 1900 at 12 hours ut
 
       real (kind=kind_phys) :: dat, t1, year, tyear, ec, angin, ador,   &
@@ -926,8 +912,7 @@
 
 !===>  ...  begin here
 
- ! solar angle at present time
-      solang = pid12 * (solhr - f12)
+      solang = pid12 * (solhr - f12)         ! solar angle at present time
       rstp = 1.0 / float(nstp)
 
       do i = 1, IM
